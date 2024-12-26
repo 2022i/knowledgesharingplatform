@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ArticleRepository extends ElasticsearchRepository<Article, String> {
+public interface ArticleRepository extends ElasticsearchRepository<Article, Integer> {
     List<Article> findArticleByTitle(String title);
     List<Article> findArticleByContent(String content);
+    Article findArticleById(int id);
 }

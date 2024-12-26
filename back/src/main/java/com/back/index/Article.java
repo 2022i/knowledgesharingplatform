@@ -6,6 +6,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(indexName = "articles")
@@ -13,20 +14,19 @@ import java.util.List;
 public class Article {
     @Id
     private int id;
-    private User author;
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
-    private String title;
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
-    private String content;
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
-    private String theme;
-    private List<Integer> relatedKnowledge;
+    //userId
+    private int authorId;
+    private int themeId;
+    @Field(type=FieldType.Date, format={}, pattern="dd.MM.uuuu")
     private String createTime;
-    private int viewCount;
-    private int supportCount;
-    private int opposeCount;
-    private int commentCount;
-    private int collectCount;
-    private int shareCount;
-    private double supportRate;
+    private int relatedKnowledgeId;
+    private List<Integer> collectionUserIds=new ArrayList<>();
+    private List<Integer> shareUserIds=new ArrayList<>();
+    private List<Integer> supportUserIds=new ArrayList<>();
+    private List<Integer> opposeUserIds=new ArrayList<>();
+    private List<Integer> viewUserIds=new ArrayList<>();
+    @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
+    private String title;
+    @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
+    private String content;
 }

@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class User {
     @Id
     private int id;
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
+    @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String username;
     private String email;
     private String password;
