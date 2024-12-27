@@ -29,6 +29,7 @@ class UserDataTest {
             userData.setCollectArticleId(count);
             userData.setShareArticleId(count);
             userData.setWriteArticleId(count);
+            userData.setViewArticleId(count);
             userDatas.add(userData);
             userDataRepository.saveAll(userDatas);
         }

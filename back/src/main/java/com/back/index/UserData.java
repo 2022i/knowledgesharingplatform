@@ -1,5 +1,6 @@
 package com.back.index;
 
+import com.back.dto.ViewArticle;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -17,5 +18,5 @@ public class UserData {
     private List<Integer> collectArticleId=new ArrayList<>();
     private List<Integer> shareArticleId=new ArrayList<>();
     private List<Integer> writeArticleId=new ArrayList<>();
-    private List<Integer> viewArticleId=new ArrayList<>();
+    private List<ViewArticle> viewArticleId=new ArrayList<>();
 }
