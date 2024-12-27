@@ -17,4 +17,5 @@ public class UserData {
     private List<Integer> collectArticleId=new ArrayList<>();
     private List<Integer> shareArticleId=new ArrayList<>();
     private List<Integer> writeArticleId=new ArrayList<>();
+    private List<Integer> viewArticleId=new ArrayList<>();
 }

@@ -7,20 +7,20 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AddOppositionData extends AddData {
+public class AddCollectionData extends AddData {
     @Override
     public void updateArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
-        List<Integer> oppositionUserIds = article.getOpposeUserIds();
-        oppositionUserIds.add(userId);
-        article.setOpposeUserIds(oppositionUserIds);
+        List<Integer> collectionUserIds = article.getCollectionUserIds();
+        collectionUserIds.add(userId);
+        article.setSupportUserIds(collectionUserIds);
         articleRepository.save(article);
     }
     public void updateUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
-        List<Integer> oppositionArticleId = userData.getOpposeArticleId();
-        oppositionArticleId.add(articleId);
-        userData.setOpposeArticleId(oppositionArticleId);
+        List<Integer> collectArticleId = userData.getCollectArticleId();
+        collectArticleId.add(articleId);
+        userData.setSupportArticleId(collectArticleId);
         userDataRepository.save(userData);
     }
 }
