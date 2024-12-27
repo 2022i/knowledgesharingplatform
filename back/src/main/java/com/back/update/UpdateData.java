@@ -9,6 +9,10 @@ public abstract class UpdateData {
     protected ArticleRepository articleRepository;
     @Resource
     protected UserDataRepository userDataRepository;
+    public void updateData(int articleId, int userId){
+        updateArticleData( articleId,  userId);
+        updateUserData( articleId,  userId);
+    }
     abstract void updateArticleData(int articleId, int userId);
     abstract void updateUserData(int articleId, int userId);
 }

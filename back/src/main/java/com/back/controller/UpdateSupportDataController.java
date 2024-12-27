@@ -7,18 +7,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping ("/updateSupportData")
+@RequestMapping ("/updateData")
 public class UpdateSupportDataController {
     @Resource
     private UpdateSupportData updateSupportData;
-    @PutMapping("/updateArticleSupportData")
+    @PutMapping("/updateSupportData")
     public Response updateArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        updateSupportData.updateArticleData(articleId, userId);
-        return Response.success();
-    }
-    @PutMapping("/updateUserSupportData")
-    public Response updateUserSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        updateSupportData.updateUserData(articleId, userId);
+        updateSupportData.updateData(articleId, userId);
         return Response.success();
     }
 }

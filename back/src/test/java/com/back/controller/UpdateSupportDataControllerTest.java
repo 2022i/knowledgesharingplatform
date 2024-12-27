@@ -41,20 +41,20 @@ class UpdateSupportDataControllerTest {
         assertThrows(NullPointerException.class, () -> updateSupportDataController.updateArticleSupportData(1, 100));
     }
 
-    @Test
-    void updateUserSupportData_success() {
-        doNothing().when(updateSupportData).updateUserData(1, 100);
-
-        Response response = updateSupportDataController.updateUserSupportData(1, 100);
-
-        assertEquals(Response.success(), response);
-        verify(updateSupportData, times(1)).updateUserData(1, 100);
-    }
-
-    @Test
-    void updateUserSupportData_userNotFound() {
-        doThrow(new NullPointerException()).when(updateSupportData).updateUserData(1, 100);
-
-        assertThrows(NullPointerException.class, () -> updateSupportDataController.updateUserSupportData(1, 100));
-    }
+//    @Test
+//    void updateUserSupportData_success() {
+//        doNothing().when(updateSupportData).updateUserData(1, 100);
+//
+//        Response response = updateSupportDataController.updateUserSupportData(1, 100);
+//
+//        assertEquals(Response.success(), response);
+//        verify(updateSupportData, times(1)).updateUserData(1, 100);
+//    }
+//
+//    @Test
+//    void updateUserSupportData_userNotFound() {
+//        doThrow(new NullPointerException()).when(updateSupportData).updateUserData(1, 100);
+//
+//        assertThrows(NullPointerException.class, () -> updateSupportDataController.updateUserSupportData(1, 100));
+//    }
 }
