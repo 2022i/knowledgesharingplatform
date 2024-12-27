@@ -1,7 +1,7 @@
 package com.back.controller;
 
 import com.back.dto.Response;
-import com.back.update.AddSupportData;
+import com.back.add.AddSupportData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,20 +25,20 @@ class AddSupportDataControllerTest {
     }
 
     @Test
-    void updateArticleSupportData_success() {
-        doNothing().when(updateSupportData).updateArticleData(1, 100);
+    void addArticleSupportData_success() {
+        doNothing().when(updateSupportData).addArticleData(1, 100);
 
-        Response response = addSupportDataController.updateArticleSupportData(1, 100);
+        Response response = addSupportDataController.addArticleSupportData(1, 100);
 
         assertEquals(Response.success(), response);
-        verify(updateSupportData, times(1)).updateArticleData(1, 100);
+        verify(updateSupportData, times(1)).addArticleData(1, 100);
     }
 
     @Test
-    void updateArticleSupportData_articleNotFound() {
-        doThrow(new NullPointerException()).when(updateSupportData).updateArticleData(1, 100);
+    void addArticleSupportData_articleNotFound() {
+        doThrow(new NullPointerException()).when(updateSupportData).addArticleData(1, 100);
 
-        assertThrows(NullPointerException.class, () -> addSupportDataController.updateArticleSupportData(1, 100));
+        assertThrows(NullPointerException.class, () -> addSupportDataController.addArticleSupportData(1, 100));
     }
 
 //    @Test

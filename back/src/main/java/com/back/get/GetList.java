@@ -10,5 +10,5 @@ public abstract class GetList {
     @Resource
     protected UserDataRepository userDataRepository;
 
-    public void getList(int userId)
+    public void getList(int userId);
 }

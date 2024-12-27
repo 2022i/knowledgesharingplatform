@@ -1,4 +1,4 @@
-package com.back.update;
+package com.back.add;
 
 import com.back.index.Article;
 import com.back.index.UserData;
@@ -39,7 +39,7 @@ class UpdateSupportDataTest {
         article.setSupportUserIds(new ArrayList<>());
         when(articleRepository.findArticleById(1)).thenReturn(article);
 
-        updateSupportData.updateArticleData(1, 100);
+        updateSupportData.addArticleData(1, 100);
 
         assertTrue(article.getSupportUserIds().contains(100));
         verify(articleRepository, times(1)).save(article);
@@ -49,7 +49,7 @@ class UpdateSupportDataTest {
     void updateArticleData_articleNotFound() {
         when(articleRepository.findArticleById(1)).thenReturn(null);
 
-        assertThrows(NullPointerException.class, () -> updateSupportData.updateArticleData(1, 100));
+        assertThrows(NullPointerException.class, () -> updateSupportData.addArticleData(1, 100));
     }
 
     @Test
@@ -58,7 +58,7 @@ class UpdateSupportDataTest {
         userData.setSupportArticleId(new ArrayList<>());
         when(userDataRepository.findUserDataById(100)).thenReturn(userData);
 
-        updateSupportData.updateUserData(1, 100);
+        updateSupportData.addUserData(1, 100);
 
         assertTrue(userData.getSupportArticleId().contains(1));
         verify(userDataRepository, times(1)).save(userData);
@@ -68,6 +68,6 @@ class UpdateSupportDataTest {
     void updateUserData_userNotFound() {
         when(userDataRepository.findUserDataById(100)).thenReturn(null);
 
-        assertThrows(NullPointerException.class, () -> updateSupportData.updateUserData(1, 100));
+        assertThrows(NullPointerException.class, () -> updateSupportData.addUserData(1, 100));
     }
 }

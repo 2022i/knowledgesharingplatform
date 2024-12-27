@@ -1,5 +1,6 @@
 package com.back.index;
 
+import com.back.dto.Message;
 import com.back.dto.ViewArticle;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -22,5 +23,5 @@ public class UserData {
     private List<Integer> fansId=new ArrayList<>();
     private List<Integer> subscriptionThemeId=new ArrayList<>();
     private List<Integer> followUserId=new ArrayList<>();
-
+    private List<Message> Message=new ArrayList<>();
 }
