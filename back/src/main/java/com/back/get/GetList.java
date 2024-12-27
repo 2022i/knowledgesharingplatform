@@ -4,11 +4,17 @@ import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 
+import java.util.List;
+
 public abstract class GetList {
     @Resource
     protected ArticleRepository articleRepository;
     @Resource
     protected UserDataRepository userDataRepository;
 
-    public void getList(int userId);
+    public void getList(int userId){
+        getArticleIDList(userId);
+    }
+
+    abstract List<Integer> getArticleIDList(int userId);
 }

@@ -19,4 +19,5 @@ public abstract class GetData {
 
     abstract int getCount(int userId);
     abstract List<Integer> getList(int userId);
+
 }
