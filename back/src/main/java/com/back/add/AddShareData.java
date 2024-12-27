@@ -2,9 +2,11 @@ package com.back.add;
 
 import com.back.index.Article;
 import com.back.index.UserData;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class AddShareData extends AddData {
     @Override
     protected void addArticleData(int articleId, int userId) {
