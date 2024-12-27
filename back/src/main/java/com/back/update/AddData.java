@@ -4,7 +4,7 @@ import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 
-public abstract class UpdateData {
+public abstract class AddData {
     @Resource
     protected ArticleRepository articleRepository;
     @Resource

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UpdateSupportData extends UpdateData {
+public class AddSupportData extends AddData {
     @Override
     public void updateArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);

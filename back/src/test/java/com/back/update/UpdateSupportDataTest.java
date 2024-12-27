@@ -26,7 +26,7 @@ class UpdateSupportDataTest {
     private UserDataRepository userDataRepository;
 
     @InjectMocks
-    private UpdateSupportData updateSupportData;
+    private AddSupportData updateSupportData;
 
     @BeforeEach
     void setUp() {
