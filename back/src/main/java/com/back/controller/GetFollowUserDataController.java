@@ -3,8 +3,12 @@ package com.back.controller;
 
 import com.back.dto.Response;
 import com.back.get.GetFollowUserData;
+import com.back.index.User;
+import com.back.index.UserData;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -16,20 +20,17 @@ public class GetFollowUserDataController {
 
     //获取关注列表
     @GetMapping("/getFollowUserList")
-    public Response getFollowUserList(@RequestParam int userId){
-        getFollowUserData.getFollowUserList(userId);
-        return Response.success();
+    public List<UserData> getFollowUserList(@RequestParam int userId){
+        return getFollowUserData.getFollowUserList(userId);
     }
 
     @GetMapping("/getFollowUserCount")
-    public  Response getCount(@RequestParam int userId){
-        getFollowUserData.getCount(userId);
-        return Response.success();
+    public  int getCount(@RequestParam int userId){
+        return getFollowUserData.getCount(userId);
     }
 
     @GetMapping("/getFollowUserIDList")
-    public Response getList(@RequestParam int userId){
-        getFollowUserData.getList(userId);
-        return Response.success();
+    public List<Integer> getList(@RequestParam int userId){
+        return getFollowUserData.getList(userId);
     }
 }
