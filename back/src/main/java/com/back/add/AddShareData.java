@@ -2,12 +2,15 @@ package com.back.add;
 
 import com.back.index.Article;
 import com.back.index.UserData;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AddShareData extends AddData {
+    @Resource
+    private SentShareMessage sentMessage;
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
@@ -26,7 +29,6 @@ public class AddShareData extends AddData {
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){
-        sentMessage=new SentShareMessage();
         sentMessage.sentMessage(articleId,messageGenerator);
     }
 }

@@ -19,7 +19,7 @@ public class UserData {
     private List<Integer> collectArticleId=new ArrayList<>();
     private List<Integer> shareArticleId=new ArrayList<>();
     private List<Integer> writeArticleId=new ArrayList<>();
-    private List<ViewArticle> viewArticleId=new ArrayList<>();
+    private List<ViewArticle> viewArticleList=new ArrayList<>();
     private List<Integer> fansId=new ArrayList<>();
     private List<Integer> subscriptionThemeId=new ArrayList<>();
     private List<Integer> followUserId=new ArrayList<>();

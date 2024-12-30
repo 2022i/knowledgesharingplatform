@@ -12,13 +12,16 @@ import java.util.List;
 @Document(indexName = "articles")
 @Data
 public class Article {
-    @Id
+    @Field(type=FieldType.Keyword)
     private int id;
     //userId
+    @Field(type=FieldType.Keyword)
     private int authorId;
+    @Field(type=FieldType.Keyword)
     private int themeId;
     @Field(type=FieldType.Date, format={}, pattern="dd.MM.uuuu")
     private String createTime;
+    @Field(type=FieldType.Keyword)
     private int relatedKnowledgeId;
     private List<Integer> collectionUserIds=new ArrayList<>();
     private List<Integer> shareUserIds=new ArrayList<>();

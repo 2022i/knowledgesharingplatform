@@ -1,13 +1,17 @@
 package com.back.add;
 
 import com.back.dto.Message;
+import com.back.index.Article;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
+@Service
 public abstract class SentMessage {
     @Resource
     protected Message message;
@@ -18,10 +22,14 @@ public abstract class SentMessage {
     public void sentMessage(int articleId, int messageGeneratorId){
         setMessage(articleId, messageGeneratorId);
         findUserDataByArticleId(articleId).getMessage().add(message);
+        System.out.println("articleId: "+articleId);
     }
     abstract void setMessageTitle();
     private UserData findUserDataByArticleId(int articleId){
+//        List<Article> article=articleRepository.findArticleById(articleId);
+//        int uerId=article.get(0).getAuthorId();
         int uerId=articleRepository.findArticleById(articleId).getAuthorId();
+        System.out.println(uerId);
         return userDataRepository.findUserDataById(uerId);
     }
     private void setMessage(int articleId, int messageGeneratorId){
@@ -31,5 +39,4 @@ public abstract class SentMessage {
         message.setArticleId(articleId);
         message.setRead(false);
     }
-
 }

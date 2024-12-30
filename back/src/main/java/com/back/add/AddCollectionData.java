@@ -2,12 +2,15 @@ package com.back.add;
 
 import com.back.index.Article;
 import com.back.index.UserData;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AddCollectionData extends AddData {
+    @Resource
+    private SentCollectMessage sentMessage;
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
@@ -26,7 +29,6 @@ public class AddCollectionData extends AddData {
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){
-        sentMessage=new SentCollectMessage();
         sentMessage.sentMessage(articleId,messageGenerator);
     }
 

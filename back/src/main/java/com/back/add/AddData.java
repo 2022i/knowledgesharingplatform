@@ -3,13 +3,14 @@ package com.back.add;
 import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 
+@Service
 public abstract class AddData {
     @Resource
     protected ArticleRepository articleRepository;
     @Resource
     protected UserDataRepository userDataRepository;
-    protected SentMessage sentMessage;
     public void addData(int articleId, int userId){
         addArticleData( articleId,  userId);
         addUserData( articleId,  userId);
