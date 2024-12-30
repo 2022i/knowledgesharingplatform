@@ -11,8 +11,4 @@ public interface ArticleRepository extends ElasticsearchRepository<Article, Inte
     List<Article> findArticleByTitle(String title);
     List<Article> findArticleByContent(String content);
     Article findArticleById(int id);
-//    Article findArticleById(int id);
-//    List<Article> findArticleById(int authorId);
-//    Article findDistinctById(int id);
-//    Article findById(int id);
 }

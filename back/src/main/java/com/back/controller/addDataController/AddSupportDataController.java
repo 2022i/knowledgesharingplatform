@@ -1,19 +1,19 @@
-package com.back.controller;
+package com.back.controller.addDataController;
 
 import com.back.dto.Response;
-import com.back.add.AddOppositionData;
+import com.back.add.AddSupportData;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/addData")
-public class AddOppositionDataController {
+@RequestMapping ("/addData")
+public class AddSupportDataController {
     @Resource
-    private AddOppositionData addOppositionData;
-    @PutMapping("/addOppositionData")
+    private AddSupportData addSupportData;
+    @PutMapping("/addSupportData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        addOppositionData.addData(articleId, userId);
+        addSupportData.addData(articleId, userId);
         return Response.success();
     }
 }

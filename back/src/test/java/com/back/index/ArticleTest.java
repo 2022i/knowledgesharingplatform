@@ -26,7 +26,7 @@ public class ArticleTest {
                     Article article = new Article();
                     article.setId(i);
                     article.setAuthorId(i);
-                    article.setThemeId(200 + i);
+                    article.setThemeId(i);
                     article.setSupportUserIds(count);
                     article.setTitle("Test Title " + i);
                     article.setContent("Test Content " + i);

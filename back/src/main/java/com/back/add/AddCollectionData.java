@@ -31,5 +31,4 @@ public class AddCollectionData extends AddData {
     protected void sentMessage(int articleId, int messageGenerator){
         sentMessage.sentMessage(articleId,messageGenerator);
     }
-
 }

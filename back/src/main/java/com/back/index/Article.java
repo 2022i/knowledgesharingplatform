@@ -1,7 +1,6 @@
 package com.back.index;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -21,9 +20,8 @@ public class Article {
     private int themeId;
     @Field(type=FieldType.Date, format={}, pattern="dd.MM.uuuu")
     private String createTime;
-    @Field(type=FieldType.Keyword)
-    private int relatedKnowledgeId;
-    private List<Integer> collectionUserIds=new ArrayList<>();
+    private List<String> relatedKnowledgeId;
+    private List<Integer> collectionUserIds =new ArrayList<>();
     private List<Integer> shareUserIds=new ArrayList<>();
     private List<Integer> supportUserIds=new ArrayList<>();
     private List<Integer> opposeUserIds=new ArrayList<>();
