@@ -6,7 +6,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
-public abstract class AddData {
+public abstract class AddDataAndMessage {
     @Resource
     protected ArticleRepository articleRepository;
     @Resource

@@ -1,7 +1,7 @@
 package com.back.controller.addDataController;
 
 import com.back.dto.Response;
-import com.back.add.AddCollectionData;
+import com.back.add.AddCollectionDataAndMessage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/addData")
 public class AddCollectionDataController {
     @Resource
-    private AddCollectionData addCollectionData;
+    private AddCollectionDataAndMessage addCollectionData;
     @PutMapping("/addCollectionData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
         addCollectionData.addData(articleId, userId);

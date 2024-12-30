@@ -13,8 +13,8 @@ public class ShareUsersList extends UsersList {
     @Resource
     private ShareUserIdsList shareUserIdsList;
     @Override
-    public List<UserData> getUserDataList(int userId){
-        List<Integer> shareUserIds =shareUserIdsList.getIdsList(userId);
+    public List<UserData> getUserDataList(int articleId){
+        List<Integer> shareUserIds =shareUserIdsList.getIdsList(articleId);
         List<UserData> userData = new ArrayList<>();
         for(Integer id : shareUserIds){
             userData.add(userDataRepository.findUserDataById(id));

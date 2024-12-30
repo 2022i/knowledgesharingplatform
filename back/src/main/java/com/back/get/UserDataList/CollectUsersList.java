@@ -13,8 +13,8 @@ public class CollectUsersList extends UsersList{
     @Resource
     private CollectUserIdsList collectUserIdsList;
     @Override
-    public List<UserData> getUserDataList(int userId){
-        List<Integer> collectUserIds = collectUserIdsList.getIdsList(userId);
+    public List<UserData> getUserDataList(int articleId){
+        List<Integer> collectUserIds = collectUserIdsList.getIdsList(articleId);
         List<UserData> userData = new ArrayList<>();
         for(Integer id : collectUserIds){
             userData.add(userDataRepository.findUserDataById(id));

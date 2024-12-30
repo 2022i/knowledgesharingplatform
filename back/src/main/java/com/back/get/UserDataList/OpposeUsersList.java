@@ -13,8 +13,8 @@ public class OpposeUsersList extends UsersList {
     @Resource
     OpposeUserIdsList opposeUserIdsList;
     @Override
-    public List<UserData> getUserDataList(int userId){
-        List<Integer> opposeUserIds =opposeUserIdsList.getIdsList(userId);
+    public List<UserData> getUserDataList(int articleId){
+        List<Integer> opposeUserIds =opposeUserIdsList.getIdsList(articleId);
         List<UserData> userData = new ArrayList<>();
         for(Integer id : opposeUserIds){
             userData.add(userDataRepository.findUserDataById(id));

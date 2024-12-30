@@ -1,5 +1,7 @@
 package com.back.add;
 
+import com.back.get.ArticleIdsList.ShareArticleIdsList;
+import com.back.get.UserIdsList.ShareUserIdsList;
 import com.back.index.Article;
 import com.back.index.UserData;
 import jakarta.annotation.Resource;
@@ -8,23 +10,28 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AddCollectionData extends AddData {
+public class AddShareDataAndMessage extends AddDataAndMessage {
     @Resource
-    private SentCollectMessage sentMessage;
+    private SentShareMessage sentMessage;
+    @Resource
+    private ShareUserIdsList shareUserIdsList;
+    @Resource
+    private ShareArticleIdsList shareArticleIdsList;
+
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
-        List<Integer> collectionUserIds = article.getCollectionUserIds();
-        collectionUserIds.add(userId);
-        article.setSupportUserIds(collectionUserIds);
+        List<Integer> shareUserIds = shareUserIdsList.getIdsList(articleId);
+        shareUserIds.add(userId);
+        article.setSupportUserIds(shareUserIds);
         articleRepository.save(article);
     }
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
-        List<Integer> collectArticleId = userData.getCollectArticleId();
-        collectArticleId.add(articleId);
-        userData.setSupportArticleId(collectArticleId);
+        List<Integer> shareArticleId = shareArticleIdsList.getIdsList(userId);
+        shareArticleId.add(articleId);
+        userData.setSupportArticleId(shareArticleId);
         userDataRepository.save(userData);
     }
     @Override

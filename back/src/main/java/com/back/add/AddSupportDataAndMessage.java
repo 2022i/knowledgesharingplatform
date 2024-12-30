@@ -1,5 +1,7 @@
 package com.back.add;
 
+import com.back.get.ArticleIdsList.ShareArticleIdsList;
+import com.back.get.UserIdsList.ShareUserIdsList;
 import com.back.index.Article;
 import com.back.index.UserData;
 import jakarta.annotation.Resource;
@@ -8,13 +10,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AddSupportData extends AddData {
+public class AddSupportDataAndMessage extends AddDataAndMessage {
     @Resource
     private SentShareMessage sentMessage;
+    @Resource
+    private ShareUserIdsList shareUserIdsList;
+    @Resource
+    private ShareArticleIdsList shareArticleIdsList;
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
-        List<Integer> supportUserIds = article.getSupportUserIds();
+        List<Integer> supportUserIds = shareUserIdsList.getIdsList(articleId);
         supportUserIds.add(userId);
         article.setSupportUserIds(supportUserIds);
         articleRepository.save(article);
@@ -22,7 +28,7 @@ public class AddSupportData extends AddData {
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
-        List<Integer> supportArticleId = userData.getSupportArticleId();
+        List<Integer> supportArticleId = shareArticleIdsList.getIdsList(userId);
         supportArticleId.add(articleId);
         userData.setSupportArticleId(supportArticleId);
         userDataRepository.save(userData);

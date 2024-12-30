@@ -1,5 +1,7 @@
 package com.back.add;
 
+import com.back.get.ArticleIdsList.CollectArticleIdsList;
+import com.back.get.UserIdsList.CollectUserIdsList;
 import com.back.index.Article;
 import com.back.index.UserData;
 import jakarta.annotation.Resource;
@@ -8,23 +10,27 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AddOppositionData extends AddData {
+public class AddCollectionDataAndMessage extends AddDataAndMessage {
     @Resource
-    private SentOpposeMessage sentMessage;
+    private SentCollectMessage sentMessage;
+    @Resource
+    private CollectUserIdsList collectUserIdsList;
+    @Resource
+    private CollectArticleIdsList collectArticleIdsList;
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
-        List<Integer> oppositionUserIds = article.getOpposeUserIds();
-        oppositionUserIds.add(userId);
-        article.setOpposeUserIds(oppositionUserIds);
+        List<Integer> collectionUserIds = collectUserIdsList.getIdsList(articleId);
+        collectionUserIds.add(userId);
+        article.setSupportUserIds(collectionUserIds);
         articleRepository.save(article);
     }
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
-        List<Integer> oppositionArticleId = userData.getOpposeArticleId();
-        oppositionArticleId.add(articleId);
-        userData.setOpposeArticleId(oppositionArticleId);
+        List<Integer> collectArticleId = collectArticleIdsList.getIdsList(userId);
+        collectArticleId.add(articleId);
+        userData.setSupportArticleId(collectArticleId);
         userDataRepository.save(userData);
     }
     @Override
