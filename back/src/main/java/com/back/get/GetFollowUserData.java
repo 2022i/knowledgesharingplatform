@@ -19,13 +19,16 @@ public class GetFollowUserData extends GetData {
     protected UserRepository userRepository;
 
     //获取关注用户列表
-    public List<User> getFollowUserList(int userId){
+    public List<UserData> getFollowUserList(int userId){
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> followUserId = userData.getFollowUserId();
-        List<User> followUsers = new ArrayList<>();
+        System.out.println(followUserId);
+        System.out.println(userDataRepository.findUserDataById(1));
+        List<UserData> followUsers = new ArrayList<>();
         for( Integer integer : followUserId){
-            followUsers.add(userRepository.findUserById(integer));
+            followUsers.add(userDataRepository.findUserDataById(integer));
         }
+        System.out.println(followUsers);
         return followUsers;
     }
 

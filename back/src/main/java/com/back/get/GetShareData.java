@@ -11,26 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetSupportData extends GetList {
+public class GetShareData extends GetList {
     @Resource
     protected ArticleRepository articleRepository;
     @Resource
     protected UserDataRepository userDataRepository;
-    @Override
-    //获取用户点赞文章ID列表
-    public List<Integer> getArticleIDList(int userId){
-        UserData userData = userDataRepository.findUserDataById(userId);
-        return userData.getSupportArticleId();
-    }
 
-    //获取点赞文章列表
-    public List<Article> getArticleList(int userId){
-        List<Integer> writeArticleId = userDataRepository.findUserDataById(userId).getWriteArticleId();
+    //获取用户分享文章列表
+    public List<Article> getShareList(int userId){
+        UserData userData= userDataRepository.findUserDataById(userId);
+        List<Integer> shareArticleId = userData.getShareArticleId();
         List<Article> articleData=new ArrayList<>();
-        for (Integer integer : writeArticleId) {
+        for (Integer integer : shareArticleId) {
             articleData.add(articleRepository.findArticleById(integer));
         }
         return articleData;
     }
 
+    //获取用户分享文章ID列表
+    @Override
+    public List<Integer> getArticleIDList(int userId){
+        UserData userData = userDataRepository.findUserDataById(userId);
+        return userData.getShareArticleId();
+    }
 }

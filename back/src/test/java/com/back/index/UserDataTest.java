@@ -21,7 +21,7 @@ class UserDataTest {
         List<Integer> count=new ArrayList<>();
         count.add(1);
         count.add(2);
-        for (int i = 1; i <= 110; i++) {
+        for (int i = 1; i <= 10; i++) {
             UserData userData = new UserData();
             userData.setId(i);
             userData.setSupportArticleId(count);
@@ -29,17 +29,12 @@ class UserDataTest {
             userData.setCollectArticleId(count);
             userData.setShareArticleId(count);
             userData.setWriteArticleId(count);
-//            userData.setViewArticleList(count);
+//            userData.setViewArticleId(count);
+            userData.setFansId(count);
+            userData.setFollowUserId(count);
             userDatas.add(userData);
+            System.out.println(userData);
             userDataRepository.saveAll(userDatas);
         }
-        UserData  userData =new UserData();
-        userData.setId(-10);
-        userData.setSupportArticleId(count);
-        userData.setOpposeArticleId(count);
-        userData.setCollectArticleId(count);
-        userData.setShareArticleId(count);
-        userData.setWriteArticleId(count);
-        userDataRepository.save(userData);
     }
 }

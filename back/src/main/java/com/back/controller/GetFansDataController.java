@@ -2,8 +2,11 @@ package com.back.controller;
 
 import com.back.dto.Response;
 import com.back.get.GetFansData;
+import com.back.index.UserData;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -14,21 +17,19 @@ public class   GetFansDataController {
 
     //获取粉丝列表
     @GetMapping("/getFansList")
-    public Response getFansList(@RequestParam int userId){
-        getFansData.getFansList(userId);
-        return Response.success();
+    public List<UserData> getFansList(@RequestParam int userId){
+
+        return getFansData.getFansList(userId);
     }
 
     @GetMapping("/getFansCount")
-    public Response getCount(@RequestParam int userId){
-        getFansData.getCount(userId);
-        return Response.success();
+    public int getCount(@RequestParam int userId){
+        return getFansData.getCount(userId);
     }
 
     //获取粉丝ID列表
     @GetMapping("/getFansIDList")
-    public Response getList(@RequestParam int userId){
-        getFansData.getList(userId);
-        return Response.success();
+    public List<Integer> getList(@RequestParam int userId){
+        return getFansData.getList(userId);
     }
 }

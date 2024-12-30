@@ -21,12 +21,12 @@ public class GetFansData extends GetData{
     protected UserRepository userRepository;
 
     //获取粉丝列表
-    public List<User> getFansList(int userId){
+    public List<UserData> getFansList(int userId){
         UserData userData = userDatarepository.findUserDataById(userId);
         List<Integer> fansId = userData.getFansId();
-        List<User> users = new ArrayList<>();
+        List<UserData> users = new ArrayList<>();
         for(Integer integer : fansId){
-            users.add(userRepository.findUserById(integer));
+            users.add(userDatarepository.findUserDataById(integer));
         }
         return users;
     }
