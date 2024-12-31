@@ -15,10 +15,6 @@ public class SupportUsersList extends UsersList{
     @Override
     public List<UserData> getUserDataList(int articleId){
         List<Integer> supportUserIds =supportUserIdsList.getIdsList(articleId);
-        List<UserData> userData = new ArrayList<>();
-        for(Integer id : supportUserIds){
-            userData.add(userDataRepository.findUserDataById(id));
-        }
-        return userData;
+        return getUserDataList(supportUserIds);
     }
 }

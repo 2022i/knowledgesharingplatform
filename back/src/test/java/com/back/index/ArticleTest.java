@@ -35,15 +35,4 @@ public class ArticleTest {
                 .collect(Collectors.toList());
         articleRepository.saveAll(articles);
     }
-    @Test
-    public void addArticle() {
-        Article article = new Article();
-        article.setId(-1);
-        article.setAuthorId(3);
-        article.setThemeId(200 + 3);
-        article.setSupportUserIds(count);
-        article.setTitle("Test Title " + 3);
-        article.setContent("Test Content " + 3);
-        articleRepository.save(article);
-    }
 }

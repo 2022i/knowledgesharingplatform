@@ -22,11 +22,11 @@ class UserDataTest {
             UserData userData = new UserData();
             userData.setId(i);
             userData.setUsername("user"+i);
-            userData.setSupportArticleId(count);
-            userData.setOpposeArticleId(count);
+            userData.setSupportArticleIds(count);
+            userData.setOpposeArticleIds(count);
             userData.setCollectArticleId(count);
             userData.setShareArticleId(count);
-            userData.setWriteArticleId(count);
+            userData.setWriteArticleIds(count);
             userData.setFansId(count);
             userData.setFollowUserId(count);
             userDatas.add(userData);

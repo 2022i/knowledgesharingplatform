@@ -31,7 +31,7 @@ public class AddOppositionDataAndMessage extends AddDataAndMessage {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> oppositionArticleId = opposeArticleIdsList.getIdsList(userId);
         oppositionArticleId.add(articleId);
-        userData.setOpposeArticleId(oppositionArticleId);
+        userData.setOpposeArticleIds(oppositionArticleId);
         userDataRepository.save(userData);
     }
     @Override

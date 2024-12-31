@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "user")
 @Data
 public class User {
-    @Field(type=FieldType.Keyword)
+    @Id
     private int id;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String username;

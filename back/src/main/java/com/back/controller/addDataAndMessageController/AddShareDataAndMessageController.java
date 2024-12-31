@@ -1,19 +1,19 @@
-package com.back.controller.addDataController;
+package com.back.controller.addDataAndMessageController;
 
+import com.back.add.AddShareDataAndMessage;
 import com.back.dto.Response;
-import com.back.add.AddCollectionDataAndMessage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/addData")
-public class AddCollectionDataController {
+public class AddShareDataAndMessageController {
     @Resource
-    private AddCollectionDataAndMessage addCollectionData;
-    @PutMapping("/addCollectionData")
+    private AddShareDataAndMessage addShareData;
+    @PutMapping("/addShareData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        addCollectionData.addData(articleId, userId);
+        addShareData.addData(articleId, userId);
         return Response.success();
     }
 }

@@ -15,10 +15,6 @@ public class OpposeUsersList extends UsersList {
     @Override
     public List<UserData> getUserDataList(int articleId){
         List<Integer> opposeUserIds =opposeUserIdsList.getIdsList(articleId);
-        List<UserData> userData = new ArrayList<>();
-        for(Integer id : opposeUserIds){
-            userData.add(userDataRepository.findUserDataById(id));
-        }
-        return userData;
+        return getUserDataList(opposeUserIds);
     }
 }

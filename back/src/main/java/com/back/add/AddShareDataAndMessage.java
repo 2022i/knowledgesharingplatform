@@ -31,7 +31,7 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> shareArticleId = shareArticleIdsList.getIdsList(userId);
         shareArticleId.add(articleId);
-        userData.setSupportArticleId(shareArticleId);
+        userData.setSupportArticleIds(shareArticleId);
         userDataRepository.save(userData);
     }
     @Override

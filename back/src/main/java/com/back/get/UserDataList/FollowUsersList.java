@@ -15,10 +15,6 @@ public class FollowUsersList extends UsersList {
     @Override
     public List<UserData> getUserDataList(int userId){
         List<Integer> followUserIds =followUserIdsList.getIdsList(userId);
-        List<UserData> userData = new ArrayList<>();
-        for(Integer id : followUserIds){
-            userData.add(userDataRepository.findUserDataById(id));
-        }
-        return userData;
+        return getUserDataList(followUserIds);
     }
 }

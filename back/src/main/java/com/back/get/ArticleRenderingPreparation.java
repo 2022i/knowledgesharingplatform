@@ -37,6 +37,7 @@ public class ArticleRenderingPreparation {
         renderedArticle.setViewUserCount(article.getViewUserIds().size());
         renderedArticle.setSupportUserCount(article.getSupportUserIds().size());
         renderedArticle.setOpposeUserCount(article.getOpposeUserIds().size());
+        renderedArticle.setCommentCount(article.getCommentIds().size());
         renderedArticle.setCollectionUserCount(article.getCollectionUserIds().size());
         renderedArticle.setShareUserCount(article.getShareUserIds().size());
         renderedArticle.setRelatedKnowledge(article.getRelatedKnowledgeId());
