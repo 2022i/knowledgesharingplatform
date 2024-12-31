@@ -1,6 +1,7 @@
 package com.back.index;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -11,7 +12,7 @@ import java.util.List;
 @Document(indexName = "articles")
 @Data
 public class Article {
-    @Field(type=FieldType.Keyword)
+    @Id
     private int id;
     //userId
     @Field(type=FieldType.Keyword)
@@ -26,6 +27,7 @@ public class Article {
     private List<Integer> supportUserIds=new ArrayList<>();
     private List<Integer> opposeUserIds=new ArrayList<>();
     private List<Integer> viewUserIds=new ArrayList<>();
+    private List<Integer> rootCommentIds =new ArrayList<>();
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String title;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")

@@ -8,6 +8,6 @@ import java.util.List;
 public class WriteArticleIdsList extends ArticleIdsList{
     @Override
     public List<Integer> getIdsList(int userId) {
-        return userDataRepository.findUserDataById(userId).getWriteArticleId();
+        return userDataRepository.findUserDataById(userId).getWriteArticleIds();
     }
 }

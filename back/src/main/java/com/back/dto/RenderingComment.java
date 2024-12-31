@@ -1,25 +1,17 @@
-package com.back.index;
+package com.back.dto;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-@Document(indexName = "comment")
-public class Comment {
-    @Id
+public class RenderingComment {
     private int id;
-    private boolean isRoot;
+    private int fatherId;
     private int userId;
-    private int articleId;
+    private String username;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;
     private LocalDateTime timestamp;
-    private List<Comment> replies=new ArrayList<>();
 }

@@ -1,4 +1,4 @@
-package com.back.controller.addDataController;
+package com.back.controller.addDataAndMessageController;
 
 import com.back.dto.Response;
 import com.back.add.AddSupportDataAndMessage;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping ("/addData")
-public class AddSupportDataController {
+public class AddSupportDataAndMessageController {
     @Resource
     private AddSupportDataAndMessage addSupportData;
     @PutMapping("/addSupportData")

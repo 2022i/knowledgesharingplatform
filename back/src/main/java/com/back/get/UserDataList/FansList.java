@@ -15,10 +15,6 @@ public class FansList extends UsersList {
     @Override
     public List<UserData> getUserDataList(int userId){
         List<Integer> fansIds=fansIdsList.getIdsList(userId);
-        List<UserData> userData = new ArrayList<>();
-        for(Integer id : fansIds){
-            userData.add(userDataRepository.findUserDataById(id));
-        }
-        return userData;
+        return getUserDataList(fansIds);
     }
 }

@@ -15,10 +15,6 @@ public class ShareUsersList extends UsersList {
     @Override
     public List<UserData> getUserDataList(int articleId){
         List<Integer> shareUserIds =shareUserIdsList.getIdsList(articleId);
-        List<UserData> userData = new ArrayList<>();
-        for(Integer id : shareUserIds){
-            userData.add(userDataRepository.findUserDataById(id));
-        }
-        return userData;
+        return getUserDataList(shareUserIds);
     }
 }

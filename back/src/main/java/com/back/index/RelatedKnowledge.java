@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @Document(indexName = "related_knowledge")
 public class RelatedKnowledge {
-    @Field(type= FieldType.Keyword)
+    @Id
     private int id;
     private List<String> relatedKnowledge;
 }

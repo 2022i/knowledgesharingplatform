@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Data
 @Document(indexName = "theme")
 public class Theme {
-    @Field(type= FieldType.Keyword)
+    @Id
     private int id;
     @Field(type=FieldType.Keyword)
     private int FatherId;

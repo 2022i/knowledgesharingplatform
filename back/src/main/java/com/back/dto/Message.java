@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Message {
     //support, opposition, collection, share, comment
     private String title;
-    @Field(type= FieldType.Date,format= DateFormat.basic_date)
+    @Field(type= FieldType.Date,format= DateFormat.basic_date_time)
     private LocalDate generationTime;
     private int messageGeneratorId;
     private int articleId;

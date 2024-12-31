@@ -8,6 +8,6 @@ import java.util.List;
 public class SupportArticleIdsList extends ArticleIdsList {
     @Override
     public List<Integer> getIdsList(int userId) {
-        return userDataRepository.findUserDataById(userId).getSupportArticleId();
+        return userDataRepository.findUserDataById(userId).getSupportArticleIds();
     }
 }

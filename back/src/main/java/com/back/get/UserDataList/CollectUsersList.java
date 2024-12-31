@@ -5,7 +5,6 @@ import com.back.index.UserData;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,10 +14,6 @@ public class CollectUsersList extends UsersList{
     @Override
     public List<UserData> getUserDataList(int articleId){
         List<Integer> collectUserIds = collectUserIdsList.getIdsList(articleId);
-        List<UserData> userData = new ArrayList<>();
-        for(Integer id : collectUserIds){
-            userData.add(userDataRepository.findUserDataById(id));
-        }
-        return userData;
+        return getUserDataList(collectUserIds);
     }
 }
