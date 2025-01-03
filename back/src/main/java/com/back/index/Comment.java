@@ -7,17 +7,19 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Document(indexName = "comment")
 public class Comment {
     @Id
     private int id;
-    private int fatherId;
+    private boolean isRoot;
     private int userId;
     private int articleId;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;
-    @Field(type = FieldType.Date,format= {},pattern="uuuu-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createTime;
+    private LocalDateTime timestamp;
+    private List<Comment> replies=new ArrayList<>();
 }
