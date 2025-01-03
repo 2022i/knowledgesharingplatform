@@ -20,7 +20,7 @@ public class RenderedArticle {
     private ArticleAuthor Author;
     @Field(type=FieldType.Keyword)
     private String theme;
-    @Field(type= FieldType.Date,format= DateFormat.basic_date_time)
+    @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime createTime;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;

@@ -14,6 +14,6 @@ public class RenderingComment {
     private String username;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;
-    @Field(type= FieldType.Date,format= DateFormat.basic_date_time)
+    @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime createTime;
 }

@@ -21,7 +21,7 @@ public class Article {
     private int authorId;
     @Field(type=FieldType.Keyword)
     private int themeId;
-    @Field(type= FieldType.Date,format= DateFormat.basic_date_time)
+    @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime createTime;
     private List<String> relatedKnowledgeId;
     private List<Integer> collectionUserIds =new ArrayList<>();

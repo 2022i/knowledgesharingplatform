@@ -5,7 +5,6 @@ import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @SpringBootTest
 class CommentTest {
@@ -20,8 +19,8 @@ class CommentTest {
             comment.setUserId(i);
             comment.setArticleId(1);
             comment.setContent("Sample content " + i);
-            comment.setCreateTime(LocalDateTime.now()); // 使用相同的格式解析为 LocalDateTime
-            System.out.println(LocalDateTime.now());
+            comment.setCreateTime(LocalDateTime.now());
+            System.out.println(comment.getCreateTime());
             commentRepository.save(comment);
         }
     }
@@ -62,6 +61,12 @@ class CommentTest {
             comment.setContent("Sample content " + i);
             comment.setCreateTime(LocalDateTime.now()); // 使用相同的格式解析为 LocalDateTime
             commentRepository.save(comment);
+        }
+    }
+    @Test
+    public void printCommentsDate() {
+        for (Comment comment : commentRepository.findCommentsByArticleId(1)) {
+            System.out.println(comment.getCreateTime());
         }
     }
 }
