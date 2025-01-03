@@ -12,6 +12,6 @@ public class RootCommentIdsList implements IdsList {
     private ArticleRepository articleRepository;
     @Override
     public List<Integer> getIdsList(int articleId) {
-        return articleRepository.findArticleById(articleId).getRootCommentIds();
+        return articleRepository.findArticleById(articleId).getCommentIds();
     }
 }
