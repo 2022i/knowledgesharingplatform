@@ -2,6 +2,7 @@ package com.back.get;
 
 import com.back.dto.RenderedArticle;
 import com.back.index.Article;
+import com.back.repository.CommentRepository;
 import com.back.repository.ThemeRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
@@ -18,6 +19,8 @@ public class ArticleRenderingPreparation {
     private ThemeRepository themeRepository;
     @Resource
     UserRenderingPreparation userRenderingPreparation;
+    @Resource
+    private CommentRepository commentRepository;
     public List<RenderedArticle>getRenderedArticles(List<Article> articles){
         List<RenderedArticle> renderedArticles = new ArrayList<>();
         for (Article article : articles) {
@@ -25,7 +28,7 @@ public class ArticleRenderingPreparation {
         }
         return renderedArticles;
     }
-    public RenderedArticle getRenderedArticle(Article article){
+    private RenderedArticle getRenderedArticle(Article article){
         RenderedArticle renderedArticle = new RenderedArticle();
         renderedArticle.setId(article.getId());
         renderedArticle.setTitle(article.getTitle());
@@ -37,7 +40,7 @@ public class ArticleRenderingPreparation {
         renderedArticle.setViewUserCount(article.getViewUserIds().size());
         renderedArticle.setSupportUserCount(article.getSupportUserIds().size());
         renderedArticle.setOpposeUserCount(article.getOpposeUserIds().size());
-        renderedArticle.setCommentCount(article.getCommentIds().size());
+        renderedArticle.setCommentCount(commentRepository.findCommentsByArticleId(article.getId()).size());
         renderedArticle.setCollectionUserCount(article.getCollectionUserIds().size());
         renderedArticle.setShareUserCount(article.getShareUserIds().size());
         renderedArticle.setRelatedKnowledge(article.getRelatedKnowledgeId());

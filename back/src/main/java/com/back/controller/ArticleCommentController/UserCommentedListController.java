@@ -14,7 +14,7 @@ public class UserCommentedListController {
     @Resource
     private UserCommentedList userCommentedList;
     @GetMapping("/getUserCommentedList")
-    public List<RenderingComment> getUserCommentedList(@RequestParam int commentId, @RequestParam int articleId) {
-        return userCommentedList.getUserCommentedList(commentId, articleId);
+    public List<RenderingComment> getUserCommentedList(@RequestParam int commentId) {
+        return userCommentedList.getUserCommentedList(commentId);
     }
 }

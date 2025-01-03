@@ -10,6 +10,8 @@ import java.util.List;
 public interface CommentRepository extends ElasticsearchRepository<Comment,Integer> {
     List<Comment> findCommentsByArticleId(int articleId);
     List<Comment> findCommentsByUserId(int userId);
-    Comment findCommentByArticleId(int articleId);
     Comment findCommentById(int id);
+    List<Comment> findCommentsByFatherId(int fatherId);
+    List<Comment> findCommentsByArticleIdAndFatherId(int articleId, int fatherId);
+
 }

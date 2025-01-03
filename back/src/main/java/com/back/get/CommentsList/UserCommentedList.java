@@ -12,7 +12,7 @@ public class UserCommentedList {
     @Resource
     private RenderingCommentsListGeneration renderingCommentsListGeneration;
 
-    public List<RenderingComment> getUserCommentedList(int commentId, int articleId) {
-            return renderingCommentsListGeneration.getUserRenderingCommentedList(commentId, articleId);
+    public List<RenderingComment> getUserCommentedList(int commentId) {
+            return renderingCommentsListGeneration.getUserRenderingCommentedList(commentId);
     }
 }

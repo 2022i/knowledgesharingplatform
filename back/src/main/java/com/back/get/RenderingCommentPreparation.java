@@ -14,7 +14,6 @@ public class RenderingCommentPreparation {
     @Resource
     private UserDataRepository userDataRepository;
 
-
     public RenderingComment getRenderingComment(Comment comment){
         RenderingComment renderingComment = new RenderingComment();
         renderingComment.setId(comment.getId());
@@ -22,6 +21,7 @@ public class RenderingCommentPreparation {
         renderingComment.setUserId(comment.getUserId());
         renderingComment.setUsername(getUsername(comment.getId()));
         renderingComment.setContent(comment.getContent());
+        renderingComment.setReplyCount(commentRepository.findCommentsByFatherId(comment.getId()).size());
         renderingComment.setCreateTime(comment.getCreateTime());
         return renderingComment;
     }
