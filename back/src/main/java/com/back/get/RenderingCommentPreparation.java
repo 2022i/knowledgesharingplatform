@@ -7,26 +7,15 @@ import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class RenderingCommentPreparation {
-    @Resource
-    private CommentsList commentsList;
     @Resource
     private CommentRepository commentRepository;
     @Resource
     private UserDataRepository userDataRepository;
-    public List<RenderingComment> getRenderingCommentList(int articleId){
-        List<Comment> comments = commentsList.getCommentsList(articleId);
-        List<RenderingComment> renderingComments = new ArrayList<>();
-        for (Comment comment : comments) {
-            renderingComments.add(getRenderingComment(comment));
-        }
-        return renderingComments;
-    }
-    private RenderingComment getRenderingComment(Comment comment){
+
+
+    public RenderingComment getRenderingComment(Comment comment){
         RenderingComment renderingComment = new RenderingComment();
         renderingComment.setId(comment.getId());
         renderingComment.setFatherId(comment.getFatherId());
