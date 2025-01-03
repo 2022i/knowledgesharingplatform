@@ -1,4 +1,4 @@
-package com.back.controller;
+package com.back.controller.ArticleCommentController;
 
 import com.back.dto.RenderingComment;
 import com.back.get.RenderingCommentsListGeneration;
@@ -9,10 +9,10 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/articleComment")
-public class ArticleCommentController {
+public class ArticleAllCommentController {
     @Resource
     private RenderingCommentsListGeneration renderingCommentsListGeneration;
-    @GetMapping("/getArticleComments")
+    @GetMapping("/getArticleAllComments")
     public List<RenderingComment> getComments(@RequestParam int articleId) {
         return renderingCommentsListGeneration.getArticleRenderingCommentList(articleId);
     }

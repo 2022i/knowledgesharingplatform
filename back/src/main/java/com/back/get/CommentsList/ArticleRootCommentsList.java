@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserCommentedList {
+public class ArticleRootCommentsList {
     @Resource
     private RenderingCommentsListGeneration renderingCommentsListGeneration;
-
-    public List<RenderingComment> getUserCommentedList(int commentId, int articleId) {
-            return renderingCommentsListGeneration.getUserRenderingCommentedList(commentId, articleId);
+    public List<RenderingComment> getArticleRootCommentsList(int articleId) {
+        return renderingCommentsListGeneration.getArticleRootRenderingCommentList(articleId);
     }
 }

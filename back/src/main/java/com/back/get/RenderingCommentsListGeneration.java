@@ -15,6 +15,16 @@ public class RenderingCommentsListGeneration {
     private RenderingCommentPreparation renderingCommentPreparation;
     @Resource
     private ArticleCommentsList articleCommentsList;
+    public List<RenderingComment> getArticleRootRenderingCommentList(int articleId){
+        List<Comment> comments = articleCommentsList.getCommentsList(articleId);
+        List<RenderingComment> renderingComments = new ArrayList<>();
+        for (Comment comment : comments) {
+            if(comment.getFatherId() == 0){
+                renderingComments.add(renderingCommentPreparation.getRenderingComment(comment));
+            }
+        }
+        return renderingComments;
+    }
     public List<RenderingComment> getUserRenderingCommentedList(int commentId, int articleId){
         List<RenderingComment> renderingComments = getArticleRenderingCommentList(articleId);
         List<RenderingComment> userRenderingComments = new ArrayList<>();
