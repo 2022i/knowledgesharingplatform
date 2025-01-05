@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ArticleRepository extends ElasticsearchRepository<Article, Integer> {
-    List<Article> findArticleByTitle(String title);
-    List<Article> findArticleByContent(String content);
     Article findArticleById(int id);
     List<Article> findArticleByThemeId(int themeId);
 }

@@ -14,6 +14,6 @@ public class AddCollectionDataAndMessageController {
     @PutMapping("/addCollectionData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
         addCollectionData.addData(articleId, userId);
-        return Response.success();
+        return Response.successAddDataAndSentMessage();
     }
 }

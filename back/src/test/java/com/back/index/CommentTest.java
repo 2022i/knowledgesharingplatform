@@ -69,4 +69,8 @@ class CommentTest {
             System.out.println(comment.getCreateTime());
         }
     }
+    @Test
+    public void findTest() {
+        System.out.println(commentRepository.findCommentById(100)==null);
+    }
 }

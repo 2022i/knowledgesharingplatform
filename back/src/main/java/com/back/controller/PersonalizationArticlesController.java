@@ -17,12 +17,12 @@ public class PersonalizationArticlesController {
     @GetMapping("/barrier-articles")
     public Response getBarrierArticles(@RequestParam List<Integer> ids){
         personalizationArticle.getBarrierArticles(ids);
-        return Response.success();
+        return Response.successAddDataAndSentMessage();
     }
 
     @GetMapping("/recommended-articles")
     public Response getRecommendedArticles(@RequestParam List<Integer> userIds) {
         personalizationArticle.getRecommendedArticles(userIds);
-        return Response.success();
+        return Response.successAddDataAndSentMessage();
     }
 }

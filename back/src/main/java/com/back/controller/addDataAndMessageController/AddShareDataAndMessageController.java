@@ -14,6 +14,6 @@ public class AddShareDataAndMessageController {
     @PutMapping("/addShareData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
         addShareData.addData(articleId, userId);
-        return Response.success();
+        return Response.successAddDataAndSentMessage();
     }
 }

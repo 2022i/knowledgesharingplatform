@@ -14,6 +14,6 @@ public class AddOppositionDataAndMessageController {
     @PutMapping("/addOppositionData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
         addOppositionData.addData(articleId, userId);
-        return Response.success();
+        return Response.successAddDataAndSentMessage();
     }
 }

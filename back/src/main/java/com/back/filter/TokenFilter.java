@@ -1,7 +1,7 @@
 package com.back.filter;
 
 import cn.hutool.core.util.StrUtil;
-import com.back.service.impl.RedisCacheServiceImpl;
+import com.back.redis.RedisCacheServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
