@@ -83,5 +83,12 @@ public class Response {
         return result;
     }
 
+    public static Response successResetPassword() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("密码重置成功");
+        return result;
+    }
+
 
 }

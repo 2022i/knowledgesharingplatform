@@ -1,6 +1,6 @@
 package com.back.controller;
 
-import com.back.dto.RegisterUserData;
+import com.back.dto.RegisterMailRequest;
 import com.back.dto.RegistrationRequest;
 import com.back.dto.Response;
 import com.back.registration.RegisterMail;
@@ -20,8 +20,8 @@ public class RegistrationController {
 
     @Description("根据邮箱发送验证码")
     @PostMapping("/mailForRegister")
-    public Response mailMail(@RequestBody RegisterUserData registerUserData) {
-        return registerMail.mailMail(registerUserData);
+    public Response mailMail(@RequestBody RegisterMailRequest registerMailRequest) {
+        return registerMail.mailMail(registerMailRequest);
     }
 
     @Description("收到验证码并且将用户名、密码、验证码输入完毕后注册")

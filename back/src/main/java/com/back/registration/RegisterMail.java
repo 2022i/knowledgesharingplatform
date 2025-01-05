@@ -1,6 +1,6 @@
 package com.back.registration;
 
-import com.back.dto.RegisterUserData;
+import com.back.dto.RegisterMailRequest;
 import com.back.dto.Response;
 import com.back.mail.MailServiceImpl;
 import com.back.repository.UserRepository;
@@ -13,13 +13,13 @@ public class RegisterMail {
     private UserRepository userRepository;
     @Resource
     private MailServiceImpl mailService;
-    public Response mailMail(RegisterUserData registerUserData) {
-        if(isUsernameExit(registerUserData.getUsername()) ){
+    public Response mailMail(RegisterMailRequest registerMailRequest) {
+        if(isUsernameExit(registerMailRequest.getUsername()) ){
             return Response.alreadyExistsEmail();
-        }else if(isEmailExit(registerUserData.getEmail())){
+        }else if(isEmailExit(registerMailRequest.getEmail())){
             return Response.alreadyExistsUsername();
         }
-        mailService.mailSendForRegister(registerUserData.getEmail());
+        mailService.mailSendForRegister(registerMailRequest.getEmail());
         return Response.successMail();
     }
     private boolean isEmailExit(String email){
