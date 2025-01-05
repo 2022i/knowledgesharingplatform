@@ -90,5 +90,12 @@ public class Response {
         return result;
     }
 
+    public static Response successComment() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("评论成功");
+        return result;
+    }
+
 
 }

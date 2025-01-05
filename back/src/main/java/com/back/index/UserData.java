@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Document(indexName = "user_data")
-public class UserData {
+public class  UserData {
     @Id
     private int id;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
