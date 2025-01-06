@@ -16,17 +16,17 @@ public abstract class SentMessage {
     @Resource
     private ArticleRepository articleRepository;
     @Resource
-    private UserDataRepository userDataRepository;
+    protected UserDataRepository userDataRepository;
     public void sentMessage(int articleId, int messageGeneratorId){
         setMessage(articleId, messageGeneratorId);
         findUserDataByArticleId(articleId).getMessage().add(message);
     }
-    abstract void setMessageTitle();
+    abstract protected void setMessageTitle();
     private UserData findUserDataByArticleId(int articleId){
         int uerId=articleRepository.findArticleById(articleId).getAuthorId();
         return userDataRepository.findUserDataById(uerId);
     }
-    private void setMessage(int articleId, int messageGeneratorId){
+    protected void setMessage(int articleId, int messageGeneratorId){
         setMessageTitle();
         message.setGenerationTime(LocalDate.now());
         message.setMessageGeneratorId(messageGeneratorId);
