@@ -24,6 +24,7 @@ spring:
 #    socket-timeout: 5000
 
 
+
   data:
     redis:
       database: 1
@@ -42,6 +43,11 @@ spring:
 
 
 
+
+
   profiles:
     active: dev
 
+ai:
+  api:
+    key:  sk-4bbb3c09ffea4106bbf07e0ee66d03b7
