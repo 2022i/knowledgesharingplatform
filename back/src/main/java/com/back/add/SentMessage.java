@@ -19,10 +19,10 @@ public abstract class SentMessage {
     protected UserDataRepository userDataRepository;
     public void sentMessage(int articleId, int messageGeneratorId){
         setMessage(articleId, messageGeneratorId);
-        findUserDataByArticleId(articleId).getMessage().add(message);
+        findAuthorDataByArticleId(articleId).getMessage().add(message);
     }
     abstract protected void setMessageTitle();
-    private UserData findUserDataByArticleId(int articleId){
+    private UserData findAuthorDataByArticleId(int articleId){
         int uerId=articleRepository.findArticleById(articleId).getAuthorId();
         return userDataRepository.findUserDataById(uerId);
     }

@@ -1,5 +1,6 @@
 package com.back.get.ArticleIdsList;
 
+import com.back.index.Comment;
 import com.back.repository.CommentRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,9 @@ public class CommentArticleIdsList extends ArticleIdsList{
     @Override
     public List<Integer> getIdsList(int userId) {
         List<Integer> commentArticleIds = new ArrayList<>();
-        for(int i=0;i<commentRepository.findCommentsByUserId(userId).size();i++){
-            commentArticleIds.add(commentRepository.findCommentsByUserId(userId).get(i).getArticleId());
+        List<Comment> comments=commentRepository.findCommentsByUserId(userId);
+        for (Comment comment : comments) {
+            commentArticleIds.add(comment.getArticleId());
         }
          return commentArticleIds;
     }
