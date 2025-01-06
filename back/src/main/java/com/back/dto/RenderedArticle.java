@@ -20,10 +20,11 @@ public class RenderedArticle {
     private ArticleAuthor Author;
     @Field(type=FieldType.Keyword)
     private String theme;
-    @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createTime;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;
+    private List<String> relatedKnowledge=new ArrayList<>();
+    @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
+    private LocalDateTime createTime;
     @Field(type=FieldType.Keyword)
     private int viewUserCount;
     private int supportUserCount;
@@ -31,5 +32,4 @@ public class RenderedArticle {
     private int commentCount;
     private int collectionUserCount ;
     private int shareUserCount;
-    private List<String> relatedKnowledge=new ArrayList<>();
 }

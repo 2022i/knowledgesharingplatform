@@ -1,4 +1,4 @@
-package com.back.controller.LoginController;
+package com.back.controller.loginController;
 
 import com.back.dto.LoginRequest;
 import com.back.dto.Response;

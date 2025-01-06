@@ -1,4 +1,4 @@
-package com.back.controller.ArticleCommentController;
+package com.back.controller.articleCommentController;
 
 import com.back.dto.RenderingComment;
 import com.back.get.CommentsList.UserCommentedList;

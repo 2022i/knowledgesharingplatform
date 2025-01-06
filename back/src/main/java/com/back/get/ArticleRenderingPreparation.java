@@ -7,7 +7,6 @@ import com.back.repository.ThemeRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +35,8 @@ public class ArticleRenderingPreparation {
         System.out.println(article.getThemeId());
         renderedArticle.setTheme(themeRepository.findThemeById(article.getThemeId()).getName());
         renderedArticle.setTitle(article.getTitle());
+        renderedArticle.setContent(article.getContent());
+        renderedArticle.setRelatedKnowledge(article.getRelatedKnowledge());
         renderedArticle.setCreateTime(article.getCreateTime());
         renderedArticle.setViewUserCount(article.getViewUserIds().size());
         renderedArticle.setSupportUserCount(article.getSupportUserIds().size());
@@ -43,7 +44,6 @@ public class ArticleRenderingPreparation {
         renderedArticle.setCommentCount(commentRepository.findCommentsByArticleId(article.getId()).size());
         renderedArticle.setCollectionUserCount(article.getCollectionUserIds().size());
         renderedArticle.setShareUserCount(article.getShareUserIds().size());
-        renderedArticle.setRelatedKnowledge(article.getRelatedKnowledge());
         return renderedArticle;
     }
 }

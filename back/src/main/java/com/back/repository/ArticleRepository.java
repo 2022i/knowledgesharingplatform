@@ -10,4 +10,7 @@ import java.util.List;
 public interface ArticleRepository extends ElasticsearchRepository<Article, Integer> {
     Article findArticleById(int id);
     List<Article> findArticleByThemeId(int themeId);
+    List<Article> findArticlesByTitle(String title);
+    List<Article> findArticlesByContent(String content);
+    List<Article> findArticlesByTitleOrContent(String title, String content);
 }
