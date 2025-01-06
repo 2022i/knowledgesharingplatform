@@ -1,4 +1,4 @@
-package com.back.controller.PersonalCenterDataController;
+package com.back.controller.personalCenterDataController;
 
 import com.back.dto.ArticleAuthor;
 import com.back.get.UserDataList.FansList;

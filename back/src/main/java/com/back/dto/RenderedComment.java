@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.time.LocalDateTime;
 
 @Data
-public class RenderingComment {
+public class RenderedComment {
     private int id;
     private int fatherId;
     private int userId;

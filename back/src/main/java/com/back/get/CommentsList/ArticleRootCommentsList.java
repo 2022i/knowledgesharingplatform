@@ -1,7 +1,7 @@
 package com.back.get.CommentsList;
 
-import com.back.dto.RenderingComment;
-import com.back.get.RenderingCommentsListGeneration;
+import com.back.dto.RenderedComment;
+import com.back.get.RenderedCommentsListGeneration;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +10,8 @@ import java.util.List;
 @Service
 public class ArticleRootCommentsList {
     @Resource
-    private RenderingCommentsListGeneration renderingCommentsListGeneration;
-    public List<RenderingComment> getArticleRootCommentsList(int articleId) {
-        return renderingCommentsListGeneration.getArticleRootRenderingCommentList(articleId);
+    private RenderedCommentsListGeneration renderedCommentsListGeneration;
+    public List<RenderedComment> getArticleRootCommentsList(int articleId) {
+        return renderedCommentsListGeneration.getArticleRootRenderingCommentList(articleId);
     }
 }

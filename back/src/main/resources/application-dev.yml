@@ -18,7 +18,8 @@ spring:
       - /login/**
       - /reset/**
       - /write/**
-      - /ai/**
+      - /articleSearch/**
+      - /auditor/**
 
   datasource:
     url: jdbc:mysql://localhost:3306/defect_management
