@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SentShareMessage extends SentMessage {
     @Override
-    public void setMessageTitle() {
+    protected void setMessageTitle() {
         message.setTitle("Share");
     }
 }

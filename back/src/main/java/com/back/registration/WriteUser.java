@@ -4,8 +4,10 @@ import com.back.dto.LastId;
 import com.back.dto.RegistrationRequest;
 import com.back.dto.Response;
 import com.back.index.User;
+import com.back.index.UserData;
 import com.back.mail.encoding.Encode;
 import com.back.redis.RedisCacheServiceImpl;
+import com.back.repository.UserDataRepository;
 import com.back.repository.UserRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ public class WriteUser {
     private RedisCacheServiceImpl redisCacheServiceImpl;
     @Resource
     private UserRepository userRepository;
+    @Resource
+    private UserDataRepository userDataRepository;
     @Resource
     private Encode encode;
     public Response registerByEmail( RegistrationRequest registrationRequest) {
@@ -40,5 +44,12 @@ public class WriteUser {
         user.setUsername(registrationRequest.getUsername());
         user.setPassword(encode.encrypt(registrationRequest.getPassword()));
         userRepository.save(user);
+        writeUserData(user);
+    }
+    private void writeUserData(User user){
+        UserData userData = new UserData();
+        userData.setId(user.getId());
+        userData.setUsername(user.getUsername());
+        userDataRepository.save(userData);
     }
 }
