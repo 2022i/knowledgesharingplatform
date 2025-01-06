@@ -1,5 +1,8 @@
 package com.back.dto;
 
+import lombok.Data;
+
+@Data
 public class PersonalAchievements {
     private int writeArticleCount;
     private int supportedCount;

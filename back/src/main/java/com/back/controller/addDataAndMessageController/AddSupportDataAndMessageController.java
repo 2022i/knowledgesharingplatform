@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping ("/addData")
+@RequestMapping ("/addDataAndSentMessage")
 public class AddSupportDataAndMessageController {
     @Resource
     private AddSupportDataAndMessage addSupportData;
-    @PutMapping("/addSupportData")
+    @PutMapping("/supportData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
         addSupportData.addData(articleId, userId);
         return Response.successAddDataAndSentMessage();

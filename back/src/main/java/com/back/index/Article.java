@@ -27,11 +27,10 @@ public class Article {
     @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime createTime;
     private List<String> relatedKnowledge =new ArrayList<>();
-    private List<Integer> collectionUserIds =new ArrayList<>();
+    private List<Integer> collectUserIds =new ArrayList<>();
     private List<Integer> shareUserIds=new ArrayList<>();
     private List<Integer> supportUserIds=new ArrayList<>();
     private List<Integer> opposeUserIds=new ArrayList<>();
     private List<Integer> viewUserIds=new ArrayList<>();
-    private List<Integer> commentIds =new ArrayList<>();
     private boolean isCheck=false;
 }

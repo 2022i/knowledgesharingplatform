@@ -6,11 +6,10 @@ spring:
   security:
     # 匿名接口，不需要认证授权
     patterns:
-      - /addData/**
+      - /addDataAndSentMessage/**
       - /login/**
       - /register/**
       - /forget/**
-      - /getdata/**
       - /getList/**
       - /personalCenterData/**
       - /articleComment/**

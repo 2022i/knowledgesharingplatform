@@ -43,7 +43,7 @@ public class ArticleRenderingPreparation {
         renderedArticle.setSupportUserCount(article.getSupportUserIds().size());
         renderedArticle.setOpposeUserCount(article.getOpposeUserIds().size());
         renderedArticle.setCommentCount(commentRepository.findCommentsByArticleId(article.getId()).size());
-        renderedArticle.setCollectionUserCount(article.getCollectionUserIds().size());
+        renderedArticle.setCollectionUserCount(article.getCollectUserIds().size());
         renderedArticle.setShareUserCount(article.getShareUserIds().size());
         return renderedArticle;
     }
