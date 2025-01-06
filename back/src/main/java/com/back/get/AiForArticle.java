@@ -8,7 +8,6 @@ import com.alibaba.dashscope.common.Role;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
-import com.back.index.Article;
 import com.back.repository.ArticleRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -16,25 +15,37 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 
 @Service
-public class AiForArticleSummary {
+public class AiForArticle {
     @Resource
     private ArticleRepository articleRepository;
-    public GenerationResult getSummary(int articleId) throws ApiException, NoApiKeyException, InputRequiredException {
+
+    private static final String API_KEY = "sk-4bbb3c09ffea4106bbf07e0ee66d03b7";
+    private static final String MODEL = "qwen-turbo";
+    private static final String SYSTEM_MESSAGE = "You are a helpful assistant.";
+    private static final String SUMMARY_PROMPT = "请给出文章概要，直接给出内容即可,限制在150字以内";
+    private static final String TAGS_PROMPT = "请为文章生成标签，形如食品、生活、财经等,直接给出标签即可";
+
+    public GenerationResult getSummary(String content) throws ApiException, NoApiKeyException, InputRequiredException {
+        return generate(content, SUMMARY_PROMPT);
+    }
+
+    public GenerationResult generateTags(String content) throws ApiException, NoApiKeyException, InputRequiredException {
+        return generate(content, TAGS_PROMPT);
+    }
+
+    private GenerationResult generate(String content, String prompt) throws ApiException, NoApiKeyException, InputRequiredException {
         Generation gen = new Generation();
-        String articleContent = articleRepository.findArticleById(articleId).getContent();
         Message systemMsg = Message.builder()
                 .role(Role.SYSTEM.getValue())
-                .content("You are a helpful assistant.")
+                .content(SYSTEM_MESSAGE)
                 .build();
         Message userMsg = Message.builder()
                 .role(Role.USER.getValue())
-                .content(articleContent+"请给出文章概要，直接给出内容即可")
+                .content(content + prompt)
                 .build();
         GenerationParam param = GenerationParam.builder()
-                // 若没有配置环境变量，请用百炼API Key将下行替换为：.apiKey("sk-xxx")
-                .apiKey("sk-4bbb3c09ffea4106bbf07e0ee66d03b7")
-                // 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
-                .model("qwen-turbo")
+                .apiKey(API_KEY)
+                .model(MODEL)
                 .messages(Arrays.asList(systemMsg, userMsg))
                 .resultFormat(GenerationParam.ResultFormat.MESSAGE)
                 .build();
