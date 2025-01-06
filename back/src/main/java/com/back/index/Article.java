@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,7 @@ public class Article {
     private int themeId;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String title;
+    private String summary;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;
     @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
@@ -33,4 +33,5 @@ public class Article {
     private List<Integer> opposeUserIds=new ArrayList<>();
     private List<Integer> viewUserIds=new ArrayList<>();
     private List<Integer> commentIds =new ArrayList<>();
+    private boolean isCheck=false;
 }

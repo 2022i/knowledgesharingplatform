@@ -1,11 +1,8 @@
 package com.back.dto;
 
-import com.back.index.UserData;
 import lombok.Data;
-import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +19,7 @@ public class RenderedArticle {
     private String theme;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String content;
+    private String summary;
     private List<String> relatedKnowledge=new ArrayList<>();
     @Field(type= FieldType.Date, format = {},pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime createTime;

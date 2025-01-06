@@ -103,4 +103,18 @@ public class Response {
         result.setMsg("文章发布成功");
         return result;
     }
+
+    public static Response successApproveArticle() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("审核成功");
+        return result;
+    }
+
+    public static Response successRejectArticle() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("拒绝成功");
+        return result;
+    }
 }

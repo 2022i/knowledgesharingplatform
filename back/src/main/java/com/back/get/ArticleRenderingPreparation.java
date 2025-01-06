@@ -35,6 +35,7 @@ public class ArticleRenderingPreparation {
         System.out.println(article.getThemeId());
         renderedArticle.setTheme(themeRepository.findThemeById(article.getThemeId()).getName());
         renderedArticle.setTitle(article.getTitle());
+        renderedArticle.setSummary(article.getSummary());
         renderedArticle.setContent(article.getContent());
         renderedArticle.setRelatedKnowledge(article.getRelatedKnowledge());
         renderedArticle.setCreateTime(article.getCreateTime());

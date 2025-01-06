@@ -1,7 +1,7 @@
 package com.back.controller.articleCommentController;
 
-import com.back.dto.RenderingComment;
-import com.back.get.RenderingCommentsListGeneration;
+import com.back.dto.RenderedComment;
+import com.back.get.RenderedCommentsListGeneration;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,9 +11,9 @@ import java.util.List;
 @RequestMapping("/articleComment")
 public class ArticleAllCommentController {
     @Resource
-    private RenderingCommentsListGeneration renderingCommentsListGeneration;
+    private RenderedCommentsListGeneration renderedCommentsListGeneration;
     @GetMapping("/getArticleAllComments")
-    public List<RenderingComment> getComments(@RequestParam int articleId) {
-        return renderingCommentsListGeneration.getArticleRenderingCommentList(articleId);
+    public List<RenderedComment> getComments(@RequestParam int articleId) {
+        return renderedCommentsListGeneration.getArticleRenderingCommentList(articleId);
     }
 }
