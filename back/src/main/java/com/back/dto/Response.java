@@ -97,5 +97,10 @@ public class Response {
         return result;
     }
 
-
+    public static Response successWriteArticle() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("文章发布成功");
+        return result;
+    }
 }

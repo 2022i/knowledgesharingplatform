@@ -43,7 +43,7 @@ public class ArticleRenderingPreparation {
         renderedArticle.setCommentCount(commentRepository.findCommentsByArticleId(article.getId()).size());
         renderedArticle.setCollectionUserCount(article.getCollectionUserIds().size());
         renderedArticle.setShareUserCount(article.getShareUserIds().size());
-        renderedArticle.setRelatedKnowledge(article.getRelatedKnowledgeId());
+        renderedArticle.setRelatedKnowledge(article.getRelatedKnowledge());
         return renderedArticle;
     }
 }

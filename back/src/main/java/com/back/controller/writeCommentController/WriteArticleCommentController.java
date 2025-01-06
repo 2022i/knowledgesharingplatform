@@ -15,7 +15,7 @@ public class WriteArticleCommentController {
     private WriteComment writeComment;
     @Resource
     private SentArticleCommentMessage sentArticleCommentMessage;
-    @PostMapping("/writeArticleComment")
+    @PostMapping("/articleComment")
     public Response writeArticleComment(@RequestBody WriteCommentRequest writeCommentRequest){
         writeComment.writeComment(writeCommentRequest);
         sentArticleCommentMessage.sentMessage(writeCommentRequest.getArticleId(),writeCommentRequest.getUserId());
