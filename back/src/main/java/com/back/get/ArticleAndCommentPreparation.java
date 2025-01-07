@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CommentAndArticlePreparation {
+public class ArticleAndCommentPreparation {
     @Resource
     private ArticleRepository articleRepository;
     @Resource
@@ -21,11 +21,11 @@ public class CommentAndArticlePreparation {
     private CommentRepository commentRepository;
     @Resource
     private CommentArticleIdsList commentArticleIdsList;
-    public List<ArticleAndComment> getCommentAndArticle(int userId) {
+    public List<ArticleAndComment> getArticleAndComments(int userId) {
         List<Integer> commentArticleIds =commentArticleIdsList.getIdsList(userId);
-        return getCommentAndArticle(commentArticleIds, userId);
+        return getArticleAndComments(commentArticleIds, userId);
     }
-    public List<ArticleAndComment> getCommentAndArticle(List<Integer> commentArticleIds, int userId) {
+    public List<ArticleAndComment> getArticleAndComments(List<Integer> commentArticleIds, int userId) {
         List<ArticleAndComment> articleAndComments =new ArrayList<>();
         for (Integer commentArticleId : commentArticleIds) {
             ArticleAndComment articleAndComment = new ArticleAndComment();

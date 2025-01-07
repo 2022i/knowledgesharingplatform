@@ -32,5 +32,8 @@ public class Article {
     private List<Integer> supportUserIds=new ArrayList<>();
     private List<Integer> opposeUserIds=new ArrayList<>();
     private List<Integer> viewUserIds=new ArrayList<>();
-    private boolean isCheck=false;
+    private boolean check=false;
+    private boolean delete=false;
+    private boolean draft=false;
+    private boolean reject=false;
 }

@@ -17,6 +17,6 @@ public class UserCommentInArticle {
     private CommentRepository commentRepository;
     public List<RenderedComment> getUserCommentInArticle(int userId, int articleId) {
         List<Comment> comments = commentRepository.findCommentsByArticleIdAndUserId(articleId, userId);
-        return commentRenderingPreparation.getRenderedComment(comments);
+        return commentRenderingPreparation.getRenderedComments(comments);
     }
 }

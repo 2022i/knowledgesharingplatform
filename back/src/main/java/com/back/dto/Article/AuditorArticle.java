@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class UnCheckArticle {
+public class AuditorArticle {
     private int id;
     private int authorId;
     private String title;

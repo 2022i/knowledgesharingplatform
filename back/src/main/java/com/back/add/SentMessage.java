@@ -6,7 +6,6 @@ import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 
 @Service
@@ -30,7 +29,9 @@ public abstract class SentMessage {
         setMessageTitle();
         message.setGenerationTime(LocalDate.now());
         message.setMessageGeneratorId(messageGeneratorId);
+        message.setMessageGeneratorName(userDataRepository.findUserDataById(messageGeneratorId).getUsername());
         message.setArticleId(articleId);
+        message.setArticleTitle(articleRepository.findArticleById(articleId).getTitle());
         message.setRead(false);
     }
 }

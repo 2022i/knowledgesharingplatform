@@ -16,6 +16,8 @@ public class Message {
     @Field(type= FieldType.Date,format= DateFormat.basic_date_time)
     private LocalDate generationTime;
     private int messageGeneratorId;
+    private String messageGeneratorName;
     private int articleId;
+    private String articleTitle;
     private boolean isRead;
 }

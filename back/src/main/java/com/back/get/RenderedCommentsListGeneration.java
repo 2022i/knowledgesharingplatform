@@ -15,14 +15,14 @@ public class RenderedCommentsListGeneration {
     private CommentRepository commentRepository;
     public List<RenderedComment> getArticleRootRenderingCommentList(int articleId){
         List<Comment> comments = commentRepository.findCommentsByArticleIdAndFatherId(articleId,0);
-        return commentRenderingPreparation.getRenderedComment(comments);
+        return commentRenderingPreparation.getRenderedComments(comments);
     }
     public List<RenderedComment> getUserRenderingCommentedList(int commentId){
         List<Comment> comments = commentRepository.findCommentsByFatherId(commentId);
-        return commentRenderingPreparation.getRenderedComment(comments);
+        return commentRenderingPreparation.getRenderedComments(comments);
     }
     public List<RenderedComment> getArticleRenderingCommentList(int articleId){
         List<Comment> comments = commentRepository.findCommentsByArticleId(articleId);
-        return commentRenderingPreparation.getRenderedComment(comments);
+        return commentRenderingPreparation.getRenderedComments(comments);
     }
 }

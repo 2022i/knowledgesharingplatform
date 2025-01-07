@@ -15,14 +15,14 @@ public class CommentRenderingPreparation {
     private CommentRepository commentRepository;
     @Resource
     private UserDataRepository userDataRepository;
-    public List<RenderedComment> getRenderedComment(List<Comment> comments){
+    public List<RenderedComment> getRenderedComments(List<Comment> comments){
         List<RenderedComment> renderedComments = new ArrayList<>();
         for (Comment comment : comments) {
-            renderedComments.add(getRenderedComment(comment));
+            renderedComments.add(getRenderedComments(comment));
         }
         return renderedComments;
     }
-    public RenderedComment getRenderedComment(Comment comment){
+    public RenderedComment getRenderedComments(Comment comment){
         RenderedComment renderedComment = new RenderedComment();
         renderedComment.setId(comment.getId());
         renderedComment.setFatherId(comment.getFatherId());

@@ -117,4 +117,11 @@ public class Response {
         result.setMsg("拒绝成功");
         return result;
     }
+
+    public static Response successDeleteArticle() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("删除成功");
+        return result;
+    }
 }

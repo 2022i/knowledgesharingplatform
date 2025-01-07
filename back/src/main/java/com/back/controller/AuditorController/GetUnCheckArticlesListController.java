@@ -1,7 +1,7 @@
 package com.back.controller.AuditorController;
 
-import com.back.auditor.ArticleCheck;
-import com.back.dto.Article.UnCheckArticle;
+import com.back.auditor.UnCheckArticleGet;
+import com.back.dto.Article.AuditorArticle;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +12,11 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/auditor")
-public class GetUnCheckArticlesList {
+public class GetUnCheckArticlesListController {
     @Resource
-    private ArticleCheck articleCheck;
+    private UnCheckArticleGet unCheckArticleGet;
     @GetMapping("/getUnCheckArticles")
-    public List<UnCheckArticle> getUnCheckArticles() {
-        return articleCheck.getUnCheckArticles();
+    public List<AuditorArticle> getUnCheckArticles() {
+        return unCheckArticleGet.getUnCheckArticles();
     }
 }
