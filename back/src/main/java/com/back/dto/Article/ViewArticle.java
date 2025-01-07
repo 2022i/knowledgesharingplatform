@@ -1,4 +1,4 @@
-package com.back.dto;
+package com.back.dto.Article;
 
 import lombok.Data;
 import org.springframework.data.elasticsearch.annotations.DateFormat;

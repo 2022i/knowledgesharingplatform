@@ -6,6 +6,8 @@ import com.back.repository.CommentRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CommentRenderingPreparation {
@@ -13,7 +15,13 @@ public class CommentRenderingPreparation {
     private CommentRepository commentRepository;
     @Resource
     private UserDataRepository userDataRepository;
-
+    public List<RenderedComment> getRenderedComment(List<Comment> comments){
+        List<RenderedComment> renderedComments = new ArrayList<>();
+        for (Comment comment : comments) {
+            renderedComments.add(getRenderedComment(comment));
+        }
+        return renderedComments;
+    }
     public RenderedComment getRenderedComment(Comment comment){
         RenderedComment renderedComment = new RenderedComment();
         renderedComment.setId(comment.getId());

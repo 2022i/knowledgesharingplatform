@@ -1,6 +1,6 @@
 package com.back.write;
 
-import com.back.dto.FrontArticle;
+import com.back.dto.Article.ArticleFromFront;
 import com.back.dto.LastId;
 import com.back.dto.Response;
 import com.back.index.Article;
@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 public class WriteArticle {
     @Resource
     private ArticleRepository articleRepository;
-    public Response writeArticle(FrontArticle frontArticle) {
+    public Response writeArticle(ArticleFromFront articleFromFront) {
         Article article = new Article();
         article.setId(LastId.getArticleId());
-        article.setAuthorId(frontArticle.getAuthorId());
-        article.setThemeId(frontArticle.getThemeId());
-        article.setTitle(frontArticle.getTitle());
-        article.setContent(frontArticle.getContent());
+        article.setAuthorId(articleFromFront.getAuthorId());
+        article.setThemeId(articleFromFront.getThemeId());
+        article.setTitle(articleFromFront.getTitle());
+        article.setContent(articleFromFront.getContent());
         article.setCreateTime(LocalDateTime.now());
         articleRepository.save(article);
         return Response.successWriteArticle();

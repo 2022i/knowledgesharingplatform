@@ -1,14 +1,12 @@
 package com.back.get.ArticleIdsList;
 
-import com.back.dto.ViewArticle;
+import com.back.dto.Article.ViewArticle;
 import com.back.get.ArtilcesList.ViewArticlesList;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.System.in;
 
 @Service
 public class ViewArticleIdsList {

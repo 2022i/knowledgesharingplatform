@@ -1,6 +1,6 @@
 package com.back.search;
 
-import com.back.dto.RenderedArticle;
+import com.back.dto.Article.RenderedArticle;
 import com.back.get.ArticleRenderingPreparation;
 import com.back.repository.ArticleRepository;
 import jakarta.annotation.Resource;

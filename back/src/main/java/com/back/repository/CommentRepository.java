@@ -13,5 +13,5 @@ public interface CommentRepository extends ElasticsearchRepository<Comment,Integ
     Comment findCommentById(int id);
     List<Comment> findCommentsByFatherId(int fatherId);
     List<Comment> findCommentsByArticleIdAndFatherId(int articleId, int fatherId);
-
+    List<Comment> findCommentsByArticleIdAndUserId(int articleId, int userId);
 }

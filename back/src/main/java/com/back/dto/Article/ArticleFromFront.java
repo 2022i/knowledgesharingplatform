@@ -1,9 +1,9 @@
-package com.back.dto;
+package com.back.dto.Article;
 
 import lombok.Data;
 
 @Data
-public class FrontArticle {
+public class ArticleFromFront {
     private int authorId;
     private int themeId;
     private String title;

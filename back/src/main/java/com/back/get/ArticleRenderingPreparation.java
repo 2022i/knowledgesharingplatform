@@ -1,6 +1,6 @@
 package com.back.get;
 
-import com.back.dto.RenderedArticle;
+import com.back.dto.Article.RenderedArticle;
 import com.back.index.Article;
 import com.back.repository.CommentRepository;
 import com.back.repository.ThemeRepository;
@@ -27,7 +27,7 @@ public class ArticleRenderingPreparation {
         }
         return renderedArticles;
     }
-    private RenderedArticle getRenderedArticle(Article article){
+    public RenderedArticle getRenderedArticle(Article article){
         RenderedArticle renderedArticle = new RenderedArticle();
         renderedArticle.setId(article.getId());
         renderedArticle.setTitle(article.getTitle());

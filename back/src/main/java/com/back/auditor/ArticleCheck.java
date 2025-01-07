@@ -1,7 +1,7 @@
 package com.back.auditor;
 
 import com.back.dto.Response;
-import com.back.dto.UnCheckArticle;
+import com.back.dto.Article.UnCheckArticle;
 import com.back.get.UnCheckArticlePreparation;
 import com.back.index.Article;
 import com.back.repository.ArticleRepository;

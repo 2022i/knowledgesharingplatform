@@ -1,7 +1,7 @@
 package com.back.controller.AuditorController;
 
 import com.back.auditor.ArticleCheck;
-import com.back.dto.UnCheckArticle;
+import com.back.dto.Article.UnCheckArticle;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

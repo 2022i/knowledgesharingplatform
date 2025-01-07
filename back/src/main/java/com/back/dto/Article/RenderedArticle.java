@@ -1,5 +1,6 @@
-package com.back.dto;
+package com.back.dto.Article;
 
+import com.back.dto.ArticleAuthor;
 import lombok.Data;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
