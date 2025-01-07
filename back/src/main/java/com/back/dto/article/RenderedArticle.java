@@ -1,4 +1,4 @@
-package com.back.dto.Article;
+package com.back.dto.article;
 
 import com.back.dto.ArticleAuthor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.back.write;
 
 import com.back.dto.LastId;
-import com.back.dto.WriteCommentRequest;
+import com.back.dto.request.WriteCommentRequest;
 import com.back.index.Comment;
 import com.back.repository.CommentRepository;
 import jakarta.annotation.Resource;

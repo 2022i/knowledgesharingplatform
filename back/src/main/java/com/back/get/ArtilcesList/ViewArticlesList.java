@@ -1,6 +1,6 @@
 package com.back.get.ArtilcesList;
 
-import com.back.dto.Article.ViewArticle;
+import com.back.dto.article.ViewArticle;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

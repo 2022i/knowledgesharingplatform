@@ -1,7 +1,7 @@
 package com.back.controller.AuditorController;
 
 import com.back.auditor.DeletingArticleGet;
-import com.back.dto.Article.AuditorArticle;
+import com.back.dto.article.AuditorArticle;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

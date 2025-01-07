@@ -1,7 +1,7 @@
 package com.back.controller;
 
-import com.back.dto.RegisterMailRequest;
-import com.back.dto.RegistrationRequest;
+import com.back.dto.request.RegisterMailRequest;
+import com.back.dto.request.RegistrationRequest;
 import com.back.dto.Response;
 import com.back.registration.RegisterMail;
 import com.back.registration.WriteUser;

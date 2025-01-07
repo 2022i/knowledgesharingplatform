@@ -1,7 +1,7 @@
 package com.back.get;
 
-import com.back.dto.Article.ArticleAndComment;
-import com.back.dto.Article.RenderedArticle;
+import com.back.dto.article.ArticleAndComment;
+import com.back.dto.article.RenderedArticle;
 import com.back.get.ArticleIdsList.CommentArticleIdsList;
 import com.back.index.Comment;
 import com.back.repository.ArticleRepository;

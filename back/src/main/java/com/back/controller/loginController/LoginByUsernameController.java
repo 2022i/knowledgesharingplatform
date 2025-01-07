@@ -1,6 +1,6 @@
 package com.back.controller.loginController;
 
-import com.back.dto.LoginRequest;
+import com.back.dto.request.LoginRequest;
 import com.back.dto.Response;
 import com.back.login.LoginByUsername;
 import jakarta.annotation.Resource;

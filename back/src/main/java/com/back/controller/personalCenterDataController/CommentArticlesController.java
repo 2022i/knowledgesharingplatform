@@ -1,6 +1,6 @@
 package com.back.controller.personalCenterDataController;
 
-import com.back.dto.Article.ArticleAndComment;
+import com.back.dto.article.ArticleAndComment;
 import com.back.get.ArtilcesList.CommentArticlesList;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;

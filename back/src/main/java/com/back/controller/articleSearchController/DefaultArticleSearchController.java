@@ -1,6 +1,6 @@
 package com.back.controller.articleSearchController;
 
-import com.back.dto.Article.RenderedArticle;
+import com.back.dto.article.RenderedArticle;
 import com.back.search.ArticleSearchOrderedViewCount;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;

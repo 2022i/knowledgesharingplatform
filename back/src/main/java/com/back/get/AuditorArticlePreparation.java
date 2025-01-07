@@ -1,6 +1,6 @@
 package com.back.get;
 
-import com.back.dto.Article.AuditorArticle;
+import com.back.dto.article.AuditorArticle;
 import com.back.index.Article;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;

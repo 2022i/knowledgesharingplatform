@@ -1,7 +1,7 @@
 package com.back.index;
 
 import com.back.dto.Message;
-import com.back.dto.Article.ViewArticle;
+import com.back.dto.article.ViewArticle;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;

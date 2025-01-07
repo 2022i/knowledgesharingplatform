@@ -1,6 +1,6 @@
 package com.back.search;
 
-import com.back.dto.Article.RenderedArticle;
+import com.back.dto.article.RenderedArticle;
 import com.back.index.Article;
 import org.springframework.stereotype.Service;
 

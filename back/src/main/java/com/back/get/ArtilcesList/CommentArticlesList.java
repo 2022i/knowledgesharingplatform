@@ -1,6 +1,6 @@
 package com.back.get.ArtilcesList;
 
-import com.back.dto.Article.ArticleAndComment;
+import com.back.dto.article.ArticleAndComment;
 import com.back.get.ArticleIdsList.CommentArticleIdsList;
 import com.back.get.ArticleAndCommentPreparation;
 import com.back.index.Article;

@@ -1,6 +1,6 @@
 package com.back.resetPassword;
 
-import com.back.dto.ResetPasswordRequest;
+import com.back.dto.request.ResetPasswordRequest;
 import com.back.dto.Response;
 import com.back.index.User;
 import com.back.mail.encoding.Encode;

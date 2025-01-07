@@ -1,6 +1,6 @@
 package com.back.write;
 
-import com.back.dto.Article.ArticleFromFront;
+import com.back.dto.article.ArticleFromFront;
 import com.back.dto.LastId;
 import com.back.dto.Response;
 import com.back.index.Article;

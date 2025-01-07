@@ -1,6 +1,6 @@
 package com.back.controller;
 
-import com.back.dto.Article.ArticleFromFront;
+import com.back.dto.article.ArticleFromFront;
 import com.back.dto.Response;
 import com.back.write.WriteArticle;
 import jakarta.annotation.Resource;

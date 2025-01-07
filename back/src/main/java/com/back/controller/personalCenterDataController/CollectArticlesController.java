@@ -1,6 +1,6 @@
 package com.back.controller.personalCenterDataController;
 
-import com.back.dto.Article.RenderedArticle;
+import com.back.dto.article.RenderedArticle;
 import com.back.get.ArtilcesList.CollectArticlesList;
 import com.back.get.ArticleRenderingPreparation;
 import jakarta.annotation.Resource;

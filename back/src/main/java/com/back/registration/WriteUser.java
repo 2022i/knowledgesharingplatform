@@ -1,7 +1,7 @@
 package com.back.registration;
 
 import com.back.dto.LastId;
-import com.back.dto.RegistrationRequest;
+import com.back.dto.request.RegistrationRequest;
 import com.back.dto.Response;
 import com.back.index.User;
 import com.back.index.UserData;

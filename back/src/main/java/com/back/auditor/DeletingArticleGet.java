@@ -1,6 +1,6 @@
 package com.back.auditor;
 
-import com.back.dto.Article.AuditorArticle;
+import com.back.dto.article.AuditorArticle;
 import com.back.get.AuditorArticlePreparation;
 import com.back.repository.ArticleRepository;
 import jakarta.annotation.Resource;

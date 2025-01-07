@@ -2,7 +2,7 @@ package com.back.controller.writeCommentController;
 
 import com.back.add.SentCommentCommentMessage;
 import com.back.dto.Response;
-import com.back.dto.WriteCommentRequest;
+import com.back.dto.request.WriteCommentRequest;
 import com.back.write.WriteComment;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;

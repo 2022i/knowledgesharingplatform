@@ -1,6 +1,6 @@
 package com.back.registration;
 
-import com.back.dto.RegisterMailRequest;
+import com.back.dto.request.RegisterMailRequest;
 import com.back.dto.Response;
 import com.back.mail.MailServiceImpl;
 import com.back.repository.UserRepository;

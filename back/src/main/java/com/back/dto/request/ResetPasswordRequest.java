@@ -1,10 +1,9 @@
-package com.back.dto;
+package com.back.dto.request;
 
 import lombok.Data;
 
 @Data
-public class RegistrationRequest {
-    private String username;
+public class ResetPasswordRequest {
     private String email;
     private String password;
     private String code;

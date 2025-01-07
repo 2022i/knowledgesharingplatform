@@ -1,7 +1,7 @@
 package com.back.login;
 
 import cn.hutool.crypto.SecureUtil;
-import com.back.dto.LoginRequest;
+import com.back.dto.request.LoginRequest;
 import com.back.dto.Response;
 import com.back.mail.encoding.Encode;
 import com.back.redis.RedisCacheServiceImpl;
