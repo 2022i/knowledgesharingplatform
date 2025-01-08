@@ -1,4 +1,4 @@
-package com.back.SentSystemMessage;
+package com.back.sentSystemMessage;
 
 import com.back.dto.LastId;
 import com.back.index.Message;

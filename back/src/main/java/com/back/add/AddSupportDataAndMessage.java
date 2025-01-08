@@ -1,6 +1,6 @@
 package com.back.add;
 
-import com.back.SentSystemMessage.SentSupportMessage;
+import com.back.sentSystemMessage.SentSupportMessage;
 import com.back.get.ArticleIdsList.SupportArticleIdsList;
 import com.back.get.UserIdsList.SupportUserIdsList;
 import com.back.index.Article;

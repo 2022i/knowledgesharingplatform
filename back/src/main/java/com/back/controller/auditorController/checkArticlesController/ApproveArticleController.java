@@ -1,6 +1,6 @@
-package com.back.controller.AuditorController.checkArticlesController;
+package com.back.controller.auditorController.checkArticlesController;
 
-import com.back.SentSystemMessage.SentApproveArticleMessage;
+import com.back.sentSystemMessage.SentApproveArticleMessage;
 import com.back.auditor.ArticleCheck;
 import com.back.dto.Response;
 import jakarta.annotation.Resource;

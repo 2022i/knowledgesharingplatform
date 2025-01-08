@@ -1,4 +1,4 @@
-package com.back.SentSystemMessage;
+package com.back.sentSystemMessage;
 
 import com.back.index.UserData;
 import com.back.repository.CommentRepository;

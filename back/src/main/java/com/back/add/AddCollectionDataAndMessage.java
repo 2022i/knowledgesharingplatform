@@ -1,6 +1,6 @@
 package com.back.add;
 
-import com.back.SentSystemMessage.SentCollectMessage;
+import com.back.sentSystemMessage.SentCollectMessage;
 import com.back.get.ArticleIdsList.CollectArticleIdsList;
 import com.back.get.UserIdsList.CollectUserIdsList;
 import com.back.index.Article;

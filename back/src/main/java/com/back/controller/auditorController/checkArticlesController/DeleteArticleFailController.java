@@ -1,6 +1,6 @@
-package com.back.controller.AuditorController.checkArticlesController;
+package com.back.controller.auditorController.checkArticlesController;
 
-import com.back.SentSystemMessage.SentDeleteArticleFailMessage;
+import com.back.sentSystemMessage.SentDeleteArticleFailMessage;
 import com.back.auditor.ArticleCheck;
 import com.back.dto.Response;
 import com.back.dto.request.AuditorRequest;

@@ -1,6 +1,6 @@
-package com.back.controller.AuditorController.checkArticlesController;
+package com.back.controller.auditorController.checkArticlesController;
 
-import com.back.SentSystemMessage.SentRejectArticleMessage;
+import com.back.sentSystemMessage.SentRejectArticleMessage;
 import com.back.auditor.ArticleCheck;
 import com.back.dto.Response;
 import com.back.dto.request.AuditorRequest;

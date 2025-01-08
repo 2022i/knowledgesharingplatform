@@ -1,4 +1,4 @@
-package com.back.SentSystemMessage;
+package com.back.sentSystemMessage;
 
 import com.back.dto.request.AuditorRequest;
 import org.springframework.stereotype.Service;
