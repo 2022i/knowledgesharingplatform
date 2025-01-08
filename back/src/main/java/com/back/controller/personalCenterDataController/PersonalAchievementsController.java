@@ -1,7 +1,7 @@
 package com.back.controller.personalCenterDataController;
 
 import com.back.dto.PersonalAchievements;
-import com.back.get.PersonalAchievementsPreparation;
+import com.back.get.preparation.PersonalAchievementsPreparation;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

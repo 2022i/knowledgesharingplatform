@@ -1,37 +1,46 @@
-package com.back.add;
+package com.back.SentSystemMessage;
 
-import com.back.dto.Message;
+import com.back.index.Message;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
+import com.back.repository.MessageRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public abstract class SentMessage {
     @Resource
-    protected Message message;
-    @Resource
     private ArticleRepository articleRepository;
     @Resource
+    protected MessageRepository messageRepository;
+    @Resource
     protected UserDataRepository userDataRepository;
+    protected Message message;
     public void sentMessage(int articleId, int messageGeneratorId){
         setMessage(articleId, messageGeneratorId);
-        findAuthorDataByArticleId(articleId).getMessage().add(message);
     }
     abstract protected void setMessageTitle();
-    private UserData findAuthorDataByArticleId(int articleId){
+    protected UserData findAuthorDataByArticleId(int articleId){
         int uerId=articleRepository.findArticleById(articleId).getAuthorId();
         return userDataRepository.findUserDataById(uerId);
     }
     protected void setMessage(int articleId, int messageGeneratorId){
+        message=new Message();
         setMessageTitle();
-        message.setGenerationTime(LocalDate.now());
+        message.setCreateTime(LocalDateTime.now());
         message.setMessageGeneratorId(messageGeneratorId);
         message.setMessageGeneratorName(userDataRepository.findUserDataById(messageGeneratorId).getUsername());
         message.setArticleId(articleId);
         message.setArticleTitle(articleRepository.findArticleById(articleId).getTitle());
         message.setRead(false);
+        messageRepository.save(message);
+        UserData userData=findAuthorDataByArticleId(articleId);
+        List<Integer> messageList= userData.getMessageIds();
+        messageList.add(message.getId());
+        userData.setMessageIds(messageList);
+        userDataRepository.save(userData);
     }
 }

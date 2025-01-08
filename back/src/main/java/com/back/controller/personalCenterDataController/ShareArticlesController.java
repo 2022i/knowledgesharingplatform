@@ -2,7 +2,7 @@ package com.back.controller.personalCenterDataController;
 
 import com.back.dto.article.RenderedArticle;
 import com.back.get.ArtilcesList.ShareArticlesList;
-import com.back.get.ArticleRenderingPreparation;
+import com.back.get.preparation.ArticleRenderingPreparation;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 

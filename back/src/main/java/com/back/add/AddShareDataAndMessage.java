@@ -1,5 +1,6 @@
 package com.back.add;
 
+import com.back.SentSystemMessage.SentShareMessage;
 import com.back.get.ArticleIdsList.ShareArticleIdsList;
 import com.back.get.UserIdsList.ShareUserIdsList;
 import com.back.index.Article;

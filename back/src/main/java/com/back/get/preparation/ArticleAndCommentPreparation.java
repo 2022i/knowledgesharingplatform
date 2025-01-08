@@ -1,4 +1,4 @@
-package com.back.get;
+package com.back.get.preparation;
 
 import com.back.dto.article.ArticleAndComment;
 import com.back.dto.article.RenderedArticle;

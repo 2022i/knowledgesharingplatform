@@ -1,7 +1,7 @@
 package com.back.search;
 
 import com.back.dto.article.RenderedArticle;
-import com.back.get.ArticleRenderingPreparation;
+import com.back.get.preparation.ArticleRenderingPreparation;
 import com.back.repository.ArticleRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

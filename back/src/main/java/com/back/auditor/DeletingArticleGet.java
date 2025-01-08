@@ -1,7 +1,7 @@
 package com.back.auditor;
 
 import com.back.dto.article.AuditorArticle;
-import com.back.get.AuditorArticlePreparation;
+import com.back.get.preparation.AuditorArticlePreparation;
 import com.back.repository.ArticleRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

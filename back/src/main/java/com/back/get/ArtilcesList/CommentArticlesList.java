@@ -2,7 +2,7 @@ package com.back.get.ArtilcesList;
 
 import com.back.dto.article.ArticleAndComment;
 import com.back.get.ArticleIdsList.CommentArticleIdsList;
-import com.back.get.ArticleAndCommentPreparation;
+import com.back.get.preparation.ArticleAndCommentPreparation;
 import com.back.index.Article;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

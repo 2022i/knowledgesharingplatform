@@ -1,4 +1,4 @@
-package com.back.add;
+package com.back.SentSystemMessage;
 
 import org.springframework.stereotype.Service;
 

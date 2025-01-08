@@ -1,6 +1,6 @@
 package com.back.controller.writeCommentController;
 
-import com.back.add.SentCommentCommentMessage;
+import com.back.SentSystemMessage.SentCommentCommentMessage;
 import com.back.dto.Response;
 import com.back.dto.request.WriteCommentRequest;
 import com.back.write.WriteComment;

@@ -22,8 +22,14 @@ public class ArticleCheck {
         articleRepository.save(article);
         return Response.successRejectArticle();
     }
-    public Response deleteArticle(int articleId) {
+    public Response deleteArticleSuccess(int articleId) {
         articleRepository.deleteArticleById(articleId);
         return Response.successDeleteArticle();
+    }
+    public Response deleteArticleFail(int articleId) {
+        Article article=articleRepository.findArticleById(articleId);
+        article.setDelete(false);
+        articleRepository.save(article);
+        return Response.failDeleteArticle();
     }
 }

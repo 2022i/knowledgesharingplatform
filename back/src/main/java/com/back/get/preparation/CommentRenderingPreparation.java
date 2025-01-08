@@ -1,4 +1,4 @@
-package com.back.get;
+package com.back.get.preparation;
 
 import com.back.dto.RenderedComment;
 import com.back.index.Comment;

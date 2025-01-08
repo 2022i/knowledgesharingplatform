@@ -1,4 +1,4 @@
-package com.back.add;
+package com.back.SentSystemMessage;
 
 import com.back.index.UserData;
 import com.back.repository.CommentRepository;
@@ -11,7 +11,7 @@ public class SentCommentCommentMessage extends SentMessage{
     private CommentRepository commentRepository;
     public void sentMessage(int fatherCommentId, int messageGeneratorId){
         setMessage(findArticleIdByCommentId(fatherCommentId), messageGeneratorId);
-        findUserDataByCommentId(fatherCommentId).getMessage().add(message);
+//        findUserDataByCommentId(fatherCommentId).getMessageIds().add(message);
     }
     @Override
     protected void setMessageTitle() {

@@ -1,18 +1,18 @@
 package com.back.add;
 
+import com.back.SentSystemMessage.SentCollectMessage;
 import com.back.get.ArticleIdsList.CollectArticleIdsList;
 import com.back.get.UserIdsList.CollectUserIdsList;
 import com.back.index.Article;
 import com.back.index.UserData;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class AddCollectionDataAndMessage extends AddDataAndMessage {
     @Resource
-    private SentCollectMessage sentMessage;
+    private SentCollectMessage sentCollectMessage;
     @Resource
     private CollectUserIdsList collectUserIdsList;
     @Resource
@@ -35,6 +35,6 @@ public class AddCollectionDataAndMessage extends AddDataAndMessage {
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){
-        sentMessage.sentMessage(articleId,messageGenerator);
+        sentCollectMessage.sentMessage(articleId,messageGenerator);
     }
 }

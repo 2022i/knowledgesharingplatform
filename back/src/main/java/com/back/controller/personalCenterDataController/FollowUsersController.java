@@ -2,7 +2,7 @@ package com.back.controller.personalCenterDataController;
 
 import com.back.dto.ArticleAuthor;
 import com.back.get.UserDataList.FollowUsersList;
-import com.back.get.UserRenderingPreparation;
+import com.back.get.preparation.UserRenderingPreparation;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 

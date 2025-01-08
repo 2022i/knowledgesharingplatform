@@ -124,4 +124,18 @@ public class Response {
         result.setMsg("删除成功");
         return result;
     }
+
+    public static Response successApplyDelete() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("申请删除成功,等待审核");
+        return result;
+    }
+
+    public static Response failDeleteArticle() {
+        Response result = new Response();
+        result.setCode(400);
+        result.setMsg("删除失败");
+        return result;
+    }
 }

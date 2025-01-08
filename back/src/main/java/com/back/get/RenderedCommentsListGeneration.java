@@ -1,6 +1,7 @@
 package com.back.get;
 
 import com.back.dto.RenderedComment;
+import com.back.get.preparation.CommentRenderingPreparation;
 import com.back.index.Comment;
 import com.back.repository.CommentRepository;
 import jakarta.annotation.Resource;
