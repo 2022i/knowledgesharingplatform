@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 
 @Data
-@Document(indexName = "view_article")
-public class ViewArticle {
+@Document(indexName = "view_data")
+public class ViewData {
     @Id
     private int id;
     private int articleId;

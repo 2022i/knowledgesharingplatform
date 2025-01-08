@@ -33,7 +33,7 @@ public abstract class SentMessage {
     protected void setMessage(int articleId, int messageGeneratorId){
         setMessageTitle();
         message.setId(lastIdOperation.getMessageId());
-        message.setAuthorId(findAuthorIdByArticleId(articleId));
+        message.setMessageRecipientId(findAuthorIdByArticleId(articleId));
         message.setCreateTime(LocalDateTime.now());
         message.setMessageGeneratorId(messageGeneratorId);
         message.setMessageGeneratorName(userDataRepository.findUserDataById(messageGeneratorId).getUsername());

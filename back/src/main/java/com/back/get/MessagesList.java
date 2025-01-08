@@ -11,7 +11,7 @@ public class MessagesList {
     @Resource
     private MessageRepository messageRepository;
     public List< Message > getMessages(int userId){
-        List<Message> messageList=messageRepository.findMessagesByAuthorId(userId);
+        List<Message> messageList=messageRepository.findMessagesByMessageRecipientId(userId);
         //Sort by creation time from newest to oldest
         messageList.sort((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime()));
         return messageList;

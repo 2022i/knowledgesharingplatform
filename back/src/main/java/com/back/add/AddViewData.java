@@ -2,12 +2,12 @@ package com.back.add;
 
 import com.back.get.LastIdOperation;
 import com.back.dto.Response;
-import com.back.index.ViewArticle;
+import com.back.index.ViewData;
 import com.back.index.Article;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
-import com.back.repository.ViewArticleRepository;
+import com.back.repository.ViewDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -20,10 +20,10 @@ public class AddViewData {
     @Resource
     private UserDataRepository userDataRepository;
     @Resource
-    private ViewArticleRepository viewArticleRepository;
+    private ViewDataRepository viewDataRepository;
     @Resource
     private LastIdOperation lastIdOperation;
-    private ViewArticle viewArticle=new ViewArticle();
+    private ViewData viewData =new ViewData();
     public Response addViewData(int articleId, int userId) {
         addArticleData(articleId, userId);
         addUserData(articleId, userId);
@@ -37,18 +37,18 @@ public class AddViewData {
         articleRepository.save(article);
     }
     private void addUserData(int articleId, int userId){
-        List<Integer> viewArticleIds =userDataRepository.findUserDataById(userId).getViewArticleIds();
-        if(viewArticleRepository.findViewArticleByArticleId(articleId)!=null){
-            viewArticle=viewArticleRepository.findViewArticleByArticleId(articleId);
+        List<Integer> viewArticleIds =userDataRepository.findUserDataById(userId).getViewDataIds();
+        if(viewDataRepository.findViewDataByArticleId(articleId)!=null){
+            viewData = viewDataRepository.findViewDataByArticleId(articleId);
         }else{
-            viewArticle.setId(lastIdOperation.getViewArticleId());
-            viewArticle.setArticleId(articleId);
-            viewArticleIds.add(viewArticle.getId());
+            viewData.setId(lastIdOperation.getViewArticleId());
+            viewData.setArticleId(articleId);
+            viewArticleIds.add(viewData.getId());
         }
-        viewArticle.setViewTime(LocalDateTime.now());
-        viewArticleRepository.save(viewArticle);
+        viewData.setViewTime(LocalDateTime.now());
+        viewDataRepository.save(viewData);
         UserData userData=userDataRepository.findUserDataById(userId);
-        userData.setViewArticleIds(viewArticleIds);
+        userData.setViewDataIds(viewArticleIds);
         userDataRepository.save(userData);
     }
 }
