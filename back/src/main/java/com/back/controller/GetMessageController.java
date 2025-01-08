@@ -1,7 +1,7 @@
 package com.back.controller;
 
 
-import com.back.get.MessageGet;
+import com.back.get.MessagesList;
 import com.back.index.Message;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,9 +15,9 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class GetMessageController {
     @Resource
-    private MessageGet messageGet;
+    private MessagesList messagesList;
     @GetMapping("/messages")
     public List<Message> getMessages(int userId){
-        return messageGet.getMessages(userId);
+        return messagesList.getMessages(userId);
     }
 }

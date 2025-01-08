@@ -13,7 +13,7 @@ public class AddSupportDataAndMessageController {
     private AddSupportDataAndMessage addSupportDataAndMessage;
     @PutMapping("/supportData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        addSupportDataAndMessage.addData(articleId, userId);
+        addSupportDataAndMessage.addDataAndSentMessage(articleId, userId);
         return Response.successAddDataAndSentMessage();
     }
 }

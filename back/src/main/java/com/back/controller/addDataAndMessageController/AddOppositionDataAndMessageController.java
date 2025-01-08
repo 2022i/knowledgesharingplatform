@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/addDataAndSentMessage")
 public class AddOppositionDataAndMessageController {
     @Resource
-    private AddOppositionDataAndMessage addOppositionData;
+    private AddOppositionDataAndMessage addOppositionDataAndMessage;
     @PutMapping("/oppositionData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        addOppositionData.addData(articleId, userId);
+        addOppositionDataAndMessage.addDataAndSentMessage(articleId, userId);
         return Response.successAddDataAndSentMessage();
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MessageGet {
+public class MessagesList {
     @Resource
     private MessageRepository messageRepository;
     public List< Message > getMessages(int userId){

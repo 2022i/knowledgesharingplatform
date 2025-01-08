@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/addDataAndSentMessage")
 public class AddCollectionDataAndMessageController {
     @Resource
-    private AddCollectionDataAndMessage addCollectionData;
+    private AddCollectionDataAndMessage addCollectionDataAndMessage;
     @PutMapping("/collectionData")
     public Response addArticleSupportData(@RequestParam int articleId, @RequestParam int userId) {
-        addCollectionData.addData(articleId, userId);
+        addCollectionDataAndMessage.addDataAndSentMessage(articleId, userId);
         return Response.successAddDataAndSentMessage();
     }
 }

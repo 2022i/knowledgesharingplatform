@@ -11,7 +11,7 @@ public abstract class AddDataAndMessage {
     protected ArticleRepository articleRepository;
     @Resource
     protected UserDataRepository userDataRepository;
-    public void addData(int articleId, int userId){
+    public void addDataAndSentMessage(int articleId, int userId){
         addArticleData( articleId,  userId);
         addUserData( articleId,  userId);
         sentMessage(articleId, userId);
