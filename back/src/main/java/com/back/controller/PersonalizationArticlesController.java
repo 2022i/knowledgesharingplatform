@@ -21,8 +21,8 @@ public class PersonalizationArticlesController {
     }
 
     @GetMapping("/recommended-articles")
-    public Response getRecommendedArticles(@RequestParam List<Integer> userIds) {
-        personalizationArticle.getRecommendedArticles(userIds);
+    public Response getRecommendedArticles(@RequestParam List<Integer> ids) {
+        personalizationArticle.getRecommendedArticles(ids);
         return Response.successAddDataAndSentMessage();
     }
 }
