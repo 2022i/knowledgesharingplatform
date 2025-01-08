@@ -10,7 +10,7 @@ public class SentRejectArticleMessage extends SentMessage{
         message.setTitle("RejectArticle");
     }
     public void sentMessage(AuditorRequest auditorRequest) {
-        setMessage(auditorRequest.getArticleId(), auditorRequest.getAuditorId());
         message.setContent(auditorRequest.getReason());
+        setMessage(auditorRequest.getArticleId(), auditorRequest.getAuditorId());
     }
 }

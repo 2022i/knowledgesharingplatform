@@ -7,6 +7,7 @@ public class LastId {
     private static int userId =0;
     private static int commentId =0;
     private static int articleId =0;
+    private static int messageId =0;
     public static int getUserId() {
         userId++;
         return userId;
@@ -18,5 +19,9 @@ public class LastId {
     public static int getArticleId() {
         articleId++;
         return articleId;
+    }
+    public static int getMessageId() {
+        messageId++;
+        return messageId;
     }
 }
