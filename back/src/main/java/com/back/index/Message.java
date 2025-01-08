@@ -20,8 +20,8 @@ public class Message {
     private String content;
     private int messageGeneratorId;
     private String messageGeneratorName;
-    private int authorId;
+    private int messageRecipientId;
     private int articleId;
     private String articleTitle;
-    private boolean isRead;
+    private boolean isRead=false;
 }

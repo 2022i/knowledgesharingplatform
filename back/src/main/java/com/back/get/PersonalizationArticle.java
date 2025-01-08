@@ -34,7 +34,9 @@ public class PersonalizationArticle {
     private List<Article> getArticlesByThemeFrequency(List<Integer> Ids, boolean isMostFrequent) {
         // 获取主题ID列表
         List<Integer> themeIdsList = Ids.stream()
-                .map(id -> articleRepository.findArticleById(id).getThemeId())
+                .map(id -> articleRepository.findArticleById(id))
+                .filter(article -> article.isCheck() && !article.isReject() && !article.isDraft() && !article.isDelete())
+                .map(Article::getThemeId)
                 .collect(Collectors.toList());
 
         // 统计每个 themeId 的出现次数
