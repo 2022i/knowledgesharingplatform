@@ -138,4 +138,11 @@ public class Response {
         result.setMsg("删除失败");
         return result;
     }
+
+    public static Response successAddData() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("添加成功");
+        return result;
+    }
 }

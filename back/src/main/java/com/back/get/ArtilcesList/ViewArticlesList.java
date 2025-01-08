@@ -1,23 +1,18 @@
 package com.back.get.ArtilcesList;
 
-import com.back.dto.article.ViewArticle;
-import com.back.repository.UserDataRepository;
+import com.back.get.ArticleIdsList.ViewArticleIdsList;
+import com.back.index.Article;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
-public class ViewArticlesList {
+public class ViewArticlesList extends ArticlesList{
     @Resource
-    protected UserDataRepository userDataRepository;
-
-    public ViewArticlesList(UserDataRepository userDataRepository) {
-        this.userDataRepository = userDataRepository;
+    private ViewArticleIdsList viewArticleIdsList;
+    @Override
+    public List<Article> getArticlesList(int userId){
+        List<Integer> viewArticleIds = viewArticleIdsList.getIdsList(userId);
+        return getArticlesList(viewArticleIds);
     }
-
-    public List<ViewArticle> getArticlesList(int userId){
-        return userDataRepository.findUserDataById(userId).getViewArticleList();
-    }
-
 }

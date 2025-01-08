@@ -1,6 +1,6 @@
 package com.back.registration;
 
-import com.back.dto.LastId;
+import com.back.get.LastIdOperation;
 import com.back.dto.request.RegistrationRequest;
 import com.back.dto.Response;
 import com.back.index.User;
@@ -21,6 +21,8 @@ public class WriteUser {
     @Resource
     private UserDataRepository userDataRepository;
     @Resource
+    private LastIdOperation lastIdOperation;
+    @Resource
     private Encode encode;
     public Response registerByEmail( RegistrationRequest registrationRequest) {
         if(isCodeExpired(registrationRequest.getEmail())){
@@ -39,7 +41,7 @@ public class WriteUser {
     }
     private void writeUser(RegistrationRequest registrationRequest){
         User user = new User();
-        user.setId(LastId.getUserId());
+        user.setId(lastIdOperation.getUserId());
         user.setEmail(registrationRequest.getEmail());
         user.setUsername(registrationRequest.getUsername());
         user.setPassword(encode.encrypt(registrationRequest.getPassword()));

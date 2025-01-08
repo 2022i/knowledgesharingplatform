@@ -1,6 +1,6 @@
 package com.back.sentSystemMessage;
 
-import com.back.dto.LastId;
+import com.back.get.LastIdOperation;
 import com.back.index.Message;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
@@ -16,9 +16,11 @@ public abstract class SentMessage {
     @Resource
     private ArticleRepository articleRepository;
     @Resource
-    protected MessageRepository messageRepository;
+    private MessageRepository messageRepository;
     @Resource
     protected UserDataRepository userDataRepository;
+    @Resource
+    private LastIdOperation lastIdOperation;
     protected Message message=new Message();
     public void sentMessage(int articleId, int messageGeneratorId){
         setMessage(articleId, messageGeneratorId);
@@ -30,7 +32,7 @@ public abstract class SentMessage {
     }
     protected void setMessage(int articleId, int messageGeneratorId){
         setMessageTitle();
-        message.setId(LastId.getMessageId());
+        message.setId(lastIdOperation.getMessageId());
         message.setAuthorId(findAuthorIdByArticleId(articleId));
         message.setCreateTime(LocalDateTime.now());
         message.setMessageGeneratorId(messageGeneratorId);
