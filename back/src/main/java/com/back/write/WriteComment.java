@@ -1,6 +1,6 @@
 package com.back.write;
 
-import com.back.dto.LastId;
+import com.back.get.LastIdOperation;
 import com.back.dto.request.WriteCommentRequest;
 import com.back.index.Comment;
 import com.back.repository.CommentRepository;
@@ -12,9 +12,11 @@ import java.time.LocalDateTime;
 public class WriteComment {
     @Resource
     private CommentRepository commentRepository;
+    @Resource
+    private LastIdOperation lastIdOperation;
     public void writeComment(WriteCommentRequest writeCommentRequest){
         Comment comment = new Comment();
-        comment.setId(LastId.getCommentId());
+        comment.setId(lastIdOperation.getCommentId());
         comment.setFatherId(writeCommentRequest.getFatherId());
         comment.setUserId(writeCommentRequest.getUserId());
         comment.setContent(writeCommentRequest.getContent());
