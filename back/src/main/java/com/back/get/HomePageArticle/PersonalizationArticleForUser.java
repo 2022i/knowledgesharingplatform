@@ -1,18 +1,25 @@
-package com.back.get;
+package com.back.get.HomePageArticle;
 
+import com.back.dto.article.ViewArticle;
 import com.back.get.ArticleIdsList.ViewArticleIdsList;
 import com.back.index.Article;
+import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
 import com.back.repository.ThemeRepository;
+import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class PersonalizationArticle {
-
+public class PersonalizationArticleForUser {
+    @Resource
+    private UserDataRepository userDataRepository;
     @Resource
     private ViewArticleIdsList viewArticleIdsList;
     @Resource
@@ -20,36 +27,36 @@ public class PersonalizationArticle {
     @Resource
     private ThemeRepository themeRepository;
 
-    // 获取浏览最多的主题文章
-    public List<Article> getRecommendedArticles(List<Integer> Ids) {
-        return getArticlesByThemeFrequency(Ids, true);
+
+    public List<Article> getRecommendedArticles(int userId) {
+        return getArticleByViewFrequency(userId,true);
     }
 
-    // 获取浏览最少的主题文章
-    public List<Article> getBarrierArticles(List<Integer> Ids) {
-        return getArticlesByThemeFrequency(Ids, false);
+    public List<Article> getBarrierArticles(int userId) {
+        return getArticleByViewFrequency(userId,false);
     }
 
-    // 通用方法，获取根据主题出现频率最多或最少的文章
-    private List<Article> getArticlesByThemeFrequency(List<Integer> Ids, boolean isMostFrequent) {
-        // 获取主题ID列表
-        List<Integer> themeIdsList = Ids.stream()
-                .map(id -> articleRepository.findArticleById(id))
-                .filter(article -> article.isCheck() && !article.isReject() && !article.isDraft() && !article.isDelete())
-                .map(Article::getThemeId)
-                .collect(Collectors.toList());
-
+    public List<Article> getArticleByViewFrequency(int userId,boolean isMostView){
+        UserData userData=userDataRepository.findUserDataById(userId);
+        List<Integer> viewArticleIds=viewArticleIdsList.getIdsList(userId);
+        List<Article> articles=new ArrayList<>();
+        for(Integer viewArticleId:viewArticleIds){
+            Article article=articleRepository.findArticleById(viewArticleId);
+            if(article.isCheck() && !article.isReject() && !article.isDraft() && !article.isDelete()){
+                articles.add(article);
+            }
+        }
         // 统计每个 themeId 的出现次数
-        Map<Integer, Long> themeCountMap = themeIdsList.stream()
-                .collect(Collectors.groupingBy(themeId -> themeId, Collectors.counting()));
+        Map<Integer, Long> themeCountMap = articles.stream()
+                .collect(Collectors.groupingBy(Article::getThemeId, Collectors.counting()));
 
-        // 根据传入的 isMostFrequent 参数，决定查找最多或最少出现的 themeId
+        // 根据传入的 isMostView 参数，决定查找最多或最少出现的 themeId
         Integer targetThemeId = themeCountMap.entrySet().stream()
                 .filter(entry -> entry.getValue() > 0) // 确保不为空
                 .collect(Collectors.collectingAndThen(
                         Collectors.toList(),
                         list -> {
-                            if (isMostFrequent) {
+                            if (isMostView) {
                                 return list.stream()
                                         .max(Map.Entry.comparingByValue()) // 查找出现次数最多的 themeId
                                         .map(Map.Entry::getKey)

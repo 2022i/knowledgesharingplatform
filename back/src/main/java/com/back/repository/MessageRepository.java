@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends ElasticsearchRepository<Message,Integer> {
-    List<Message> findMessagesByAuthorId(int authorId);
+    List<Message> findMessagesByMessageRecipientId(int messageRecipientId);
 }
