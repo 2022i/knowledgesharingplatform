@@ -8,6 +8,4 @@ public class ArticleFromFront {
     private int themeId;
     private String title;
     private String content;
-    private String summary;
-    private String relatedKnowledge;
 }

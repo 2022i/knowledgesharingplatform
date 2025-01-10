@@ -22,6 +22,7 @@ spring:
       - /addData/**
       - /follow/**
       - /ai/**
+      - /userDeleteArticle/**
 
   datasource:
     url: jdbc:mysql://localhost:3306/defect_management
