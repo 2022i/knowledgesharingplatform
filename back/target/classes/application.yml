@@ -1,0 +1,53 @@
+server:
+  port: 8081
+  address: 0.0.0.0
+  servlet:
+    context-path: /server
+
+
+spring:
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 2383195232@qq.com
+    password: cgzakpwxckrkecdf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+
+  elasticsearch:
+    uris: http://localhost:9200
+#    connection-timeout: 3000
+#    socket-timeout: 5000
+
+
+
+  data:
+    redis:
+      database: 1
+      host: localhost
+      port: 6379
+      #username: root
+      #password: root
+      connect-timeout: 2s
+      timeout: 5s
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 100
+          max-idle: 75
+          min-idle: 75
+
+
+
+
+
+  profiles:
+    active: dev
+
+ai:
+  api:
+    key:  sk-4bbb3c09ffea4106bbf07e0ee66d03b7

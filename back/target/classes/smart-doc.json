@@ -1,0 +1,9 @@
+{
+  "outPath": "target/docs",
+  "allInOne": true,
+  "coverOld": true,
+  "allInOneDocFileName": "后端服务接口文档",
+  "serverUrl": "http://127.0.0.1:8081/server",
+  "projectName": "后端服务",
+  "language": "zh"
+}
