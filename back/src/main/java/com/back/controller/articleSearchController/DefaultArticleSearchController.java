@@ -13,7 +13,7 @@ import java.util.List;
 public class DefaultArticleSearchController {
     @Resource
     private ArticleSearchOrderedViewCount articleSearchOrderedViewCount;
-    @Description("根据关键字搜索文章，按文章的浏览量由高到低排序，返回文章数据用于渲染")
+    @Description("根据关键字搜索文章，按文章的浏览量由高到低排序，返回文章数据用于渲染，是默认搜索结果的排序方式")
     @GetMapping("/default")
     public List<RenderedArticle> getArticles(@RequestParam String keyword){
         return articleSearchOrderedViewCount.getArticles(keyword);
