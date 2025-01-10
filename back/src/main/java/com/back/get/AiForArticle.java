@@ -8,6 +8,7 @@ import com.alibaba.dashscope.common.Role;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
+import com.back.index.Article;
 import com.back.repository.ArticleRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 public class AiForArticle {
     @Resource
     private ArticleRepository articleRepository;
+    @Resource
+    private Article article;
 
     private static final String API_KEY = "sk-4bbb3c09ffea4106bbf07e0ee66d03b7";
     private static final String MODEL = "qwen-turbo";
