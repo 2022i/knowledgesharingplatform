@@ -1,10 +1,11 @@
 package com.back.get.HomePageArticle;
 
-import com.back.dto.article.ViewArticle;
+
 import com.back.index.Article;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
 import com.back.repository.UserDataRepository;
+import com.back.repository.ViewDataRepository;
 import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class HotArticle {
     private UserDataRepository userDataRepository;
     @Resource
     private ArticleRepository articleRepository;
+    @Resource
+    private ViewDataRepository viewDataRepository;
 
 
     public List<Article> getHotArticles() {

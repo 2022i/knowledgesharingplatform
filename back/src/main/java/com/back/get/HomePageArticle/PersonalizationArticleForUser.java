@@ -1,6 +1,6 @@
 package com.back.get.HomePageArticle;
 
-import com.back.dto.article.ViewArticle;
+
 import com.back.get.ArticleIdsList.ViewArticleIdsList;
 import com.back.index.Article;
 import com.back.index.UserData;
@@ -42,7 +42,12 @@ public class PersonalizationArticleForUser {
         List<Article> articles=new ArrayList<>();
         for(Integer viewArticleId:viewArticleIds){
             Article article=articleRepository.findArticleById(viewArticleId);
-            if(article.isCheck() && !article.isReject() && !article.isDraft() && !article.isDelete()){
+            if(article.isCheck() && !article.isReject() && !article.isDraft() && !article.isDelete() &&
+                    !userData.getWriteArticleIds().contains(viewArticleId) &&
+                    !userData.getSupportArticleIds().contains(viewArticleId) &&
+                    !userData.getOpposeArticleIds().contains(viewArticleId) &&
+                    !userData.getCollectArticleId().contains(viewArticleId) &&
+                    !userData.getShareArticleId().contains(viewArticleId)){
                 articles.add(article);
             }
         }

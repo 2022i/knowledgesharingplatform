@@ -22,4 +22,7 @@ public class RenderedArticle {
     private int commentCount;
     private int collectionUserCount ;
     private int shareUserCount;
+    private boolean isSupport;
+    private boolean isOppose;
+    private boolean isCollect;
 }
