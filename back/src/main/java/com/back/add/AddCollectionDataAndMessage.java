@@ -30,7 +30,7 @@ public class AddCollectionDataAndMessage extends AddDataAndMessage {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> collectArticleId = collectArticleIdsList.getIdsList(userId);
         collectArticleId.add(articleId);
-        userData.setSupportArticleIds(collectArticleId);
+        userData.setCollectArticleId(collectArticleId);
         userDataRepository.save(userData);
     }
     @Override

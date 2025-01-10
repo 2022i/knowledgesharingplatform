@@ -3,6 +3,7 @@ package com.back.controller.articleSearchController;
 import com.back.dto.article.RenderedArticle;
 import com.back.search.ArticleSearchOrderedCreateTime;
 import jakarta.annotation.Resource;
+import jdk.jfr.Description;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 public class ArticleSearchOrderedCreateTimeController {
     @Resource
     private ArticleSearchOrderedCreateTime articleSearchOrderedCreateTime;
+    @Description("根据关键字搜索文章，按文章的发布时间由近到远排序，返回文章数据用于渲染")
     @GetMapping("/orderedCreateTime")
     public List<RenderedArticle> getArticles(@RequestParam String keyword){
         return articleSearchOrderedCreateTime.getArticles(keyword);

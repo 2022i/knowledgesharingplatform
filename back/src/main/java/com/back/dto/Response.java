@@ -65,7 +65,7 @@ public class Response {
     public static Response successLogin(String token) {
         Response result = new Response();
         result.setCode(200);
-        result.setMsg("登录成功 "+" token:"+token);
+        result.setMsg(token);
         return result;
     }
 

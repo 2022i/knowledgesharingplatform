@@ -15,9 +15,9 @@ public class RegisterMail {
     private MailServiceImpl mailService;
     public Response mailMail(RegisterMailRequest registerMailRequest) {
         if(isUsernameExit(registerMailRequest.getUsername()) ){
-            return Response.alreadyExistsEmail();
-        }else if(isEmailExit(registerMailRequest.getEmail())){
             return Response.alreadyExistsUsername();
+        }else if(isEmailExit(registerMailRequest.getEmail())){
+            return Response.alreadyExistsEmail();
         }
         mailService.mailSendForRegister(registerMailRequest.getEmail());
         return Response.successMail();
