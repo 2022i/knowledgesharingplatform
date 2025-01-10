@@ -26,7 +26,7 @@ public class ArticleSaverTest {
 
     @Test
     public void saveArticlesFromFiles() throws IOException {
-        File folder = new File("D:\\Python_study\\protect7");
+        File folder = new File("E:\\protect7");
         File[] files = folder.listFiles(); // 获取文件夹下的所有文件
         List<Article> articles = new ArrayList<>();
         int count =1;
