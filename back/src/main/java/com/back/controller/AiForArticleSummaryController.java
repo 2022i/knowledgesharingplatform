@@ -6,6 +6,7 @@ import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.back.get.AiForArticle;
 import jakarta.annotation.Resource;
+import jdk.jfr.Description;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class AiForArticleSummaryController {
     private AiForArticle aiForArticle;
 
     @GetMapping("/summary")
+    @Description("使用ai生成文章概要，限制在150字以内")
     public String getSummary(@RequestBody String content){
         try {
             GenerationResult result = aiForArticle.getSummary(content);
@@ -28,6 +30,7 @@ public class AiForArticleSummaryController {
     }
 
     @GetMapping("/tags")
+    @Description("使用AI生成文章关联知识，形如财经、人工智能等")
     public String getTags(@RequestBody String content){
         try {
             GenerationResult result = aiForArticle.generateTags(content);

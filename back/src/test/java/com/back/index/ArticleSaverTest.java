@@ -29,7 +29,7 @@ public class ArticleSaverTest {
         File folder = new File("D:\\Python_study\\protect7");
         File[] files = folder.listFiles(); // 获取文件夹下的所有文件
         List<Article> articles = new ArrayList<>();
-
+        int count =1;
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().endsWith(".text")) {
@@ -47,13 +47,14 @@ public class ArticleSaverTest {
 
                     Article article = new Article();
                     article.setId(articles.size() + 1); // 假设ID是递增的
-                    article.setAuthorId(1);
+                    article.setAuthorId(count);
                     article.setThemeId(1);
                     article.setCreateTime(LocalDateTime.now());
                     article.setTitle(title);
                     article.setContent(content);
 
                     articles.add(article);
+                    count++;
                 }
             }
         }
