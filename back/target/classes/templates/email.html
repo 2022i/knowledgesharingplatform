@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all">Template for HTML email with inline image</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+        body {
+            font-size: 16px; /* 设置默认字体大小 */
+            line-height: 1.5; /* 设置行高 */
+        }
+        img {
+            width: 200px; /* 调整图片宽度 */
+            height: auto; /* 保持图片的宽高比 */
+        }
+        .code {
+            font-size: 24px; /* 设置验证码的字体大小 */
+            font-weight: bold; /* 设置验证码字体加粗 */
+        }
+    </style>
+</head>
+<body>
+<p>
+<!--    <img src="https://img.zcool.cn/community/019b615de70a5ba8012138534fa69f.jpg??imageMogr2/format/webp" />-->
+    <img class="src" th:src="${src}" />
+
+</p>
+<p>哦！我尊敬的用户。欢迎使用由我勒个DAMN团队开发的</p>
+<p>宇宙无敌第一的：项目考核系统</p>
+<p class="subject" th:text="${subject}">:</p>
+<p class="code" th:text="${code}"></p>
+<p>验证码有效期为一分钟，请尽快使用哦！</p>
+</body>
+</html>
