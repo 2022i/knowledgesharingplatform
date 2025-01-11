@@ -106,6 +106,13 @@ public class Response {
         return result;
     }
 
+    public static Response successWriteDraft() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("草稿提交成功");
+        return result;
+    }
+
     public static Response successApproveArticle() {
         Response result = new Response();
         result.setCode(200);
