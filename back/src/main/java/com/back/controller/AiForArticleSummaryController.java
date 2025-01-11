@@ -16,7 +16,7 @@ public class AiForArticleSummaryController {
     @Resource
     private AiForArticle aiForArticle;
 
-    @GetMapping("/summary")
+    @PostMapping ("/summary")
     @Description("使用ai生成文章概要，限制在150字以内")
     public String getSummary(@RequestBody String content){
         try {
@@ -29,7 +29,7 @@ public class AiForArticleSummaryController {
         return "获取文章概要失败";
     }
 
-    @GetMapping("/tags")
+    @PostMapping("/tags")
     @Description("使用AI生成文章关联知识，形如财经、人工智能等")
     public String getTags(@RequestBody String content){
         try {

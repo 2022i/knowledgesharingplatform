@@ -6,5 +6,5 @@ import java.util.List;
 
 @Service
 public interface IdsList {
-    public List<Integer> getIdsList(int id);
+     List<Integer> getIdsList(int id);
 }
