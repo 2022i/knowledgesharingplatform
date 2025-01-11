@@ -1,6 +1,7 @@
 package com.back.sentSystemMessage;
 
 import com.back.get.LastIdOperation;
+import com.back.index.Article;
 import com.back.index.Message;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
@@ -26,10 +27,6 @@ public abstract class SentMessage {
         setMessage(articleId, messageGeneratorId);
     }
     abstract protected void setMessageTitle();
-    protected UserData findAuthorDataByArticleId(int articleId){
-        int uerId=articleRepository.findArticleById(articleId).getAuthorId();
-        return userDataRepository.findUserDataById(uerId);
-    }
     protected void setMessage(int articleId, int messageGeneratorId){
         setMessageTitle();
         message.setId(lastIdOperation.getMessageId());
@@ -47,7 +44,12 @@ public abstract class SentMessage {
         userData.setMessageIds(messageList);
         userDataRepository.save(userData);
     }
+    protected UserData findAuthorDataByArticleId(int articleId){
+        return userDataRepository.findUserDataById(findAuthorIdByArticleId(articleId));
+    }
     private int findAuthorIdByArticleId(int articleId){
+        System.out.println(articleRepository.findArticleById(articleId).getAuthorId());
+        Article article=articleRepository.findArticleById(articleId);
         return articleRepository.findArticleById(articleId).getAuthorId();
     }
 }

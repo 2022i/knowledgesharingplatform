@@ -19,9 +19,6 @@ import java.util.Arrays;
 public class AiForArticle {
     @Resource
     private ArticleRepository articleRepository;
-    @Resource
-    private Article article;
-
     private static final String API_KEY = "sk-4bbb3c09ffea4106bbf07e0ee66d03b7";
     private static final String MODEL = "qwen-turbo";
     private static final String SYSTEM_MESSAGE = "You are a helpful assistant.";

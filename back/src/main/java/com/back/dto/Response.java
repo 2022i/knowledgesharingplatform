@@ -100,7 +100,7 @@ public class Response {
     public static Response successWriteArticle() {
         Response result = new Response();
         result.setCode(200);
-        result.setMsg("文章发布成功");
+        result.setMsg("文章提交成功，等待审核");
         return result;
     }
 

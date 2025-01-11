@@ -17,6 +17,7 @@ public class PersonalAchievementsPreparation {
     public PersonalAchievements getPersonalAchievements(int userId) {
         PersonalAchievements personalAchievements = new PersonalAchievements();
         personalAchievements.setWriteArticleCount(getWriteArticleCount(userId));
+        System.out.println("writeArticleCount: " + getWriteArticleCount(userId));
         personalAchievements.setSupportedCount(getSupportedCount(userId));
         personalAchievements.setOpposedCount(getOpposedCount(userId));
         personalAchievements.setSharedCount(getSharedCount(userId));
