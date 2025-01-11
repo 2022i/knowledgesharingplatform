@@ -24,7 +24,7 @@ public abstract class Login {
         } else if (!isPasswordCorrect(loginRequest.getPassword(),loginRequest.getUserUniqueIdentifier())) {
             return Response.errorPassword();
         }
-        return Response.successLogin(generateToken(loginRequest));
+        return Response.successLogin("token:"+generateToken(loginRequest)+"  userId:"+getUserId(loginRequest.getUserUniqueIdentifier()));
     }
 
     private String generateToken(LoginRequest loginRequest) {
@@ -37,4 +37,5 @@ public abstract class Login {
     private boolean isPasswordCorrect(String password,String userUniqueIdentifier) {
         return encode.matches(password, getPassword(userUniqueIdentifier));
     }
+    protected abstract int getUserId(String userUniqueIdentifier);
 }

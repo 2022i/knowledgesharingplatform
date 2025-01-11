@@ -13,4 +13,8 @@ public class LoginByEmail extends Login {
     protected String getPassword(String email) {
         return userRepository.findUserByEmail(email).getPassword();
     }
+    @Override
+    protected int getUserId(String email) {
+        return userRepository.findUserByEmail(email).getId();
+    }
 }

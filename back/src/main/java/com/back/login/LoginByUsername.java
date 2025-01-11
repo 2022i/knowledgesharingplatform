@@ -12,4 +12,8 @@ public class LoginByUsername extends Login {
     protected String getPassword(String username) {
         return userRepository.findUserByUsername(username).getPassword();
     }
+    @Override
+    protected int getUserId(String username) {
+        return userRepository.findUserByUsername(username).getId();
+    }
 }

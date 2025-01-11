@@ -62,10 +62,10 @@ public class Response {
         return result;
     }
 
-    public static Response successLogin(String token) {
+    public static Response successLogin(String message) {
         Response result = new Response();
         result.setCode(200);
-        result.setMsg(token);
+        result.setMsg(message);
         return result;
     }
 
