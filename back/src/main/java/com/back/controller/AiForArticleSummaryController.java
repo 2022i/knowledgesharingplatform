@@ -9,6 +9,8 @@ import jakarta.annotation.Resource;
 import jdk.jfr.Description;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ai")
 @CrossOrigin(origins = "*")
@@ -31,14 +33,13 @@ public class AiForArticleSummaryController {
 
     @PostMapping("/tags")
     @Description("使用AI生成文章关联知识，形如财经、人工智能等")
-    public String getTags(@RequestBody String content){
+    public List<String > getTags(@RequestBody String content){
         try {
-            GenerationResult result = aiForArticle.generateTags(content);
-            return result.getOutput().getChoices().get(0).getMessage().getContent();
+            return aiForArticle.generateTags(content);
         } catch (ApiException | NoApiKeyException | InputRequiredException e) {
             System.err.println("错误信息："+e.getMessage());
             System.out.println("请参考文档：https://help.aliyun.com/zh/model-studio/developer-reference/error-code");
         }
-        return "获取文章标签失败";
+        return null;
     }
 }

@@ -14,6 +14,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class AiForArticle {
@@ -29,8 +30,9 @@ public class AiForArticle {
         return generate(content, SUMMARY_PROMPT);
     }
 
-    public GenerationResult generateTags(String content) throws ApiException, NoApiKeyException, InputRequiredException {
-        return generate(content, TAGS_PROMPT);
+    public List<String> generateTags(String content) throws ApiException, NoApiKeyException, InputRequiredException {
+        GenerationResult result = generate(content, TAGS_PROMPT);
+        return Arrays.asList(result.getOutput().getChoices().get(0).getMessage().getContent().split("、"));
     }
 
     private GenerationResult generate(String content, String prompt) throws ApiException, NoApiKeyException, InputRequiredException {
