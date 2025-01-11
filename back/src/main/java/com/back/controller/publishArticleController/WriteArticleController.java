@@ -1,4 +1,4 @@
-package com.back.controller;
+package com.back.controller.publishArticleController;
 
 import com.back.dto.article.ArticleFromFront;
 import com.back.dto.Response;

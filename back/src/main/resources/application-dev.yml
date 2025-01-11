@@ -24,6 +24,7 @@ spring:
       - /ai/**
       - /userDeleteArticle/**
       - /getAllThemes/**
+      - /theme/**
 
   datasource:
     url: jdbc:mysql://localhost:3306/defect_management

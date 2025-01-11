@@ -1,6 +1,7 @@
 package com.back.repository;
 
 import com.back.index.Article;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -13,5 +14,6 @@ public interface ArticleRepository extends ElasticsearchRepository<Article, Inte
     List<Article> findArticlesByCheck(boolean check);
     void deleteArticleById(int id);
     List<Article> findArticlesByDelete(boolean delete);
-    List<Article> findAll();
+    @NotNull List<Article> findAll();
+    List<Article> findArticlesByThemeId(int themeId);
 }

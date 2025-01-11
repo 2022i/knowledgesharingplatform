@@ -1,4 +1,4 @@
-package com.back.controller;
+package com.back.controller.publishArticleController;
 
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
 import com.alibaba.dashscope.exception.ApiException;

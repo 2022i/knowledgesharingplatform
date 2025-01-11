@@ -1,8 +1,7 @@
-package com.back.controller.HomePageArticleController;
+package com.back.controller.homePageArticleController;
 
 import com.back.dto.Response;
 import com.back.get.HomePageArticle.PersonalizationArticleForUser;
-import com.back.get.HomePageArticle.PersonalizationArticleForVisitor;
 import com.back.get.HomePageArticle.PersonalizationArticleForVisitor;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;

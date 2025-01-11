@@ -1,4 +1,4 @@
-package com.back.controller.HomePageArticleController;
+package com.back.controller.homePageArticleController;
 
 
 import com.back.get.HomePageArticle.HotArticle;
