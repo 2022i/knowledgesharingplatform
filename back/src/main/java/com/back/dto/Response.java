@@ -6,6 +6,7 @@ import lombok.Data;
 public class Response {
     private int code;
     private String msg;
+    private String additionalInformation;
     public static Response successAddDataAndSentMessage() {
         Response result = new Response();
         result.setCode(200);
@@ -62,10 +63,11 @@ public class Response {
         return result;
     }
 
-    public static Response successLogin(String message) {
+    public static Response successLogin(String token, int userId) {
         Response result = new Response();
         result.setCode(200);
-        result.setMsg(message);
+        result.setMsg(token);
+        result.setAdditionalInformation(String.valueOf(userId));
         return result;
     }
 

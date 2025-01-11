@@ -24,7 +24,7 @@ public abstract class Login {
         } else if (!isPasswordCorrect(loginRequest.getPassword(),loginRequest.getUserUniqueIdentifier())) {
             return Response.errorPassword();
         }
-        return Response.successLogin("token:"+generateToken(loginRequest)+"  userId:"+getUserId(loginRequest.getUserUniqueIdentifier()));
+        return Response.successLogin(generateToken(loginRequest),getUserId(loginRequest.getUserUniqueIdentifier()));
     }
 
     private String generateToken(LoginRequest loginRequest) {
