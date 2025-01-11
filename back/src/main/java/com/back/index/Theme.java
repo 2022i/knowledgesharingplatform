@@ -12,7 +12,5 @@ public class Theme {
     @Id
     private int id;
     @Field(type=FieldType.Keyword)
-    private int FatherId;
-    @Field(type=FieldType.Keyword)
     private String name;
 }
