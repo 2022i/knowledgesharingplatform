@@ -16,4 +16,5 @@ public interface ArticleRepository extends ElasticsearchRepository<Article, Inte
     List<Article> findArticlesByDelete(boolean delete);
     @NotNull List<Article> findAll();
     List<Article> findArticlesByThemeId(int themeId);
+    List<Article> findArticlesByAuthorIdAndDraft(int authorId, boolean draft);
 }
