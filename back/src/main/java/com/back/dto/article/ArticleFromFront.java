@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class ArticleFromFront {
+    private int id;
     private int authorId;
     private int themeId;
     private String title;

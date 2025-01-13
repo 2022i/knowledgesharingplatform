@@ -7,13 +7,13 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ArticleDeletion {
+public class UndoSubmitDeleteRequest {
     @Resource
     private ArticleRepository articleRepository;
-    public Response deleteArticle(int articleId) {
+    public Response undoSubmitDeleteRequest(int articleId) {
         Article article=articleRepository.findArticleById(articleId);
-        article.setDelete(true);
+        article.setDelete(false);
         articleRepository.save(article);
-        return Response.successApplyDelete();
+        return Response.successUndoDelete();
     }
 }

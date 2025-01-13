@@ -106,6 +106,13 @@ public class Response {
         return result;
     }
 
+    public static Response successUpdateArticle() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("文章修改成功，等待审核");
+        return result;
+    }
+
     public static Response successWriteDraft() {
         Response result = new Response();
         result.setCode(200);
@@ -138,6 +145,13 @@ public class Response {
         Response result = new Response();
         result.setCode(200);
         result.setMsg("申请删除成功,等待审核");
+        return result;
+    }
+
+    public static Response successUndoDelete() {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg("撤销删除成功");
         return result;
     }
 
