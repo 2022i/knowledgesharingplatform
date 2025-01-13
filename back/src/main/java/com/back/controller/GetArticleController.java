@@ -14,7 +14,7 @@ public class GetArticleController {
     private RenderedArticleGet renderedArticleGet;
     @Description("获取前端渲染需要的文章数据")
     @GetMapping ("/getRenderedArticle")
-    public RenderedArticle getRenderedArticle(int articleId) {
+    public RenderedArticle getRenderedArticle(@RequestParam int articleId) {
         return renderedArticleGet.getRenderedArticle(articleId);
     }
 }
