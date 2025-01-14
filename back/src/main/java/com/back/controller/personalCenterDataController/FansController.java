@@ -20,6 +20,6 @@ public class FansController {
     @Description("个人中心接口，获取用户的粉丝列表，返回用户数据用于渲染")
     @GetMapping("/getFans")
     public List<ArticleAuthor> getFans(@RequestParam int userId) {
-        return userRenderingPreparation.getArticleAuthors(fansList.getUserDataList(userId));
+        return userRenderingPreparation.getArticleAuthors(fansList.getUserDataList(userId),userId);
     }
 }

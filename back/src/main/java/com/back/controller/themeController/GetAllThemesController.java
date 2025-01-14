@@ -4,11 +4,7 @@ import com.back.get.ThemesList;
 import com.back.index.Theme;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
