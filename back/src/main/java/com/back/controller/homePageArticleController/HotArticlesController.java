@@ -4,6 +4,7 @@ package com.back.controller.homePageArticleController;
 import com.back.dto.article.RenderedArticle;
 import com.back.get.HomePageArticle.HotArticle;
 import com.back.get.preparation.ArticleRenderingPreparation;
+import com.back.get.preparation.RenderedArticleBooleanSet;
 import com.back.index.Article;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;
@@ -19,12 +20,13 @@ public class HotArticlesController {
     private HotArticle hotArticle;
     @Resource
     private ArticleRenderingPreparation articleRenderingPreparation;
-
+    @Resource
+    private RenderedArticleBooleanSet renderedArticleBooleanSet;
     @GetMapping("/hotArticles")
     @Description("获取热门文章")
-    public List<RenderedArticle> getHotArticles(){
+    public List<RenderedArticle> getHotArticles(@RequestParam int userId){
         List<Article> articles = hotArticle.getHotArticles();
-        return articleRenderingPreparation.getRenderedArticles(articles);
+        return renderedArticleBooleanSet.setRenderedArticleBoolean(articleRenderingPreparation.getRenderedArticles(articles),userId);
     }
 }
 

@@ -1,7 +1,6 @@
 package com.back.sentSystemMessage;
 
 import com.back.get.LastIdOperation;
-import com.back.index.Article;
 import com.back.index.Message;
 import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
@@ -48,8 +47,6 @@ public abstract class SentMessage {
         return userDataRepository.findUserDataById(findAuthorIdByArticleId(articleId));
     }
     private int findAuthorIdByArticleId(int articleId){
-        System.out.println(articleRepository.findArticleById(articleId).getAuthorId());
-        Article article=articleRepository.findArticleById(articleId);
         return articleRepository.findArticleById(articleId).getAuthorId();
     }
 }

@@ -30,7 +30,7 @@ public abstract class RecommendedArticle {
         recommendedArticles = new ArrayList<>();
         int articleCount =articleRepository.findAll().size();
         int randomNum = new Random().nextInt(articleCount)+1;
-        int recommendArticlesCount=5;
+        int recommendArticlesCount=10;
         while (recommendArticlesCount>0){
             Article article=articleRepository.findArticleById(randomNum);
             if(isInsert(article,userData)){
@@ -42,7 +42,7 @@ public abstract class RecommendedArticle {
         // 去重并随机打乱推荐结果
         return recommendedArticles.stream()
                 .distinct()
-                .limit(5)  // 推荐10篇文章
+                .limit(10)  // 推荐10篇文章
                 .collect(Collectors.toList());
     }
     abstract void init(int userId);

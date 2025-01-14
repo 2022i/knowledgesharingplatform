@@ -28,7 +28,7 @@ public class FollowController {
     @PutMapping ("/followUser")
     public Response followUser(@RequestParam int userId, @RequestParam int followUserId) {
         followUser.followUser(userId,followUserId);
-        sentFollowMessage.sentFollowMessage(userId,followUserId);
+        sentFollowMessage.sentMessage(userId,followUserId);
         return Response.successAddDataAndSentMessage();
     }
 

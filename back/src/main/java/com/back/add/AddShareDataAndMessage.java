@@ -23,11 +23,12 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> shareUserIds = shareUserIdsList.getIdsList(articleId);
+        System.out.println(shareUserIds);
         if(shareUserIds.contains(userId)){
             return;
         }
         shareUserIds.add(userId);
-        article.setSupportUserIds(shareUserIds);
+        article.setShareUserIds(shareUserIds);
         articleRepository.save(article);
     }
     @Override

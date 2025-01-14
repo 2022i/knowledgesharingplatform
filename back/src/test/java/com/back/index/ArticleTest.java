@@ -25,11 +25,12 @@ public class ArticleTest {
                     Article article = new Article();
                     article.setId(i);
                     article.setAuthorId(1);
-                    article.setThemeId(i);
+                    article.setThemeId(1);
                     article.setSupportUserIds(count);
                     article.setCreateTime(LocalDateTime.now());
                     article.setTitle("Test Title " + (int)(Math.random()*100));
                     article.setContent("Test Content " + (int)(Math.random()*100));
+                    article.setCheck(true);
                     return article;
                 })
                 .collect(Collectors.toList());
@@ -53,9 +54,5 @@ public class ArticleTest {
                 })
                 .collect(Collectors.toList());
         articleRepository.saveAll(articles);
-    }
-    @Test
-    public void test1() {
-        System.out.println(articleRepository.findArticlesByContent("测试"));
     }
 }
