@@ -18,21 +18,10 @@
       <div class="content-left">
         <!-- 使用 v-loading 显示加载状态 -->
         <article-list 
-          :articles="articleStore.currentPageArticles"
-          v-loading="articleStore.loading"
+          :articles="articles"
+          :loading="loading"
+          @update:articles="articles = $event"
         />
-        
-        <!-- 分页器 -->
-        <div class="pagination">
-          <el-pagination
-            v-model:current-page="articleStore.currentPage"
-            :page-size="articleStore.pageSize"
-            :total="articleStore.total"
-            layout="prev, pager, next"
-            @current-change="handlePageChange"
-            background
-          />
-        </div>
       </div>
 
       <!-- 右侧边栏 -->
@@ -69,14 +58,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
-import { useArticleStore } from '../store/article'
 import ArticleList from '../components/ArticleList.vue'
+import request from '../utils/request'
+import { ElMessage } from 'element-plus'
 
-// 初始化 store
-const articleStore = useArticleStore()
+// 状态管理
 const activeTab = ref('recommend')
+const loading = ref(false)
+const articles = ref([])
+const currentPage = ref(1)
+const total = ref(0)
 
 // 内容分类标签
 const tabs = [
@@ -94,19 +87,78 @@ const hotTopics = ref([
   { id: 'management', name: '项目管理', count: 145 }
 ])
 
+// 获取用户ID
+const getUserId = () => {
+  const userInfo = localStorage.getItem('userInfo')
+  return userInfo ? JSON.parse(userInfo).id : 0
+}
+
+// 加载文章列表
+const loadArticles = async () => {
+  loading.value = true
+  try {
+    let response
+    const userId = getUserId()
+
+    // 根据不同的tab调用不同的接口
+    switch (activeTab.value) {
+      case 'follow':
+        response = await request.get('/server/getList/followArticles', {
+          params: { userId }
+        })
+        break
+      case 'recommend':
+        response = await request.get('/server/getList/recommendedArticlesUser', {
+          params: { userId }
+        })
+        break
+      case 'hot':
+        response = await request.get('/server/getList/hotArticles')
+        break
+    }
+
+    console.log('API Response:', response) // 添加日志
+
+    // 检查响应是否是数组
+    if (Array.isArray(response?.data)) {
+      articles.value = response.data
+      total.value = response.data.length
+      console.log('Articles loaded:', articles.value)
+    } else {
+      articles.value = []
+      total.value = 0
+      ElMessage.warning('暂无文章')
+    }
+  } catch (error) {
+    console.error('Failed to load articles:', error)
+    ElMessage.error('加载文章失败')
+    articles.value = []
+    total.value = 0
+  } finally {
+    loading.value = false
+  }
+}
+
 // 处理分页变化
 const handlePageChange = (page: number) => {
-  articleStore.setCurrentPage(page)
+  currentPage.value = page
   // 滚动到顶部
   window.scrollTo({
     top: 0,
     behavior: 'smooth'
   })
+  loadArticles()
 }
 
+// 监听标签切换
+watch(activeTab, () => {
+  currentPage.value = 1
+  loadArticles()
+})
+
 // 组件挂载时加载文章数据
-onMounted(async () => {
-  await articleStore.fetchArticles()
+onMounted(() => {
+  loadArticles()
 })
 
 // 确保组件被正确注册

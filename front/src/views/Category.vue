@@ -1,25 +1,43 @@
 <template>
   <div class="category-container">
     <!-- 分类标签列表 -->
-    <div class="category-tabs">
+    <div class="category-tabs" v-loading="themeStore.loading">
       <div 
-        v-for="category in categories" 
-        :key="category.value"
-        :class="['category-tab', { active: currentCategory === category.value }]"
-        @click="handleCategoryChange(category.value)"
+        v-for="theme in themeStore.getThemesWithCount" 
+        :key="theme.theme.id"
+        :class="['category-tab', { active: currentCategory === theme.theme.id.toString() }]"
+        @click="handleCategoryChange(theme.theme.id.toString())"
       >
-        <el-icon><component :is="category.icon" /></el-icon>
-        <span>{{ category.label }}</span>
-        <span class="article-count">({{ category.count }})</span>
+        <el-icon><component :is="getCategoryIcon(theme.theme.name)" /></el-icon>
+        <span>{{ theme.theme.name }}</span>
+        <span class="article-count">({{ theme.articleCount }})</span>
       </div>
     </div>
 
+    <!-- 错误提示 -->
+    <el-alert
+      v-if="themeStore.error"
+      :title="themeStore.error"
+      type="error"
+      show-icon
+      class="error-alert"
+    />
+
     <!-- 文章列表区域 -->
-    <div class="article-container">
-      <h2 class="category-title">
-        {{ getCurrentCategoryLabel() }}
-        <span class="category-desc">共{{ articleStore.total }}篇文章</span>
-      </h2>
+    <div class="article-container" v-if="!themeStore.error">
+      <div class="category-header">
+        <h2 class="category-title">
+          {{ getCurrentCategoryLabel() }}
+          <span class="category-desc">共{{ articleStore.total }}篇文章</span>
+        </h2>
+        
+        <!-- 排序选项 -->
+        <el-select v-model="sortBy" class="sort-select" size="small">
+          <el-option label="最新发布" value="latest" />
+          <el-option label="最多浏览" value="views" />
+          <el-option label="最多点赞" value="likes" />
+        </el-select>
+      </div>
       
       <article-list 
         :articles="articleStore.currentPageArticles"
@@ -28,16 +46,29 @@
       />
 
       <!-- 分页器 -->
-      <div class="pagination">
+      <div class="pagination" v-if="articleStore.total > 0">
         <el-pagination
           v-model:current-page="articleStore.currentPage"
           :page-size="articleStore.pageSize"
           :total="articleStore.total"
-          layout="prev, pager, next"
+          :page-sizes="[10, 20, 50]"
+          layout="sizes, prev, pager, next, total"
           @current-change="handlePageChange"
+          @size-change="handleSizeChange"
           background
         />
       </div>
+
+      <!-- 无数据提示 -->
+      <el-empty
+        v-else
+        description="暂无文章"
+        :image-size="200"
+      >
+        <template #description>
+          <p>该分类下暂无文章</p>
+        </template>
+      </el-empty>
     </div>
   </div>
 </template>
@@ -56,26 +87,36 @@ import {
   TrendCharts
 } from '@element-plus/icons-vue'
 import ArticleList from '../components/ArticleList.vue'
-import { useArticleStore } from '../store/article'
+import { useUserArticleStore } from '../store/userArticle'
+import { useThemeStore } from '../store/theme'
 
 const route = useRoute()
 const router = useRouter()
-const articleStore = useArticleStore()
+const articleStore = useUserArticleStore()
+const themeStore = useThemeStore()
 
-// 分类列表
-const categories = [
-  { label: '前端开发', value: 'frontend', icon: 'Monitor', count: 328 },
-  { label: '后端开发', value: 'backend', icon: 'DataLine', count: 256 },
-  { label: '人工智能', value: 'ai', icon: 'Connection', count: 198 },
-  { label: '运维部署', value: 'devops', icon: 'Setting', count: 167 },
-  { label: '产品设计', value: 'design', icon: 'Promotion', count: 145 },
-  { label: '项目管理', value: 'management', icon: 'Management', count: 134 },
-  { label: '职场经验', value: 'career', icon: 'Briefcase', count: 123 },
-  { label: '数据分析', value: 'data', icon: 'TrendCharts', count: 112 }
-]
+// 排序方式
+const sortBy = ref('latest')
 
 // 当前选中的分类
-const currentCategory = ref(route.query.category as string || 'frontend')
+const currentCategory = ref(route.query.category?.toString() || '')
+
+// 分类图标映射
+const categoryIcons: Record<string, any> = {
+  '前端开发': Monitor,
+  '后端开发': DataLine,
+  '人工智能': Connection,
+  '运维部署': Setting,
+  '产品设计': Promotion,
+  '项目管理': Management,
+  '职场经验': Briefcase,
+  '数据分析': TrendCharts
+}
+
+// 获取分类图标
+const getCategoryIcon = (categoryName: string) => {
+  return categoryIcons[categoryName] || Monitor
+}
 
 // 处理分类切换
 const handleCategoryChange = (category: string) => {
@@ -91,8 +132,8 @@ const handleCategoryChange = (category: string) => {
 
 // 获取当前分类的标签文本
 const getCurrentCategoryLabel = () => {
-  const category = categories.find(c => c.value === currentCategory.value)
-  return category ? category.label : '全部文章'
+  const currentTheme = themeStore.findThemeById(Number(currentCategory.value))
+  return currentTheme ? currentTheme.name : '全部文章'
 }
 
 // 处理分页变化
@@ -106,11 +147,19 @@ const handlePageChange = (page: number) => {
   })
 }
 
+// 处理每页数量变化
+const handleSizeChange = (size: number) => {
+  articleStore.setPageSize(size)
+  loadArticles()
+}
+
 // 加载文章
 const loadArticles = async () => {
-  await articleStore.fetchArticles({
-    category: currentCategory.value
-  })
+  const params = {
+    category: currentCategory.value,
+    sortBy: sortBy.value === 'latest' ? 'time' : sortBy.value === 'views' ? 'views' : 'likes'
+  }
+  await articleStore.fetchArticles(params)
 }
 
 // 处理评论添加
@@ -123,89 +172,151 @@ const handleCommentAdded = ({ articleId, comment }: any) => {
 watch(
   () => route.query.category,
   (newCategory) => {
-    if (newCategory && newCategory !== currentCategory.value) {
-      currentCategory.value = newCategory as string
+    if (newCategory !== currentCategory.value) {
+      currentCategory.value = newCategory?.toString() || ''
       loadArticles()
     }
   }
 )
 
-// 组件挂载时加载文章
-onMounted(() => {
+// 监听排序方式变化
+watch(sortBy, () => {
   loadArticles()
+})
+
+// 组件挂载时加载数据
+onMounted(async () => {
+  try {
+    await themeStore.fetchAllThemes()
+    // 如果URL中没有指定分类，使用第一个分类
+    if (!currentCategory.value && themeStore.getAllThemes.length > 0) {
+      currentCategory.value = themeStore.getAllThemes[0].id.toString()
+    }
+    await loadArticles()
+  } catch (error) {
+    console.error('Failed to load initial data:', error)
+  }
 })
 </script>
 
 <style scoped>
 .category-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 .category-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 32px;
-  padding: 16px;
+  padding: 20px;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
 }
 
 .category-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border-radius: 6px;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .category-tab:hover {
-  background-color: #f6f8fa;
-  color: #056de8;
+  background-color: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-7);
+  transform: translateY(-1px);
 }
 
 .category-tab.active {
-  background-color: #e8f3ff;
-  color: #056de8;
+  background-color: var(--el-color-primary-light-8);
+  border-color: var(--el-color-primary);
+  color: var(--el-color-primary);
+}
+
+.category-tab .el-icon {
+  font-size: 20px;
 }
 
 .article-count {
-  color: #8590a6;
+  color: var(--el-text-color-secondary);
   font-size: 13px;
-  margin-left: 4px;
+  margin-left: auto;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .category-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
-  color: #121212;
-  margin: 0 0 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  color: var(--el-text-color-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .category-desc {
   font-size: 14px;
-  color: #8590a6;
+  color: var(--el-text-color-secondary);
   font-weight: normal;
-  margin-left: 12px;
 }
 
 .article-container {
   background: #fff;
   padding: 24px;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
 }
 
 .pagination {
-  margin-top: 24px;
+  margin-top: 32px;
   display: flex;
   justify-content: center;
+}
+
+.error-alert {
+  margin-bottom: 24px;
+}
+
+.sort-select {
+  width: 120px;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .category-container {
+    padding: 16px;
+  }
+
+  .category-tabs {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    padding: 16px;
+  }
+
+  .category-tab {
+    padding: 12px;
+  }
+
+  .category-title {
+    font-size: 20px;
+  }
+
+  .article-container {
+    padding: 16px;
+  }
 }
 </style> 

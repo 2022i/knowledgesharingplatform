@@ -44,51 +44,47 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChatLineRound } from '@element-plus/icons-vue'
+import { useCommentStore } from '../store/comment'
+import type { Comment } from '../store/comment'
 import BaseComment from './BaseComment.vue'
 
 interface Props {
   articleId: number
-  comments: any[] // 使用实际的评论类型
-  commentCount: number
 }
 
 const props = defineProps<Props>()
 const router = useRouter()
+const commentStore = useCommentStore()
 
 // 控制评论预览的显示
 const showComments = ref(false)
 
 // 获取前3条根评论
 const topComments = computed(() => {
-  return props.comments
-    .filter(comment => !comment.fatherId)
-    .slice(0, 3)
+  return commentStore.getRootComments(props.articleId).slice(0, 3)
 })
 
-// 获取子评论
-const getChildComments = (parentId: number) => {
-  return props.comments.filter(comment => comment.fatherId === parentId)
-}
+// 获取评论总数
+const commentCount = computed(() => {
+  return commentStore.getCommentCount(props.articleId)
+})
 
 // 切换评论显示
-const toggleComments = () => {
+const toggleComments = async () => {
+  if (!showComments.value) {
+    await commentStore.fetchArticleRootComments(props.articleId)
+  }
   showComments.value = !showComments.value
-}
-
-// 处理回复添加
-const handleReplyAdded = (comment: any) => {
-  // TODO: 处理新回复的添加
-  emit('reply-added', comment)
-}
-
-// 处理展开更多回复
-const handleExpandReplies = (comment: any) => {
-  // 点击展开更多时直接跳转到文章详情页
-  router.push(`/article/${props.articleId}`)
 }
 
 // 查看全部评论
 const viewAllComments = () => {
+  router.push(`/article/${props.articleId}`)
+}
+
+// 处理展开更多回复
+const handleExpandReplies = (comment: Comment) => {
+  // 点击展开更多时直接跳转到文章详情页
   router.push(`/article/${props.articleId}`)
 }
 

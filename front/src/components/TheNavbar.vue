@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Search, User, SwitchButton } from '@element-plus/icons-vue'
 import { useAuth } from '../composables/useAuth'
@@ -80,10 +80,27 @@ const handleSearch = () => {
   if (searchQuery.value.trim()) {
     router.push({
       path: '/search',
-      query: { q: searchQuery.value }
+      query: { 
+        q: searchQuery.value,
+        type: 'articles',  // 默认搜索文章
+        sort: 'default'    // 默认排序方式
+      }
     })
+    // 搜索后清空导航栏搜索框
+    searchQuery.value = ''
   }
 }
+
+// 监听路由变化，同步搜索框状态
+watch(
+  () => route.path,
+  (newPath) => {
+    // 如果不是搜索页面，清空搜索框
+    if (newPath !== '/search') {
+      searchQuery.value = ''
+    }
+  }
+)
 
 // 处理下拉菜单命令
 const handleCommand = async (command: string) => {

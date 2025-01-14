@@ -12,22 +12,6 @@
       <div class="login-box">
         <h2 class="login-type">账号登录</h2>
 
-        <!-- 登录方式切换 -->
-        <div class="login-tabs">
-          <div
-            :class="['tab-item', { active: loginForm.loginType === 'email' }]"
-            @click="toggleLoginType"
-          >
-            邮箱登录
-          </div>
-          <div
-            :class="['tab-item', { active: loginForm.loginType === 'username' }]"
-            @click="toggleLoginType"
-          >
-            用户名登录
-          </div>
-        </div>
-
         <!-- 登录表单 -->
         <el-form
           ref="loginFormRef"
@@ -35,6 +19,30 @@
           :rules="rules"
           class="login-form"
         >
+          <!-- 角色选择 -->
+          <el-form-item>
+            <el-radio-group v-model="loginForm.role" @change="handleRoleChange">
+              <el-radio-button value="user">普通用户</el-radio-button>
+              <el-radio-button value="admin">管理员</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+
+          <!-- 登录方式切换 -->
+          <div class="login-tabs">
+            <div
+              :class="['tab-item', { active: loginForm.loginType === 'email' }]"
+              @click="toggleLoginType"
+            >
+              邮箱登录
+            </div>
+            <div
+              :class="['tab-item', { active: loginForm.loginType === 'username' }]"
+              @click="toggleLoginType"
+            >
+              用户名登录
+            </div>
+          </div>
+
           <!-- 邮箱/用户名输入框 -->
           <el-form-item prop="userUniqueIdentifier">
             <el-input
@@ -43,7 +51,7 @@
               :prefix-icon="loginForm.loginType === 'email' ? MessageIcon : UserIcon"
             />
           </el-form-item>
-          
+
           <!-- 密码输入框 -->
           <el-form-item prop="password">
             <el-input
@@ -57,13 +65,13 @@
 
           <!-- 登录按钮 -->
           <el-form-item>
-            <el-button 
-              type="primary" 
-              class="login-button" 
+            <el-button
+              type="primary"
+              class="login-button"
               :loading="loading"
               @click="handleLogin"
             >
-              登录
+              {{ loading ? '登录中...' : '登录' }}
             </el-button>
           </el-form-item>
         </el-form>
@@ -72,29 +80,6 @@
         <div class="form-footer">
           <router-link to="/register" class="register-link">注册账号</router-link>
           <el-link type="primary">忘记密码？</el-link>
-        </div>
-      </div>
-
-      <!-- 测试账号信息 -->
-      <div class="test-account">
-        <p class="test-title">测试账号：</p>
-        <div class="test-info">
-          <p>普通用户：test@example.com / 123456</p>
-          <p>管理员：admin@example.com / admin123</p>
-          <el-button 
-            type="primary" 
-            link 
-            @click="useTestAccount('user')"
-          >
-            使用用户账号
-          </el-button>
-          <el-button 
-            type="primary" 
-            link 
-            @click="useTestAccount('admin')"
-          >
-            使用管理员账号
-          </el-button>
         </div>
       </div>
     </div>
@@ -121,7 +106,8 @@ const loading = ref(false)
 const loginForm = ref({
   userUniqueIdentifier: '',
   password: '',
-  loginType: 'email' as 'email' | 'username'
+  loginType: 'email' as 'email' | 'username',
+  role: 'user' as 'user' | 'admin'
 })
 
 // 表单验证规则
@@ -152,65 +138,43 @@ const toggleLoginType = () => {
   }
 }
 
-/**
- * 处理登录逻辑
- */
+// 处理角色切换
+const handleRoleChange = () => {
+  console.log('当前选择的角色:', loginForm.value.role)
+}
+
+// 处理登录
 const handleLogin = async () => {
   if (!loginFormRef.value) return
-  
+
   try {
     await loginFormRef.value.validate()
     loading.value = true
     
-    // 调用登录接口
-    const { role, user } = await login(loginForm.value)
-    
-    // 登录成功提示
-    ElMessage({
-      type: 'success',
-      message: `欢迎回来，${user?.name || ''}`,
-      duration: 1500
+    console.log('开始登录请求:', {
+      identifier: loginForm.value.userUniqueIdentifier,
+      loginType: loginForm.value.loginType,
+      role: loginForm.value.role
     })
 
-    // 获取重定向地址
-    const redirect = route.query.redirect as string
-    const defaultPath = role === 'admin' ? '/admin/dashboard' : '/home'
-    const targetPath = redirect || defaultPath
-
-    // 等待消息显示后再跳转
-    setTimeout(async () => {
-      try {
-        await router.replace(targetPath)
-      } catch (error) {
-        console.error('路由跳转失败：', error)
-        window.location.href = targetPath
+    // 调用登录接口
+    const success = await login(loginForm.value)
+    
+    if (success) {
+      ElMessage.success('登录成功')
+      // 根据角色跳转到不同的页面
+      if (loginForm.value.role === 'admin') {
+        await router.push('/admin/articles')
+      } else {
+        await router.push('/home')
       }
-    }, 1500)
-  } catch (error) {
+    }
+  } catch (error: any) {
+    console.error('登录失败:', error)
+    ElMessage.error(error.message || '登录失败，请重试')
+  } finally {
     loading.value = false
-    console.error('登录失败：', error)
   }
-}
-
-// 测试账号数据
-const testAccounts = {
-  user: {
-    userUniqueIdentifier: 'test@example.com',
-    password: '123456',
-    loginType: 'email' as const
-  },
-  admin: {
-    userUniqueIdentifier: 'admin@example.com',
-    password: 'admin123',
-    loginType: 'email' as const
-  }
-}
-
-/**
- * 一键填写测试账号
- */
-const useTestAccount = (type: 'user' | 'admin') => {
-  loginForm.value = { ...testAccounts[type] }
 }
 </script>
 
@@ -358,5 +322,18 @@ const useTestAccount = (type: 'user' | 'admin') => {
 
 .test-info .el-button {
   align-self: flex-start;
+}
+
+/* 添加角色选择样式 */
+.el-radio-group {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.el-radio-button {
+  flex: 1;
+  text-align: center;
 }
 </style>

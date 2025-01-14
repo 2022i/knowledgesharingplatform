@@ -1,502 +1,444 @@
 <template>
   <div class="article-detail">
-    <div class="article-main">
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-wrapper">
+      <el-skeleton :rows="10" animated />
+    </div>
+    
+    <!-- 文章内容 -->
+    <template v-else-if="article">
+      <!-- 文章头部信息 -->
       <div class="article-header">
         <h1 class="article-title">{{ article.title }}</h1>
         <div class="article-meta">
-          <div class="author-info">
-            <el-avatar :size="40" :src="article.author.avatar" />
-            <div class="author-detail">
-              <div class="author-name">{{ article.author.name }}</div>
-              <div class="publish-time">
-                发布于 {{ article.createTime }}
-                <span v-if="article.updateTime">· 更新于 {{ article.updateTime }}</span>
-              </div>
+          <div class="meta-left">
+            <div class="author-info">
+              <el-avatar :size="32" :src="article.Author?.avatar">
+                {{ article.Author?.username?.charAt(0).toUpperCase() }}
+              </el-avatar>
+              <span class="author-name">{{ article.Author?.username }}</span>
             </div>
+            <el-tag size="small" type="info">{{ article.theme }}</el-tag>
+            <span class="publish-time">{{ formatTime(article.createTime) }}</span>
+          </div>
+          <div class="meta-right">
+            <span class="stat-item">
+              <el-icon><View /></el-icon>
+              {{ formatNumber(article.viewUserCount) }}
+            </span>
           </div>
         </div>
-      </div>
-
-      <div class="article-content" v-html="article.content"></div>
-
-      <!-- 评论区域 -->
-      <div id="comments" class="article-comments">
-        <h3 class="comments-title">评论 {{ article.comments?.length || 0 }}</h3>
         
-        <!-- 评论输入框 -->
-        <div class="comment-input">
-          <el-avatar :size="40" :src="currentUser?.avatar" />
-          <div class="input-wrapper">
-            <el-input
-              v-model="commentContent"
-              type="textarea"
-              :rows="2"
-              placeholder="写下你的评论..."
-              :maxlength="500"
-              show-word-limit
-            />
-            <div class="input-actions">
-              <el-button type="primary" @click="submitComment">发表评论</el-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 评论列表 -->
-        <div class="comments-list">
-          <BaseComment
-            v-for="comment in rootComments"
-            :key="comment.id"
-            :comment="comment"
-            :child-comments="getChildComments(comment.id)"
-            mode="full"
-            @reply-added="handleReplyAdded"
-          />
-        </div>
-
-        <!-- 加载更多 -->
-        <div v-if="hasMore" class="load-more">
-          <el-button link @click="loadMore">加载更多评论</el-button>
+        <!-- 知识标签 -->
+        <div v-if="article.relatedKnowledge?.length" class="knowledge-tags">
+          <el-tag
+            v-for="tag in article.relatedKnowledge"
+            :key="tag"
+            size="small"
+            effect="plain"
+            class="knowledge-tag"
+          >
+            {{ tag }}
+          </el-tag>
         </div>
       </div>
-    </div>
 
-    <div class="article-sidebar">
-      <div class="author-card">
-        <div class="author-header">
-          <el-avatar :size="50" :src="article.author.avatar" />
-          <div class="author-info">
-            <div class="author-name">{{ article.author.name }}</div>
-            <div class="author-bio">{{ article.author.bio || '这个作者很懒，还没有写简介' }}</div>
-          </div>
+      <!-- 文章正文 -->
+      <div class="article-content markdown-body" v-html="processContent(article.content)"></div>
+
+      <!-- 文章底部操作栏 -->
+      <div class="article-actions">
+        <div class="action-buttons">
+          <!-- 点赞 -->
+          <el-button 
+            :type="article.support ? 'primary' : 'default'"
+            :icon="CaretTop"
+            @click="handleSupport"
+          >
+            {{ article.support ? '已点赞' : '点赞' }}
+            <span class="count">{{ formatNumber(article.supportUserCount) }}</span>
+          </el-button>
+
+          <!-- 反对 -->
+          <el-button
+            :type="article.oppose ? 'danger' : 'default'"
+            :icon="CaretBottom"
+            @click="handleOppose"
+          >
+            {{ article.oppose ? '已反对' : '反对' }}
+            <span class="count">{{ formatNumber(article.opposeUserCount) }}</span>
+          </el-button>
+
+          <!-- 收藏 -->
+          <el-button
+            :type="article.collect ? 'warning' : 'default'"
+            :icon="Star"
+            @click="handleCollect"
+          >
+            {{ article.collect ? '已收藏' : '收藏' }}
+            <span class="count">{{ formatNumber(article.collectionUserCount) }}</span>
+          </el-button>
+
+          <!-- 分享 -->
+          <el-button
+            :icon="Share"
+            @click="handleShare"
+          >
+            分享
+            <span class="count">{{ formatNumber(article.shareUserCount) }}</span>
+          </el-button>
         </div>
-        <div class="author-stats">
-          <div class="stat-item">
-            <div class="stat-value">{{ authorArticleCount }}</div>
-            <div class="stat-label">文章</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">{{ authorFansCount }}</div>
-            <div class="stat-label">粉丝</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">{{ authorTotalLikes }}</div>
-            <div class="stat-label">获赞</div>
-          </div>
-        </div>
-        <el-button 
-          type="primary" 
-          class="follow-button"
-          :class="{ 'is-following': isFollowing }"
-          @click="handleFollow"
-        >
-          {{ isFollowing ? '已关注' : '关注作者' }}
-        </el-button>
       </div>
-    </div>
+
+      <!-- 评论区 -->
+      <div id="comments" class="comments-section">
+        <ArticleComments :article-id="articleId" />
+      </div>
+    </template>
+
+    <!-- 加载失败 -->
+    <el-empty 
+      v-else 
+      description="文章加载失败" 
+      :image-size="200"
+    >
+      <el-button type="primary" @click="loadArticle">重试</el-button>
+    </el-empty>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useArticleStore } from '../store/article'
-import type { Article } from '../types/article'
-import BaseComment from '../components/BaseComment.vue'
+import { ElMessage } from 'element-plus'
+import { View, CaretTop, CaretBottom, Star, Share } from '@element-plus/icons-vue'
+import request from '../utils/request'
+import { useUserArticleStore } from '../store/userArticle'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
+import ArticleComments from '../components/ArticleComments.vue'
+
+dayjs.extend(relativeTime)
+dayjs.locale('zh-cn')
 
 const route = useRoute()
 const router = useRouter()
-const articleStore = useArticleStore()
+const articleStore = useUserArticleStore()
 
+// 文章ID
+const articleId = Number(route.params.id)
+
+// 加载状态
+const loading = ref(true)
 // 文章数据
-const article = ref<Article>({
-  id: 0,
-  title: '',
-  content: '',
-  excerpt: '',
-  createTime: '',
-  authorId: 0,
-  themeId: 0,
-  relatedKnowledgeId: [],
-  collectionUserIds: [],
-  shareUserIds: [],
-  supportUserIds: [],
-  opposeUserIds: [],
-  viewUserIds: [],
-  commentIds: [],
-  comments: [],
-  author: {
-    id: 0,
-    name: '',
-    avatar: '',
-    bio: '',
-    writeArticleIds: [],
-    fansId: [],
-    articles: 0,
-    followers: 0,
-    likes: 0
-  }
-})
+const article = ref<any>(null)
 
 // 加载文章数据
 const loadArticle = async () => {
-  const articleId = Number(route.params.id)
-  if (!articleId) return
-
-  // 从 store 中查找文章
-  const foundArticle = articleStore.articles.find(a => a.id === articleId) ||
-                      articleStore.draftArticles.find(a => a.id === articleId)
-  
-  if (!foundArticle) {
-    // 如果找不到文章，跳转到 404 页面
-    router.push('/404')
-    return
-  }
-
-  // 如果是草稿且不是作者本人，不允许查看
-  if (foundArticle.status === 'draft' && foundArticle.author.id !== 1) { // TODO: 替换为实际的用户ID
-    router.push('/404')
-    return
-  }
-
-  article.value = {
-    ...foundArticle,
-    favorites: 1234 // 模拟数据
-  }
-}
-
-// 评论相关状态和方法
-const commentContent = ref('')
-const currentUser = ref({
-  id: 1,
-  username: '当前用户',
-  followUserId: [] as number[]
-})
-
-// 检查是否已关注作者
-const isFollowing = computed(() => {
-  return currentUser.value.followUserId.includes(article.value.author.id)
-})
-
-// 获取作者的文章总数
-const authorArticleCount = computed(() => {
-  return article.value.author.writeArticleIds?.length || 0
-})
-
-// 获取作者的粉丝数量
-const authorFansCount = computed(() => {
-  return article.value.author.fansId?.length || 0
-})
-
-// 获取作者获得的总点赞数
-const authorTotalLikes = computed(() => {
-  // 这里应该是从所有文章中统计点赞数
-  // 暂时返回模拟数据
-  return 1234
-})
-
-// 处理关注作者
-const handleFollow = () => {
-  const authorId = article.value.author.id
-  
-  if (isFollowing.value) {
-    // 取消关注
-    currentUser.value.followUserId = currentUser.value.followUserId.filter(id => id !== authorId)
-    article.value.author.fansId = article.value.author.fansId.filter(id => id !== currentUser.value.id)
-    ElMessage.success('已取消关注')
-  } else {
-    // 添加关注
-    currentUser.value.followUserId.push(authorId)
-    if (!article.value.author.fansId) {
-      article.value.author.fansId = []
-    }
-    article.value.author.fansId.push(currentUser.value.id)
-    ElMessage.success('关注成功')
-  }
-}
-
-// 分页相关
-const page = ref(1)
-const pageSize = ref(20)
-const hasMore = ref(true)
-
-// 获取根评论
-const rootComments = computed(() => {
-  const comments = article.value.comments
-  return Array.isArray(comments) ? comments.filter(comment => !comment.fatherId) : []
-})
-
-// 获取子评论
-const getChildComments = (parentId: number) => {
-  const comments = article.value.comments
-  return Array.isArray(comments) ? comments.filter(comment => comment.fatherId === parentId) : []
-}
-
-// 提交评论
-const submitComment = async () => {
-  if (!commentContent.value.trim()) {
-    return ElMessage.warning('请输入评论内容')
-  }
-
+  loading.value = true
   try {
-    // TODO: 调用API提交评论
-    const newComment = {
-      id: Date.now(),
-      fatherId: null,
-      userId: currentUser.value.id,
-      articleId: article.value.id,
-      content: commentContent.value,
-      createTime: new Date().toISOString(),
-      user: currentUser.value
-    }
-
-    // 确保 comments 是数组
-    if (!Array.isArray(article.value.comments)) {
-      article.value.comments = []
-    }
-
-    // 添加到评论列表
-    article.value.comments.unshift(newComment)
-    
-    // 更新评论数量
-    if (article.value.commentCount !== undefined) {
-      article.value.commentCount++
-    }
-    
-    // 清空输入框
-    commentContent.value = ''
-    ElMessage.success('评论成功')
+    const response = await request.get('/server/getRenderedArticle', {
+      params: { articleId }
+    })
+    article.value = response.data
   } catch (error) {
-    console.error('提交评论失败:', error)
-    ElMessage.error('评论失败，请重试')
+    console.error('Failed to load article:', error)
+    ElMessage.error('文章加载失败，请重试')
+    article.value = null
+  } finally {
+    loading.value = false
   }
 }
 
-// 处理回复
-const handleReplyAdded = (comment: any) => {
-  if (!Array.isArray(article.value.comments)) {
-    article.value.comments = []
+// 格式化数字
+const formatNumber = (num: number) => {
+  if (num >= 10000) {
+    return (num / 10000).toFixed(1) + 'w'
   }
-  
-  // 添加用户信息到评论
-  const newComment = {
-    ...comment,
-    user: currentUser.value
-  }
-  
-  // 添加到评论列表
-  article.value.comments.push(newComment)
-  
-  // 更新评论数量
-  if (article.value.commentCount !== undefined) {
-    article.value.commentCount++
-  }
-  
-  // 显示成功提示
-  ElMessage.success('回复成功')
+  return num.toString()
 }
 
-// 加载更多评论
-const loadMore = async () => {
+// 格式化时间
+const formatTime = (time: string) => {
+  return dayjs(time).fromNow()
+}
+
+// 处理点赞
+const handleSupport = async () => {
   try {
-    // TODO: 调用API加载更多评论
-    page.value++
-    // 模拟没有更多数据
-    if (page.value > 3) {
-      hasMore.value = false
-    }
+    await articleStore.toggleSupport(articleId)
+    // 重新加载文章数据以更新状态
+    loadArticle()
   } catch (error) {
-    console.error('加载更多评论失败:', error)
-    ElMessage.error('加载失败，请重试')
+    console.error('Failed to toggle support:', error)
+    ElMessage.error('操作失败，请重试')
   }
 }
 
+// 处理反对
+const handleOppose = async () => {
+  try {
+    await articleStore.toggleOppose(articleId)
+    // 重新加载文章数据以更新状态
+    loadArticle()
+  } catch (error) {
+    console.error('Failed to toggle oppose:', error)
+    ElMessage.error('操作失败，请重试')
+  }
+}
+
+// 处理收藏
+const handleCollect = async () => {
+  try {
+    await articleStore.toggleCollect(articleId)
+    // 重新加载文章数据以更新状态
+    loadArticle()
+  } catch (error) {
+    console.error('Failed to toggle collect:', error)
+    ElMessage.error('操作失败，请重试')
+  }
+}
+
+// 处理分享
+const handleShare = async () => {
+  try {
+    await articleStore.shareArticle(articleId)
+    // 重新加载文章数据以更新状态
+    loadArticle()
+  } catch (error) {
+    console.error('Failed to share article:', error)
+    ElMessage.error('分享失败，请重试')
+  }
+}
+
+// 处理文章内容
+const processContent = (content: string) => {
+  if (!content) return ''
+  
+  // 创建临时DOM元素
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = content
+  
+  // 移除分页相关元素
+  const paginationElements = tempDiv.querySelectorAll(
+    '.el-pagination, [class*="el-pagination"], .pagination, .pager, nav[role="navigation"]'
+  )
+  paginationElements.forEach(el => el.remove())
+  
+  return tempDiv.innerHTML
+}
+
+// 组件挂载时加载文章数据
 onMounted(() => {
+  if (!articleId) {
+    ElMessage.error('无效的文章ID')
+    router.push('/')
+    return
+  }
   loadArticle()
 })
 </script>
 
 <style scoped>
 .article-detail {
-  max-width: 1140px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 20px;
+  padding: 24px;
+  background: var(--el-bg-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.article-main {
-  background: #fff;
-  padding: 32px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
+.loading-wrapper {
+  padding: 24px;
+}
+
+.article-header {
+  margin-bottom: 32px;
 }
 
 .article-title {
+  margin: 0 0 16px;
   font-size: 28px;
   font-weight: 600;
-  margin: 0 0 24px;
-  color: #121212;
+  line-height: 1.4;
+  color: var(--el-text-color-primary);
 }
 
 .article-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
+}
+
+.meta-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.meta-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .author-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.author-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .author-name {
   font-size: 16px;
   font-weight: 500;
-  color: #121212;
+  color: var(--el-text-color-primary);
 }
 
 .publish-time {
   font-size: 14px;
-  color: #8590a6;
+  color: var(--el-text-color-secondary);
 }
 
-.article-content {
-  font-size: 16px;
-  line-height: 1.8;
-  color: #121212;
-}
-
-.article-footer {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.article-tags {
+.knowledge-tags {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-}
-
-.article-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.author-card {
-  background: #fff;
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
-}
-
-.author-header {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.author-bio {
-  font-size: 14px;
-  color: #8590a6;
-  margin-top: 4px;
-  line-height: 1.5;
-}
-
-.author-stats {
-  display: flex;
-  justify-content: space-around;
-  margin: 20px 0;
-  text-align: center;
-}
-
-.stat-item {
-  flex: 1;
-  padding: 0 8px;
-  border-right: 1px solid #f0f0f0;
-}
-
-.stat-item:last-child {
-  border-right: none;
-}
-
-.stat-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #121212;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #8590a6;
-  margin-top: 4px;
-}
-
-.follow-button {
-  width: 100%;
-  transition: all 0.3s;
-}
-
-.follow-button.is-following {
-  background-color: #f0f0f0;
-  border-color: #f0f0f0;
-  color: #8590a6;
-}
-
-.follow-button.is-following:hover {
-  background-color: #ff4d4f;
-  border-color: #ff4d4f;
-  color: #fff;
-}
-
-.follow-button.is-following:hover::after {
-  content: '取消关注';
-}
-
-.article-comments {
-  margin-top: 40px;
-  padding-top: 32px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.comments-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #121212;
-  margin: 0 0 24px;
-}
-
-.comment-input {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.input-wrapper {
-  flex: 1;
-}
-
-.input-actions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.comments-list {
   margin-bottom: 24px;
 }
 
-.load-more {
-  text-align: center;
-  margin-top: 24px;
+.article-content {
+  margin-bottom: 32px;
+  line-height: 1.8;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.article-actions {
+  margin-bottom: 32px;
+  padding: 16px 0;
+  border-top: 1px solid var(--el-border-color-light);
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.action-buttons .el-button {
+  min-width: 100px;
+}
+
+.count {
+  margin-left: 4px;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+
+.comments-section {
+  margin-top: 32px;
+}
+
+:deep(.article-content) {
+  font-size: 16px;
+  color: var(--el-text-color-primary);
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin: 24px 0 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+  h4 { font-size: 18px; }
+  h5, h6 { font-size: 16px; }
+
+  p {
+    margin: 16px 0;
+    line-height: 1.8;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 16px 0;
+  }
+
+  a {
+    color: var(--el-color-primary);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  ul, ol {
+    margin: 16px 0;
+    padding-left: 24px;
+  }
+
+  li {
+    margin: 8px 0;
+  }
+
+  blockquote {
+    margin: 16px 0;
+    padding: 8px 16px;
+    border-left: 4px solid var(--el-color-primary-light-7);
+    background-color: var(--el-color-primary-light-9);
+    color: var(--el-text-color-regular);
+  }
+
+  pre {
+    margin: 16px 0;
+    padding: 16px;
+    background-color: var(--el-bg-color-page);
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: Monaco, Consolas, Courier New, monospace;
+    font-size: 14px;
+    padding: 2px 4px;
+    background-color: var(--el-bg-color-page);
+    border-radius: 2px;
+  }
+
+  table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 8px;
+    border: 1px solid var(--el-border-color);
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--el-bg-color-page);
+    font-weight: 600;
+  }
+
+  hr {
+    margin: 24px 0;
+    border: none;
+    border-top: 1px solid var(--el-border-color);
+  }
+}
+
+:deep(.markdown-body) {
+  background: none;
 }
 </style>

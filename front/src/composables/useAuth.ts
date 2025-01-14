@@ -8,6 +8,7 @@ export interface LoginForm {
   userUniqueIdentifier: string // 可以是邮箱或用户名
   password: string
   loginType: 'email' | 'username' // 登录类型
+  role: UserRole  // 添加角色字段
 }
 
 // 注册表单接口
@@ -32,7 +33,39 @@ export interface UserInfo {
   lastLoginAt?: string
 }
 
+// API 响应接口
+interface ApiResponse<T = any> {
+  code: number
+  msg: string
+  additionalInformation: number  // userId 是整型
+  data?: T
+}
+
 const API_BASE_URL = 'http://127.0.0.1:8081/server'
+
+// 创建axios实例
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+})
+
+// 添加请求拦截器
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // 从 localStorage 获取 token
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 export function useAuth() {
   const router = useRouter()
@@ -48,7 +81,8 @@ export function useAuth() {
   // 初始化认证状态
   const initAuth = async () => {
     const token = localStorage.getItem('token')
-    if (token) {
+    const userId = localStorage.getItem('userId')
+    if (token && userId) {
       await getCurrentUser()
     }
   }
@@ -57,7 +91,8 @@ export function useAuth() {
   const getCurrentUser = async () => {
     try {
       const token = localStorage.getItem('token')
-      if (!token) {
+      const userId = localStorage.getItem('userId')
+      if (!token || !userId) {
         userInfo.value = null
         return null
       }
@@ -127,34 +162,41 @@ export function useAuth() {
         ? '/login/loginByEmail' 
         : '/login/loginByUsername'
 
-      const response = await axios.post(`${API_BASE_URL}${endpoint}`, {
+      const response = await axiosInstance.post<ApiResponse>(endpoint, {
         userUniqueIdentifier: form.userUniqueIdentifier,
         password: form.password
       })
 
-      if (response.data.code === 200) {
-        // 保存token
-        const token = response.data.msg
-        localStorage.setItem('token', token)
+      console.log('登录响应:', response.data)
 
-        // 创建模拟用户信息（实际项目中应该调用获取用户信息的API）
-        const mockUserInfo: UserInfo = {
-          id: 1,
+      if (response.data.code === 200) {
+        // 保存token和userId
+        const token = response.data.msg
+        const userId = response.data.additionalInformation
+        
+        localStorage.setItem('token', token)
+        localStorage.setItem('userId', userId.toString())
+
+        // 创建用户信息
+        const userInfoData: UserInfo = {
+          id: userId,
           name: form.userUniqueIdentifier,
           email: form.loginType === 'email' ? form.userUniqueIdentifier : '',
-          role: form.userUniqueIdentifier.includes('admin') ? 'admin' : 'user',
+          role: form.role,  // 使用表单中选择的角色
           lastLoginAt: new Date().toISOString()
         }
 
-        userInfo.value = mockUserInfo
-        localStorage.setItem('userInfo', JSON.stringify(mockUserInfo))
-
-        // 根据角色跳转
-        const redirectPath = mockUserInfo.role === 'admin' ? '/admin/dashboard' : '/home'
-        await router.push(redirectPath)
+        userInfo.value = userInfoData
+        localStorage.setItem('userInfo', JSON.stringify(userInfoData))
         
-        ElMessage.success('登录成功')
-        return { role: mockUserInfo.role, user: mockUserInfo }
+        // 根据角色跳转到不同页面
+        if (form.role === 'admin') {
+          await router.push('/admin')
+        } else {
+          await router.push('/home')
+        }
+        
+        return true
       } else {
         throw new Error(response.data.msg)
       }
@@ -171,6 +213,7 @@ export function useAuth() {
     try {
       // 清除本地存储和状态
       localStorage.removeItem('token')
+      localStorage.removeItem('userId')
       localStorage.removeItem('userInfo')
       userInfo.value = null
       
@@ -206,8 +249,13 @@ export function useAuth() {
     let message = '操作失败'
     if (error instanceof Error) {
       message = error.message
-    } else if (axios.isAxiosError(error) && error.response?.data?.msg) {
-      message = error.response.data.msg
+    } else if (axios.isAxiosError(error)) {
+      // 处理后端返回的验证错误
+      if (error.response?.data?.username?.[0]) {
+        message = error.response.data.username[0]
+      } else if (error.response?.data?.msg) {
+        message = error.response.data.msg
+      }
     }
     
     ElMessage.error(message)

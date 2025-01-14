@@ -1,42 +1,42 @@
 <template>
-  <div class="likes-container">
+  <div class="view-history-container">
     <div class="article-list" v-loading="loading">
       <!-- 文章列表 -->
-      <div v-for="article in likedArticles" :key="article.id" class="article-item">
+      <div v-for="item in viewHistory" :key="item.article.id" class="article-item">
         <div class="article-main">
           <div class="article-content">
-            <h3 class="article-title" @click="handleArticleClick(article.id)">
-              {{ article.title }}
+            <h3 class="article-title" @click="handleArticleClick(item.article.id)">
+              {{ item.article.title }}
             </h3>
-            <p class="article-summary">{{ article.summary || '暂无概要' }}</p>
+            <p class="article-summary">{{ item.article.summary || item.article.content.slice(0, 150) + '...' }}</p>
             <div class="article-meta">
               <span class="meta-item">
                 <el-icon><User /></el-icon>
-                {{ article.author.username }}
+                {{ item.article.author.username }}
               </span>
               <span class="meta-item">
                 <el-icon><View /></el-icon>
-                {{ article.viewUserCount }}
+                {{ item.article.viewUserCount }}
               </span>
               <span class="meta-item">
                 <el-icon><Star /></el-icon>
-                {{ article.supportUserCount }}
+                {{ item.article.supportUserCount }}
               </span>
               <span class="meta-item">
                 <el-icon><ChatLineRound /></el-icon>
-                {{ article.commentCount }}
+                {{ item.article.commentCount }}
               </span>
               <span class="meta-item">
                 <el-icon><Collection /></el-icon>
-                {{ article.collectionUserCount }}
+                {{ item.article.collectionUserCount }}
               </span>
               <span class="meta-item">
                 <el-icon><Share /></el-icon>
-                {{ article.shareUserCount }}
+                {{ item.article.shareUserCount }}
               </span>
-              <span class="create-time">
+              <span class="view-time">
                 <el-icon><Clock /></el-icon>
-                {{ formatDateTime(article.createTime) }}
+                浏览于 {{ formatDateTime(item.viewTime) }}
               </span>
             </div>
           </div>
@@ -45,8 +45,8 @@
 
       <!-- 空状态 -->
       <el-empty 
-        v-if="likedArticles.length === 0 && !loading" 
-        description="暂无点赞文章"
+        v-if="viewHistory.length === 0 && !loading" 
+        description="暂无浏览记录"
       >
         <template #description>
           <p>去发现更多优质文章吧</p>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- 分页器 -->
-    <div class="pagination" v-if="likedArticles.length > 0">
+    <div class="pagination" v-if="viewHistory.length > 0">
       <el-pagination
         v-model:current-page="currentPage"
         :page-size="pageSize"
@@ -95,7 +95,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 
-// 文章数据接口
+// 浏览历史数据
 interface Author {
   id: number
   username: string
@@ -121,7 +121,12 @@ interface Article {
   support: boolean
 }
 
-const likedArticles = ref<Article[]>([])
+interface ViewHistoryItem {
+  article: Article
+  viewTime: string
+}
+
+const viewHistory = ref<ViewHistoryItem[]>([])
 
 // 获取用户ID
 const userId = computed(() => {
@@ -129,60 +134,43 @@ const userId = computed(() => {
   return userInfo.id
 })
 
-// 加载点赞文章列表
-const loadLikedArticles = async () => {
+// 加载浏览历史
+const loadViewHistory = async () => {
   if (!userId.value) {
     console.log('未找到用户ID，请先登录')
     return
   }
 
-  console.log('开始加载点赞文章列表，用户ID:', userId.value)
+  console.log('开始加载浏览历史，用户ID:', userId.value)
   loading.value = true
   
   try {
-    const response = await request.get<Article[]>('/server/personalCenterData/getSupportArticles', {
+    const response = await request.get<ViewHistoryItem[]>('/server/personalCenterData/getViewHistory', {
       params: { userId: userId.value }
     })
     
-    console.log('API返回原始数据:', JSON.stringify(response.data, null, 2))
+    console.log('获取浏览历史成功:', response.data)
     
     if (Array.isArray(response.data)) {
-      likedArticles.value = response.data
+      viewHistory.value = response.data
       total.value = response.data.length
-      console.log('点赞文章列表数据处理完成:')
-      response.data.forEach((article, index) => {
-        console.log(`文章 ${index + 1}:`, {
-          id: article.id,
-          title: article.title,
-          author: article.author.username,
-          summary: article.summary,
-          content: article.content?.substring(0, 100) + '...',
-          createTime: article.createTime,
-          stats: {
-            views: article.viewUserCount,
-            likes: article.supportUserCount,
-            comments: article.commentCount,
-            collections: article.collectionUserCount,
-            shares: article.shareUserCount
-          }
-        })
-      })
+      console.log(`共加载 ${total.value} 条浏览记录`)
       
       if (total.value === 0) {
-        console.log('暂无点赞文章')
+        console.log('暂无浏览记录')
       }
     } else {
       console.warn('API返回数据格式错误，期望数组类型:', response.data)
-      likedArticles.value = []
+      viewHistory.value = []
       total.value = 0
     }
   } catch (error) {
-    console.error('加载点赞文章列表失败:', error)
-    likedArticles.value = []
+    console.error('加载浏览历史失败:', error)
+    viewHistory.value = []
     total.value = 0
   } finally {
     loading.value = false
-    console.log('点赞文章列表加载完成，共', total.value, '篇文章')
+    console.log('浏览历史加载完成')
   }
 }
 
@@ -211,17 +199,17 @@ const handleArticleClick = (articleId: number) => {
 const handlePageChange = (page: number) => {
   console.log('切换页码:', page)
   currentPage.value = page
-  loadLikedArticles()
+  loadViewHistory()
 }
 
 // 组件挂载时加载数据
 onMounted(() => {
-  loadLikedArticles()
+  loadViewHistory()
 })
 </script>
 
 <style scoped>
-.likes-container {
+.view-history-container {
   background: white;
   border-radius: 0 0 8px 8px;
   padding: 24px;
@@ -277,7 +265,7 @@ onMounted(() => {
   gap: 4px;
 }
 
-.create-time {
+.view-time {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -290,4 +278,4 @@ onMounted(() => {
   display: flex;
   justify-content: center;
 }
-</style>
+</style> 

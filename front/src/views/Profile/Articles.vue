@@ -1,351 +1,301 @@
 <template>
   <div class="articles-container">
-    <!-- 文章筛选和排序 -->
-    <div class="filter-bar">
-      <div class="filter-tabs">
-        <span 
-          v-for="filter in filters" 
-          :key="filter.value"
-          :class="['filter-item', { active: currentFilter === filter.value }]"
-          @click="currentFilter = filter.value"
-        >
-          {{ filter.label }}
-        </span>
-      </div>
-      <el-dropdown @command="handleSort">
-        <span class="sort-trigger">
-          {{ currentSort.label }}
-          <el-icon><ArrowDown /></el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item 
-              v-for="sort in sorts" 
-              :key="sort.value"
-              :command="sort.value"
-            >
-              {{ sort.label }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
+    <el-tabs v-model="activeTab" @tab-change="handleTabChange">
+      <el-tab-pane label="已发布" name="published">
+        <article-list 
+          :articles="publishedArticles" 
+          :loading="loading.published"
+          type="published"
+          empty-text="暂无已发布的文章"
+          @page-change="(page) => handlePageChange(page, 'published')"
+          @delete="handleDeletePublished"
+          @edit="handleEdit"
+        />
+      </el-tab-pane>
+      
+      <el-tab-pane label="待审核" name="publishing">
+        <article-list 
+          :articles="publishingArticles" 
+          :loading="loading.publishing"
+          type="publishing"
+          empty-text="暂无待审核的文章"
+          @page-change="(page) => handlePageChange(page, 'publishing')"
+          @delete="handleDirectDelete"
+          @edit="handleEdit"
+        />
+      </el-tab-pane>
+      
+      <el-tab-pane label="待删除" name="deleting">
+        <article-list 
+          :articles="deletingArticles" 
+          :loading="loading.deleting"
+          type="deleting"
+          empty-text="暂无待删除的文章"
+          @page-change="(page) => handlePageChange(page, 'deleting')"
+        />
+      </el-tab-pane>
+      
+      <el-tab-pane label="已拒绝" name="unpublished">
+        <article-list 
+          :articles="unpublishedArticles" 
+          :loading="loading.unpublished"
+          type="unpublished"
+          empty-text="暂无被拒绝的文章"
+          @page-change="(page) => handlePageChange(page, 'unpublished')"
+          @delete="handleDirectDelete"
+          @edit="handleEdit"
+        />
+      </el-tab-pane>
 
-    <!-- 文章列表 -->
-    <div class="article-list">
-      <div v-for="article in articles" :key="article.id" class="article-item">
-        <!-- 文章主体 -->
-        <div class="article-main">
-          <h3 class="article-title">
-            <router-link :to="`/article/${article.id}`">{{ article.title }}</router-link>
-            <span v-if="article.status === 'draft'" class="draft-tag">草稿</span>
-          </h3>
-          <p class="article-excerpt">{{ article.excerpt }}</p>
-          
-          <!-- 文章数据 -->
-          <div class="article-meta">
-            <span class="publish-time">{{ article.createTime }}</span>
-            <template v-if="article.status === 'published'">
-              <span class="divider">·</span>
-              <span class="view-count">{{ article.views }} 次浏览</span>
-              <span class="divider">·</span>
-              <span class="like-count">{{ article.likes }} 赞同</span>
-              <span class="divider">·</span>
-              <span class="comment-count">{{ article.comments }} 评论</span>
-            </template>
-            <template v-else>
-              <span class="divider">·</span>
-              <span class="update-time">最后编辑于 {{ article.updateTime }}</span>
-            </template>
-          </div>
-        </div>
-
-        <!-- 文章操作 -->
-        <div class="article-actions">
-          <el-dropdown trigger="click" @command="(command) => handleAction(command, article)">
-            <el-button link>
-              <el-icon><More /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="edit">
-                  <el-icon><Edit /></el-icon>编辑文章
-                </el-dropdown-item>
-                <el-dropdown-item command="delete" divided>
-                  <el-icon><Delete /></el-icon>删除{{ article.status === 'draft' ? '草稿' : '文章' }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </div>
-
-      <!-- 空状态 -->
-      <el-empty
-        v-if="articles.length === 0"
-        :description="currentFilter === 'draft' ? '草稿箱空空如也' : '还没有发布过文章'"
-      >
-        <el-button type="primary" @click="router.push('/editor')">
-          写文章
-        </el-button>
-      </el-empty>
-    </div>
-
-    <!-- 分页器 -->
-    <div class="pagination" v-if="articles.length > 0">
-      <el-pagination
-        v-model:current-page="currentPage"
-        :page-size="pageSize"
-        :total="total"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
-        background
-      />
-    </div>
+      <el-tab-pane label="草稿箱" name="draft">
+        <article-list 
+          :articles="draftArticles" 
+          :loading="loading.draft"
+          type="draft"
+          empty-text="暂无草稿"
+          @page-change="(page) => handlePageChange(page, 'draft')"
+          @delete="handleDirectDelete"
+          @edit="handleEdit"
+        />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import { 
-  ArrowDown, 
-  More, 
-  Edit, 
-  FolderAdd, 
-  Delete 
-} from '@element-plus/icons-vue'
-import { useArticleStore } from '../../store/article'
-import type { Article } from '../../types/article'
+import { ElMessage } from 'element-plus'
+import ArticleList from './ArticleList.vue'
+import request from '../../utils/request'
 
 const router = useRouter()
-const articleStore = useArticleStore()
 
-// 筛选选项
-const filters = [
-  { label: '全部文章', value: 'all' },
-  { label: '已发布', value: 'published' },
-  { label: '草稿箱', value: 'draft' }
-]
-const currentFilter = ref('all')
+// 当前激活的标签页
+const activeTab = ref('published')
 
-// 排序选项
-const sorts = [
-  { label: '最新发布', value: 'newest' },
-  { label: '最多浏览', value: 'views' },
-  { label: '最多点赞', value: 'likes' }
-]
-const currentSort = ref(sorts[0])
+// 文章数据接口
+interface Author {
+  id: number
+  username: string
+}
+
+interface Article {
+  id: number
+  title: string
+  theme: string
+  content: string
+  summary: string | null
+  relatedKnowledge: any[]
+  createTime: string
+  viewUserCount: number
+  supportUserCount: number
+  opposeUserCount: number
+  commentCount: number
+  collectionUserCount: number
+  shareUserCount: number
+  author: Author
+  oppose: boolean
+  collect: boolean
+  support: boolean
+}
+
+interface Draft {
+  id: number
+  title: string
+  content: string
+  theme: {
+    id: number
+    name: string
+  }
+}
+
+// 各状态文章列表
+const publishedArticles = ref<Article[]>([])
+const publishingArticles = ref<Article[]>([])
+const deletingArticles = ref<Article[]>([])
+const unpublishedArticles = ref<Article[]>([])
+const draftArticles = ref<Draft[]>([])
+
+// 加载状态
+const loading = ref({
+  published: false,
+  publishing: false,
+  deleting: false,
+  unpublished: false,
+  draft: false
+})
 
 // 分页相关
-const currentPage = ref(1)
-const pageSize = ref(5)
-const total = ref(0)
+const currentPage = ref({
+  published: 1,
+  publishing: 1,
+  deleting: 1,
+  unpublished: 1,
+  draft: 1
+})
 
-// 根据筛选条件获取文章列表
-const articles = computed(() => {
-  let filteredArticles: Article[] = []
-  
-  switch (currentFilter.value) {
-    case 'published':
-      filteredArticles = articleStore.getPublishedArticles
-      break
-    case 'draft':
-      filteredArticles = articleStore.getDraftArticles
-      break
-    default:
-      filteredArticles = [...articleStore.articles, ...articleStore.draftArticles]
-  }
-
-  // 排序
-  return filteredArticles.sort((a, b) => {
-    switch (currentSort.value.value) {
-      case 'views':
-        return b.views - a.views
-      case 'likes':
-        return b.likes - a.likes
-      default:
-        return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
-    }
-  })
+// 获取用户ID
+const userId = computed(() => {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+  return userInfo.id
 })
 
 // 加载文章列表
-const loadArticles = async () => {
-  await articleStore.fetchArticles()
-  await articleStore.fetchArticles('draft')
-  total.value = articles.value.length
-}
+const loadArticles = async (type: string) => {
+  if (!userId.value) {
+    console.log('未找到用户ID，请先登录')
+    return
+  }
 
-onMounted(() => {
-  loadArticles()
-})
+  const apiMap = {
+    published: '/server/personalCenterData/getPublishedArticles',
+    publishing: '/server/personalCenterData/getPublishingArticles',
+    deleting: '/server/personalCenterData/getDeletingArticles',
+    unpublished: '/server/personalCenterData/getUnpublishedArticles',
+    draft: '/server/personalCenterData/getDrafts'
+  }
 
-// 处理排序
-const handleSort = (value: string) => {
-  currentSort.value = sorts.find(sort => sort.value === value) || sorts[0]
-}
+  const api = apiMap[type]
+  if (!api) return
 
-// 处理文章操作
-const handleAction = async (command: string, article: Article) => {
-  switch (command) {
-    case 'edit':
-      router.push(`/editor/${article.id}`)
-      break
-    case 'delete':
-      try {
-        await ElMessageBox.confirm(
-          `确定要删除${article.status === 'draft' ? '草稿' : '文章'}吗？`, 
-          '提示', 
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        )
-        await articleStore.deleteArticle(article.id, article.status)
-        ElMessage.success('删除成功')
-        loadArticles()
-      } catch {
-        // 用户取消删除
+  console.log(`开始加载${type}文章列表，用户ID:`, userId.value)
+  loading.value[type] = true
+
+  try {
+    const response = await request.get(api, {
+      params: { userId: userId.value }
+    })
+
+    console.log(`获取${type}文章列表成功:`, response.data)
+
+    if (Array.isArray(response.data)) {
+      switch (type) {
+        case 'published':
+          publishedArticles.value = response.data
+          break
+        case 'publishing':
+          publishingArticles.value = response.data
+          break
+        case 'deleting':
+          deletingArticles.value = response.data
+          break
+        case 'unpublished':
+          unpublishedArticles.value = response.data
+          break
+        case 'draft':
+          draftArticles.value = response.data
+          break
       }
-      break
+    } else {
+      console.warn('API返回数据格式错误，期望数组类型:', response.data)
+    }
+  } catch (error) {
+    console.error(`加载${type}文章列表失败:`, error)
+  } finally {
+    loading.value[type] = false
+    console.log(`${type}文章列表加载完成`)
   }
 }
 
-// 处理分页
-const handlePageChange = (page: number) => {
-  currentPage.value = page
+// 处理已发布文章的删除
+const handleDeletePublished = async (articleId: number) => {
+  try {
+    const response = await request.put('/server/submitDeleteRequest', null, {
+      params: { articleId }
+    })
+    
+    if (response.data.code === 200) {
+      ElMessage.success(response.data.msg)
+      loadArticles('published')
+    } else {
+      ElMessage.error(response.data.msg || '删除请求提交失败')
+    }
+  } catch (error) {
+    console.error('删除请求提交失败:', error)
+    ElMessage.error('删除请求提交失败')
+  }
 }
+
+// 处理直接删除
+const handleDirectDelete = async (articleId: number) => {
+  try {
+    const response = await request.delete('/server/directDelete', {
+      params: { articleId }
+    })
+    
+    if (response.data.code === 200) {
+      ElMessage.success(response.data.msg)
+      loadArticles(activeTab.value)
+    } else {
+      ElMessage.error(response.data.msg || '删除失败')
+    }
+  } catch (error) {
+    console.error('删除失败:', error)
+    ElMessage.error('删除失败')
+  }
+}
+
+// 处理编辑
+const handleEdit = async (articleId: number) => {
+  try {
+    // 获取文章详情
+    const response = await request.get('/server/getRenderedArticle', {
+      params: { articleId }
+    })
+    
+    if (response.data) {
+      // 跳转到编辑页面
+      router.push({
+        path: `/editor/${articleId}`,
+        query: { type: activeTab.value }
+      })
+    }
+  } catch (error) {
+    console.error('获取文章详情失败:', error)
+    ElMessage.error('获取文章详情失败')
+  }
+}
+
+// 处理标签页切换
+const handleTabChange = (tab: string) => {
+  console.log('切换标签页:', tab)
+  loadArticles(tab)
+}
+
+// 处理分页变化
+const handlePageChange = (page: number, type: string) => {
+  console.log('切换页码:', page, '类型:', type)
+  currentPage.value[type] = page
+  loadArticles(type)
+}
+
+// 组件挂载时加载数据
+onMounted(() => {
+  loadArticles('published')
+})
 </script>
 
 <style scoped>
 .articles-container {
-  background: #fff;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 400px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.filter-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #f0f0f0;
+:deep(.el-tabs__nav-wrap::after) {
+  height: 1px;
+  background-color: #f0f0f0;
 }
 
-.filter-tabs {
-  display: flex;
-  gap: 24px;
-}
-
-.filter-item {
-  color: #8590a6;
-  cursor: pointer;
-  padding: 4px 0;
-  position: relative;
-}
-
-.filter-item:hover {
-  color: #121212;
-}
-
-.filter-item.active {
-  color: #121212;
-  font-weight: 500;
-}
-
-.filter-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -16px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #056de8;
-}
-
-.sort-trigger {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #8590a6;
-  cursor: pointer;
-}
-
-.article-list {
+:deep(.el-tabs__item) {
+  font-size: 16px;
   padding: 0 24px;
 }
 
-.article-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.article-main {
-  flex: 1;
-  margin-right: 16px;
-}
-
-.article-title {
-  margin: 0 0 8px;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.article-title a {
-  color: #121212;
-  text-decoration: none;
-}
-
-.article-title a:hover {
-  color: #056de8;
-}
-
-.draft-tag {
-  font-size: 12px;
-  color: #8590a6;
-  border: 1px solid #8590a6;
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.article-excerpt {
-  color: #646464;
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0 0 12px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-.article-meta {
-  color: #8590a6;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-}
-
-.divider {
-  margin: 0 8px;
-}
-
-.pagination {
-  padding: 24px;
-  display: flex;
-  justify-content: center;
-}
-
-:deep(.el-dropdown-menu__item) {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+:deep(.el-tabs__item.is-active) {
+  font-weight: 600;
 }
 </style>

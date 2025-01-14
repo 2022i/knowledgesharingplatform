@@ -6,7 +6,11 @@
         返回
       </el-button>
       <div class="header-actions">
-        <el-button @click="handleSaveDraft">保存草稿</el-button>
+        <el-button 
+          type="info" 
+          :loading="savingDraft" 
+          @click="handleSaveDraft"
+        >保存草稿</el-button>
         <el-button type="primary" @click="handleSubmit">发布文章</el-button>
       </div>
     </div>
@@ -24,15 +28,26 @@
           <el-form-item>
             <el-select
               v-model="articleForm.category"
-              placeholder="选择文章分类"
+              placeholder="请选择分类"
               class="category-select"
+              :loading="themeStore.isLoading"
+              :disabled="themeStore.isLoading"
             >
               <el-option
-                v-for="item in categories"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="theme in themeOptions"
+                :key="theme.id"
+                :label="theme.name"
+                :value="theme.id"
               />
+              <template #empty>
+                <el-empty
+                  v-if="!themeStore.isLoading"
+                  description="暂无分类数据"
+                />
+                <div v-else class="loading-text">
+                  加载分类中...
+                </div>
+              </template>
             </el-select>
           </el-form-item>
         </div>
@@ -136,31 +151,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { useArticleStore } from '../store/article'
+import { ElMessage, ElLoading } from 'element-plus'
+import { useThemeStore } from '../store/theme'
+import axios from 'axios'
 import type { Article } from '../types/article'
+import type { Theme } from '../store/theme'
 
 const router = useRouter()
 const route = useRoute()
-const articleStore = useArticleStore()
-
-// 文章分类选项
-const categories = [
-  { label: '前端开发', value: 'frontend' },
-  { label: '后端开发', value: 'backend' },
-  { label: '移动开发', value: 'mobile' },
-  { label: '人工智能', value: 'ai' },
-  { label: '运维部署', value: 'devops' },
-  { label: '数据库', value: 'database' },
-  { label: '编程语言', value: 'programming' },
-  { label: '架构设计', value: 'architecture' },
-  { label: '其他', value: 'other' }
-]
+const themeStore = useThemeStore()
+const isLoading = ref(false)
+const loading = ref(false)
+const savingDraft = ref(false)
 
 const isFullscreen = ref(false)
 const summaryDialogVisible = ref(false)
@@ -171,8 +178,8 @@ const tagInputRef = ref()
 const articleForm = ref({
   title: '',
   content: '',
-  category: '',
-  tags: [],
+  category: null,
+  tags: [] as string[],
   summary: ''
 })
 
@@ -181,30 +188,62 @@ const editorRef = ref()
 // 自动保存定时器
 let autoSaveTimer: number | null = null
 
-// 如果是编辑模式，加载文章内容
+// 添加计算属性来获取分类列表
+const themeOptions = computed(() => {
+  const themes = themeStore.getAllThemes
+  console.log('当前分类列表:', themes)
+  return themes
+})
+
+// 在组件挂载时获取分类数据
 onMounted(async () => {
-  const articleId = route.params.id
-  if (articleId) {
-    // TODO: 从API获取文章详情
-    const article = articleStore.articles.find(a => a.id === Number(articleId)) ||
-                   articleStore.draftArticles.find(a => a.id === Number(articleId))
-    if (article) {
-      articleForm.value = {
-        title: article.title,
-        content: article.content || '',
-        category: article.category || '',
-        tags: article.tags || [],
-        summary: article.summary || ''
+  console.log('Editor组件开始加载...')
+  try {
+    console.log('开始获取分类数据...')
+    await themeStore.fetchAllThemes()
+    console.log('分类数据加载完成:', themeStore.getAllThemes)
+    
+    const articleId = route.params.id
+    if (articleId) {
+      // 确保 articleId 是整数
+      const id = parseInt(articleId as string, 10)
+      console.log('正在加载文章ID:', id)
+      
+      try {
+        const response = await axios.get(`/server/article/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        
+        if (response.data.code === 200) {
+          const article = response.data.data
+          console.log('找到文章数据:', article)
+          articleForm.value = {
+            title: article.title,
+            content: article.content || '',
+            category: article.themeId ? parseInt(String(article.themeId), 10) : null,
+            tags: article.relatedKnowledge || [],
+            summary: article.summary || ''
+          }
+          console.log('文章表单数据已更新:', articleForm.value)
+        }
+      } catch (error) {
+        console.error('加载文章数据失败:', error)
+        ElMessage.error('加载文章数据失败，请稍后重试')
       }
     }
-  }
 
-  // 设置自动保存
-  autoSaveTimer = window.setInterval(async () => {
-    if (articleForm.value.title || articleForm.value.content) {
-      await handleSaveDraft()
-    }
-  }, 60000) // 每分钟自动保存
+    // 设置自动保存
+    autoSaveTimer = window.setInterval(async () => {
+      if (articleForm.value.title || articleForm.value.content) {
+        await handleSaveDraft()
+      }
+    }, 60000) // 每分钟自动保存
+  } catch (error) {
+    console.error('加载分类数据失败:', error)
+    ElMessage.error('加载分类数据失败，请刷新页面重试')
+  }
 })
 
 // 组件卸载时清除定时器
@@ -221,78 +260,236 @@ const handleBack = () => {
 
 // 保存草稿
 const handleSaveDraft = async () => {
+  if (!articleForm.value.title.trim()) {
+    ElMessage.warning('请输入文章标题')
+    return
+  }
+  if (!articleForm.value.content.trim()) {
+    ElMessage.warning('请输入文章内容')
+    return
+  }
+  if (!articleForm.value.category) {
+    ElMessage.warning('请选择文章分类')
+    return
+  }
+
+  savingDraft.value = true
   try {
-    const draft = await articleStore.saveDraft({
-      title: articleForm.value.title,
-      content: articleForm.value.content,
-      category: articleForm.value.category,
-      tags: articleForm.value.tags,
-      summary: articleForm.value.summary
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    const draftData = {
+      authorId: userInfo.id,
+      themeId: parseInt(String(articleForm.value.category), 10),
+      title: articleForm.value.title.trim(),
+      content: articleForm.value.content.trim(),
+      summary: '',
+      relatedKnowledge: []
+    }
+
+    const response = await axios.post('http://127.0.0.1:8081/server/write/draft', draftData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     })
-    ElMessage.success('草稿已保存')
-    return draft
+
+    if (response.data.code === 200) {
+      ElMessage.success(response.data.msg || '草稿保存成功')
+    } else {
+      ElMessage.error(response.data.msg || '草稿保存失败')
+    }
   } catch (error) {
-    ElMessage.error('保存草稿失败')
-    console.error(error)
+    console.error('保存草稿时发生错误:', error)
+    ElMessage.error('保存草稿失败，请稍后重试')
+  } finally {
+    savingDraft.value = false
+  }
+}
+
+// 生成文章概要（调用后端API）
+const generateSummary = async (content: string) => {
+  console.log('开始生成文章概要，文章内容长度:', content.length)
+  try {
+    console.log('发送请求到 AI 摘要生成接口...')
+    console.log('发送的文章内容:', content)
+
+    const response = await axios({
+      method: 'post',
+      url: 'http://127.0.0.1:8081/server/ai/summary',
+      headers: {
+        'Content-Type': 'text/plain',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      data: content,  // 直接发送原始内容，包含 HTML 标签
+      transformRequest: [(data) => data]  // 防止 axios 自动转换请求体
+    })
+
+    console.log('收到摘要生成响应:', response.data)
+    
+    // 确保返回的是字符串类型
+    const summary = typeof response.data === 'string' ? response.data : response.data.msg || ''
+    console.log('处理后的摘要:', summary)
+    return summary
+  } catch (error: any) {
+    console.error('生成摘要失败:', {
+      error: error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      requestData: content.substring(0, 500) + '...' // 记录前500个字符
+    })
+    ElMessage.error(`生成摘要失败: ${error.response?.data?.msg || error.message}`)
+    throw error
+  }
+}
+
+// 生成知识标签（调用后端API）
+const generateTags = async (content: string) => {
+  console.log('开始生成知识标签，文章内容长度:', content.length)
+  try {
+    console.log('发送请求到 AI 标签生成接口...')
+    console.log('发送的文章内容:', content)
+
+    const response = await axios({
+      method: 'post',
+      url: 'http://127.0.0.1:8081/server/ai/tags',
+      headers: {
+        'Content-Type': 'text/plain',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      data: content,  // 直接发送原始内容，包含 HTML 标签
+      transformRequest: [(data) => data]  // 防止 axios 自动转换请求体
+    })
+
+    console.log('收到标签生成响应:', response.data)
+
+    // 处理返回的标签数据
+    let tags: string[] = []
+    if (Array.isArray(response.data)) {
+      // 如果返回的是数组，直接使用
+      tags = response.data.filter(tag => typeof tag === 'string' && tag.trim())
+    } else if (typeof response.data === 'string') {
+      // 如果返回的是字符串，按分隔符分割
+      tags = response.data.split('、').filter(Boolean)
+    }
+
+    if (!tags || tags.length === 0) {
+      console.warn('未生成有效的标签')
+      return []
+    }
+
+    console.log('处理后的标签列表:', tags)
+    return tags
+  } catch (error: any) {
+    console.error('生成标签失败:', {
+      error: error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      requestData: content.substring(0, 500) + '...' // 记录前500个字符
+    })
+    ElMessage.error(`生成标签失败: ${error.response?.data?.msg || error.message}`)
+    throw error
   }
 }
 
 // 发布文章
 const handleSubmit = async () => {
+  console.log('开始文章发布流程')
+  console.log('当前文章表单数据:', {
+    title: articleForm.value.title,
+    categoryId: articleForm.value.category,
+    contentLength: articleForm.value.content.length
+  })
+
   if (!articleForm.value.title.trim()) {
+    console.warn('标题为空')
     return ElMessage.warning('请输入文章标题')
   }
   if (!articleForm.value.category) {
+    console.warn('未选择分类')
     return ElMessage.warning('请选择文章分类')
   }
   if (!articleForm.value.content.trim()) {
+    console.warn('内容为空')
     return ElMessage.warning('请输入文章内容')
   }
 
   try {
-    // 调用后端接口生成文章概要
-    const summary = await generateSummary(articleForm.value.content)
-    articleForm.value.summary = summary
-    
-    // 显示概要编辑对话框
-    summaryDialogVisible.value = true
-  } catch (error) {
-    ElMessage.error('生成文章概要失败')
-    console.error(error)
+    console.log('开始生成文章概要...')
+    // 显示加载提示
+    const loadingInstance = ElLoading.service({
+      text: '正在生成文章概要...'
+    })
+
+    try {
+      // 调用后端接口生成文章概要
+      const summary = await generateSummary(articleForm.value.content)
+      console.log('成功生成文章概要:', summary)
+      articleForm.value.summary = summary
+      
+      // 显示概要编辑对话框
+      summaryDialogVisible.value = true
+    } finally {
+      // 关闭加载提示
+      loadingInstance.close()
+    }
+  } catch (error: any) {
+    console.error('文章发布流程失败:', {
+      error: error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    })
+    ElMessage.error('发布失败，请重试')
   }
-}
-
-// 生成文章概要（模拟API调用）
-const generateSummary = async (content: string) => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  return '这是一段自动生成的文章概要，实际项目中应该通过调用后端接口来获取。您可以根据需要修改这段内容，使其更好地概括文章的主要内容。'
-}
-
-// 生成知识标签（模拟API调用）
-const generateTags = async (content: string) => {
-  // 模拟API调用延迟
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  return ['前端开发', 'Vue3', 'TypeScript', '最佳实践']
 }
 
 // 确认文章概要，进入标签编辑
 const handleConfirmSummary = async () => {
-  if (!articleForm.value.summary.trim()) {
+  // 确保 summary 是字符串并且不为空
+  const summary = String(articleForm.value.summary || '').trim()
+  if (!summary) {
     return ElMessage.warning('请输入文章概要')
   }
 
   try {
-    // 调用后端接口生成知识标签
-    const tags = await generateTags(articleForm.value.content)
-    articleForm.value.tags = tags
+    // 显示加载提示
+    const loadingInstance = ElLoading.service({
+      text: '正在生成知识标签...'
+    })
+
+    try {
+      // 调用后端接口生成知识标签
+      const tags = await generateTags(articleForm.value.content)
+      
+      // 检查标签是否为空
+      if (!tags || tags.length === 0) {
+        ElMessage.warning('未能生成有效的知识标签，请手动添加')
+        articleForm.value.tags = []
+      } else {
+        articleForm.value.tags = tags
+      }
+      
+      // 关闭概要对话框，显示标签对话框
+      summaryDialogVisible.value = false
+      tagsDialogVisible.value = true
+    } finally {
+      // 关闭加载提示
+      loadingInstance.close()
+    }
+  } catch (error: any) {
+    console.error('生成标签失败:', {
+      error: error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    })
     
-    // 关闭概要对话框，显示标签对话框
+    // 即使标签生成失败，也允许用户继续
+    ElMessage.warning('标签生成失败，请手动添加标签')
+    articleForm.value.tags = []
     summaryDialogVisible.value = false
     tagsDialogVisible.value = true
-  } catch (error) {
-    ElMessage.error('生成知识标签失败')
-    console.error(error)
   }
 }
 
@@ -328,29 +525,111 @@ const handleRemoveTag = (tag: string) => {
 
 // 最终发布文章
 const handlePublish = async () => {
-  if (articleForm.value.tags.length === 0) {
-    return ElMessage.warning('请至少添加一个知识标签')
+  if (!articleForm.value.title.trim()) {
+    return ElMessage.warning('请输入文章标题')
+  }
+
+  if (!articleForm.value.content.trim()) {
+    return ElMessage.warning('请输入文章内容')
+  }
+
+  if (!articleForm.value.category) {
+    return ElMessage.warning('请选择文章分类')
+  }
+
+  if (!articleForm.value.summary.trim()) {
+    return ElMessage.warning('请输入文章概要')
+  }
+
+  if (!articleForm.value.tags.length) {
+    return ElMessage.warning('请添加知识标签')
   }
 
   try {
-    // 先保存为草稿
-    const draft = await handleSaveDraft()
-    if (!draft) return
-
-    // 发布文章
-    await articleStore.publishArticle({
-      ...draft,
-      category: articleForm.value.category,
-      summary: articleForm.value.summary,
-      tags: articleForm.value.tags
-    })
+    loading.value = true
+    console.log('开始发布文章...')
     
-    ElMessage.success('文章发布成功')
-    tagsDialogVisible.value = false
-    router.push('/profile/articles')
+    // 获取当前用户ID
+    const userInfo = localStorage.getItem('userInfo')
+    if (!userInfo) {
+      throw new Error('用户未登录')
+    }
+    const { id: authorId } = JSON.parse(userInfo)
+
+    // 准备发布数据，确保所有ID都是整数
+    const publishData = {
+      authorId: parseInt(String(authorId), 10),
+      themeId: parseInt(String(articleForm.value.category), 10),
+      title: articleForm.value.title,
+      content: articleForm.value.content,
+      summary: articleForm.value.summary,
+      relatedKnowledge: articleForm.value.tags
+    }
+
+    console.log('发布文章数据:', publishData)
+
+    // 发送请求
+    const response = await axios.post(
+      'http://127.0.0.1:8081/server/write/article',
+      publishData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    )
+
+    console.log('发布响应:', response.data)
+
+    if (response.data.code === 200) {
+      ElMessage.success('文章发布成功')
+      // 关闭对话框
+      tagsDialogVisible.value = false
+      // 发布成功后跳转到首页
+      router.push('/home')
+    } else {
+      throw new Error(response.data.msg || '发布失败')
+    }
+  } catch (error: any) {
+    console.error('发布文章失败:', error)
+    ElMessage.error(error.message || '发布失败，请重试')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理确认发布
+const handleConfirmPublish = async () => {
+  if (!articleForm.value.title.trim()) {
+    ElMessage.warning('请输入文章标题')
+    return
+  }
+
+  if (!articleForm.value.content.trim()) {
+    ElMessage.warning('请输入文章内容')
+    return
+  }
+
+  if (!articleForm.value.themeId) {
+    ElMessage.warning('请选择文章分类')
+    return
+  }
+
+  if (!articleForm.value.summary.trim()) {
+    ElMessage.warning('请生成或编辑文章摘要')
+    return
+  }
+
+  if (!articleForm.value.tags.length) {
+    ElMessage.warning('请生成或编辑文章标签')
+    return
+  }
+
+  try {
+    await handlePublish()
   } catch (error) {
-    ElMessage.error('发布文章失败')
-    console.error(error)
+    console.error('确认发布失败:', error)
   }
 }
 
@@ -483,6 +762,21 @@ onUnmounted(() => {
 
 .category-select {
   width: 200px;
+}
+
+.loading-text {
+  padding: 12px;
+  text-align: center;
+  color: #909399;
+  font-size: 14px;
+}
+
+:deep(.el-select-dropdown__empty) {
+  padding: 8px 0;
+}
+
+:deep(.el-empty) {
+  padding: 12px 0;
 }
 
 .summary-content {
