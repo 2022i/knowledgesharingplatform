@@ -11,7 +11,7 @@ public class ArticleSearchOrderedViewCount extends ArticleSearch{
     @Override
     public List<RenderedArticle> getArticles(String keyword){
         List<Article> articles=articleRepository.findArticlesByTitleOrContent(keyword,keyword);
-        articles.removeIf(article -> article.isCheck() && !article.isDelete() && !article.isReject());
+        articles.removeIf(article -> !article.isCheck() || article.isDelete() || article.isReject());
         List<RenderedArticle> renderedArticles = articleRenderingPreparation.getRenderedArticles(articles);
         renderedArticles.sort((a1, a2) -> a2.getViewUserCount() - a1.getViewUserCount());
         return renderedArticles;
