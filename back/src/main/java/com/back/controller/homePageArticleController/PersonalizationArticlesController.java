@@ -1,16 +1,13 @@
 package com.back.controller.homePageArticleController;
 
-import com.back.dto.Response;
 import com.back.dto.article.RenderedArticle;
 import com.back.get.HomePageArticle.PersonalizationArticleForUser;
-import com.back.get.HomePageArticle.PersonalizationArticleForVisitor;
 import com.back.get.HomePageArticle.PersonalizationArticleForVisitor;
 import com.back.get.preparation.ArticleRenderingPreparation;
 import com.back.index.Article;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -38,17 +35,17 @@ public class PersonalizationArticlesController {
         return articleRenderingPreparation.getRenderedArticles(articles);
     }
 
-    @GetMapping("/barrierArticlesUser")
-    @Description("用户身份下获取信息壁垒文章")
-    public List<RenderedArticle> getBarrierArticles(@RequestParam int userId) {
-        List<Article> articles=personalizationArticleforUser.getBarrierArticles(userId);
-        return articleRenderingPreparation.getRenderedArticles(articles);
-    }
+//    @GetMapping("/barrierArticlesUser")
+//    @Description("用户身份下获取信息壁垒文章")
+//    public List<RenderedArticle> getBarrierArticles(@RequestParam int userId) {
+//        List<Article> articles=personalizationArticleforUser.getBarrierArticles(userId);
+//        return articleRenderingPreparation.getRenderedArticles(articles);
+//    }
 
     @GetMapping("/recommendedArticlesUser")
     @Description("用户身份下获取推荐文章")
     public List<RenderedArticle> getRecommendedArticles(@RequestParam int userId) {
-        List<Article> articles=personalizationArticleforUser.getRecommendedArticles(userId);
+        List<Article> articles=personalizationArticleforUser.getRecommendArticles(userId);
         return articleRenderingPreparation.getRenderedArticles(articles);
     }
 }

@@ -21,8 +21,8 @@ public class FollowArticlesController {
 
     @GetMapping("/followArticles")
     @Description("获取用户关注的文章，包括关注的人的文章以及关注的主题文章")
-    public List<RenderedArticle>   getFollowArticles(@RequestParam int userId){
-        List<Article> articles = followArticle.getFollowArticles(userId);
+    public List<RenderedArticle> getFollowArticles(@RequestParam int userId){
+        List<Article> articles = followArticle.getRecommendArticles(userId);
         return articleRenderingPreparation.getRenderedArticles(articles);
     }
 }

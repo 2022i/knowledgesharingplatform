@@ -2,57 +2,39 @@ package com.back.get.HomePageArticle;
 
 
 import com.back.index.Article;
-import com.back.index.UserData;
 import com.back.repository.ArticleRepository;
-import com.back.repository.UserDataRepository;
-import com.back.repository.ViewDataRepository;
 import jakarta.annotation.Resource;
-
 import org.springframework.stereotype.Service;
-
-import org.springframework.data.domain.Pageable;
-import java.util.Optional;
-
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class HotArticle {
     @Resource
-    private UserDataRepository userDataRepository;
-    @Resource
     private ArticleRepository articleRepository;
-    @Resource
-    private ViewDataRepository viewDataRepository;
-
 
     public List<Article> getHotArticles() {
-        // 获取所有文章
+        int limit = 10;
+        List<Article> articles = articleRepository.findArticlesByCheckAndDeleteAndReject(true, false, false);
 
-        List<Article> allArticles = articleRepository.findAll();
+        List<ArticleScore> articleScores = articles.stream().map(article -> {
+            int supportCount = article.getSupportUserIds().size();
+            int collectCount = article.getCollectUserIds().size();
+            int viewCount = article.getViewUserIds().size();
+            int opposeCount = article.getOpposeUserIds().size();
 
-        // 过滤文章状态
-        List<Article> validArticles = allArticles.stream()
-                .filter(article -> article.isCheck() && !article.isReject() && !article.isDraft() && !article.isDelete())
+            int score = supportCount * 3 + collectCount * 2 + viewCount - opposeCount * 2;
+
+            return new ArticleScore(article, score);
+        }).toList();
+        return articleScores.stream()
+                .sorted(Comparator.comparingInt(ArticleScore::score).reversed()
+                        .thenComparing(a -> a.article().getCreateTime(), Comparator.reverseOrder()))
+                .limit(limit)
+                .map(ArticleScore::article)
                 .collect(Collectors.toList());
-
-        // 统计每篇文章的ViewUser数量
-// 统计每篇文章的ViewUser数量
-        Map<Article, Long> articleViewCountMap = validArticles.stream()
-                .collect(Collectors.toMap(
-                        article -> article,
-                        article -> (long) article.getViewUserIds().size()
-                ));
-
-
-// 按ViewUser数量由高到低排序，并获取所有文章
-        List<Article> hotArticles = articleViewCountMap.entrySet().stream()
-                .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-        return hotArticles;
+    }
+     private record ArticleScore(Article article, int score) {
     }
 }
