@@ -13,12 +13,12 @@ public class UnFollowTheme {
     private UserDataRepository userDataRepository;
     public void unFollowTheme(int userId,int themeId){
         List<Integer> subscriptionThemeId = userDataRepository.findUserDataById(userId).getSubscriptionThemeId();
-        if (!subscriptionThemeId.contains(themeId)) {
-            throw new IllegalArgumentException("Theme is already unfollowed");
+        if (subscriptionThemeId.contains(themeId)) {
+            subscriptionThemeId.remove((Integer) themeId);
+            UserData userData = userDataRepository.findUserDataById(userId);
+            userData.setSubscriptionThemeId(subscriptionThemeId);
+            userDataRepository.save(userData);
         }
-        subscriptionThemeId.remove(Integer.valueOf(themeId));
-        UserData userData = userDataRepository.findUserDataById(userId);
-        userData.setSubscriptionThemeId(subscriptionThemeId);
-        userDataRepository.save(userData);
+
     }
 }
