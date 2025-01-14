@@ -274,6 +274,7 @@ export function useAuth() {
     isLoading,
     isAuthenticated,
     isAdmin,
+    userId: Number(localStorage.getItem('userId')) || -1,
 
     // 方法
     login,

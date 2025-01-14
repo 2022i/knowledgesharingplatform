@@ -5,12 +5,36 @@
       <div 
         v-for="theme in themeStore.getThemesWithCount" 
         :key="theme.theme.id"
-        :class="['category-tab', { active: currentCategory === theme.theme.id.toString() }]"
-        @click="handleCategoryChange(theme.theme.id.toString())"
+        :class="[
+          'category-tab', 
+          { 
+            active: currentCategory === theme.theme.id.toString(),
+            subscribed: theme.theme.subscribed
+          }
+        ]"
       >
-        <el-icon><component :is="getCategoryIcon(theme.theme.name)" /></el-icon>
-        <span>{{ theme.theme.name }}</span>
-        <span class="article-count">({{ theme.articleCount }})</span>
+        <div class="category-content" @click="handleCategoryChange(theme.theme.id.toString())">
+          <el-icon><component :is="getCategoryIcon(theme.theme.name)" /></el-icon>
+          <span>{{ theme.theme.name }}</span>
+          <span class="article-count">({{ theme.articleCount }})</span>
+        </div>
+        <el-button
+          v-if="theme.theme.subscribed"
+          size="small"
+          type="success"
+          @click.stop="handleUnfollow(theme.theme.id)"
+          class="follow-button"
+        >
+          已关注
+        </el-button>
+        <el-button
+          v-else
+          size="small"
+          @click.stop="handleFollow(theme.theme.id)"
+          class="follow-button"
+        >
+          关注
+        </el-button>
       </div>
     </div>
 
@@ -89,6 +113,7 @@ import {
 import ArticleList from '../components/ArticleList.vue'
 import { useUserArticleStore } from '../store/userArticle'
 import { useThemeStore } from '../store/theme'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
@@ -168,6 +193,26 @@ const handleCommentAdded = ({ articleId, comment }: any) => {
   console.log('Comment added:', articleId, comment)
 }
 
+// 处理关注
+const handleFollow = async (themeId: number) => {
+  try {
+    await themeStore.followTheme(themeId)
+    ElMessage.success('关注成功')
+  } catch (error: any) {
+    ElMessage.error(error.message || '关注失败')
+  }
+}
+
+// 处理取消关注
+const handleUnfollow = async (themeId: number) => {
+  try {
+    await themeStore.unfollowTheme(themeId)
+    ElMessage.success('已取消关注')
+  } catch (error: any) {
+    ElMessage.error(error.message || '取消关注失败')
+  }
+}
+
 // 监听路由参数变化
 watch(
   () => route.query.category,
@@ -221,23 +266,37 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px;
+  padding: 12px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 1px solid transparent;
+  position: relative;
 }
 
 .category-tab:hover {
   background-color: var(--el-color-primary-light-9);
   border-color: var(--el-color-primary-light-7);
-  transform: translateY(-1px);
 }
 
 .category-tab.active {
   background-color: var(--el-color-primary-light-8);
   border-color: var(--el-color-primary);
   color: var(--el-color-primary);
+}
+
+.category-tab.subscribed {
+  border-color: var(--el-color-success);
+  background-color: var(--el-color-success-light-9);
+}
+
+.subscribed-tag {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  border-radius: 0 8px 0 8px;
+  font-size: 12px;
+  padding: 2px 6px;
 }
 
 .category-tab .el-icon {
@@ -294,6 +353,17 @@ onMounted(async () => {
 
 .sort-select {
   width: 120px;
+}
+
+.category-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.follow-button {
+  margin-left: auto;
 }
 
 /* 响应式布局 */

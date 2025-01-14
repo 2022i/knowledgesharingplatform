@@ -62,24 +62,15 @@ export const useUserArticleStore = defineStore('userArticle', {
   },
 
   actions: {
-    // 获取当前用户ID
-    getCurrentUserId() {
-      const userInfo = localStorage.getItem('userInfo')
-      const token = localStorage.getItem('token')
-      
+    // 获取用户ID
+    getCurrentUserId(): number {
       console.log('=== 认证信息 ===')
-      console.log('Token:', token)
-      console.log('UserInfo:', userInfo)
+      console.log('Token:', localStorage.getItem('token'))
+      console.log('UserInfo:', localStorage.getItem('userInfo'))
       
-      if (!userInfo) return null
-      try {
-        const parsed = JSON.parse(userInfo)
-        console.log('解析后的用户信息:', parsed)
-        return parsed.id
-      } catch (e) {
-        console.error('解析用户信息失败:', e)
-        return null
-      }
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+      console.log('解析后的用户信息:', userInfo)
+      return Number(userInfo.id) || -1
     },
 
     // 获取文章列表
@@ -164,11 +155,11 @@ export const useUserArticleStore = defineStore('userArticle', {
     // 记录浏览历史
     async addViewRecord(articleId: number) {
       const userId = this.getCurrentUserId()
-      if (!userId) {
-        ElMessage.warning('请先登录')
-        return
+      if (!userId || userId === -1) {
+        throw new Error('请先登录')
       }
 
+      console.log('记录浏览历史:', articleId, '用户ID:', userId)
       try {
         const response = await axios.put(`${API_BASE_URL}/addData/viewData`, null, {
           params: {
@@ -176,231 +167,179 @@ export const useUserArticleStore = defineStore('userArticle', {
             userId
           },
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
 
-        if (response.data.code === 200) {
-          const article = this.articles.find(a => a.id === articleId)
-          if (article) {
-            article.viewUserCount += 1
-          }
-        }
+        console.log('浏览记录响应:', response.data)
+        return response.data.code === 200
       } catch (error) {
-        console.error('Failed to add view record:', error)
-        ElMessage.error('记录浏览历史失败')
+        console.error('记录浏览历史失败:', error)
+        throw error
       }
     },
 
-    // 切换点赞状态
+    // 点赞文章
     async toggleSupport(articleId: number) {
-      console.log('=== 点赞操作开始 ===')
       const userId = this.getCurrentUserId()
-      console.log('当前用户ID:', userId)
-      
-      if (!userId) {
-        console.warn('未找到用户ID，终止操作')
-        ElMessage.warning('请先登录')
-        return
+      if (!userId || userId === -1) {
+        throw new Error('请先登录')
       }
 
+      console.log('开始点赞文章:', articleId, '用户ID:', userId)
       try {
-        console.log('发送点赞请求:', {
-          articleId,
-          userId,
-          url: `${API_BASE_URL}/addDataAndSentMessage/supportData`
-        })
-        
-        const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/supportData?articleId=${articleId}&userId=${userId}`, null, {
+        const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/supportData`, null, {
+          params: {
+            articleId,
+            userId
+          },
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
 
-        console.log('点赞请求响应:', response.data)
-
+        console.log('点赞响应:', response.data)
         if (response.data.code === 200) {
-          const article = this.articles.find(a => a.id === articleId)
-          if (article) {
-            article.support = !article.support
-            article.supportUserCount += article.support ? 1 : -1
-            console.log('文章状态更新:', {
-              articleId,
-              newSupportState: article.support,
-              newCount: article.supportUserCount
-            })
-            ElMessage.success(article.support ? '点赞成功' : '已取消点赞')
-          }
-          // 获取最新的文章数据
-          await this.getRenderedArticle(articleId)
+          // 更新文章状态
+          this.updateArticleState(articleId, 'support', !this.articles.find(a => a.id === articleId)?.support)
+          return await this.getRenderedArticle(articleId)
         }
-      } catch (error: any) {
-        console.error('点赞请求失败:', error)
-        console.error('错误详情:', {
-          message: error.message,
-          response: error.response?.data
-        })
-        ElMessage.error('操作失败，请重试')
+        throw new Error(response.data.msg || '点赞失败')
+      } catch (error) {
+        console.error('点赞失败:', error)
+        throw error
       }
     },
 
-    // 切换反对状态
+    // 反对文章
     async toggleOppose(articleId: number) {
-      console.log('=== 反对操作开始 ===')
       const userId = this.getCurrentUserId()
-      console.log('当前用户ID:', userId)
-      
-      if (!userId) {
-        console.warn('未找到用户ID，终止操作')
-        ElMessage.warning('请先登录')
-        return
+      if (!userId || userId === -1) {
+        throw new Error('请先登录')
       }
 
+      console.log('开始反对文章:', articleId, '用户ID:', userId)
       try {
-        console.log('发送反对请求:', {
-          articleId,
-          userId,
-          url: `${API_BASE_URL}/addDataAndSentMessage/oppositionData`
-        })
-        
         const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/oppositionData`, null, {
           params: {
             articleId,
             userId
           },
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
 
-        console.log('反对请求响应:', response.data)
-
+        console.log('反对响应:', response.data)
         if (response.data.code === 200) {
-          const article = this.articles.find(a => a.id === articleId)
-          if (article) {
-            article.oppose = !article.oppose
-            article.opposeUserCount += article.oppose ? 1 : -1
-            console.log('文章状态更新:', {
-              articleId,
-              newOpposeState: article.oppose,
-              newCount: article.opposeUserCount
-            })
-            ElMessage.success(article.oppose ? '已反对' : '已取消反对')
-          }
-          // 获取最新的文章数据
-          await this.getRenderedArticle(articleId)
+          // 更新文章状态
+          this.updateArticleState(articleId, 'oppose', !this.articles.find(a => a.id === articleId)?.oppose)
+          return await this.getRenderedArticle(articleId)
         }
-      } catch (error: any) {
-        console.error('反对请求失败:', error)
-        console.error('错误详情:', {
-          message: error.message,
-          response: error.response?.data
-        })
-        ElMessage.error('操作失败，请重试')
+        throw new Error(response.data.msg || '反对失败')
+      } catch (error) {
+        console.error('反对失败:', error)
+        throw error
       }
     },
 
-    // 切换收藏状态
+    // 收藏文章
     async toggleCollect(articleId: number) {
       const userId = this.getCurrentUserId()
-      if (!userId) {
-        ElMessage.warning('请先登录')
-        return
+      if (!userId || userId === -1) {
+        throw new Error('请先登录')
       }
 
+      console.log('开始收藏文章:', articleId, '用户ID:', userId)
       try {
-        console.log('发送收藏请求:', {
-          articleId,
-          userId,
-          url: `${API_BASE_URL}/addDataAndSentMessage/collectionData`
-        })
-
         const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/collectionData`, null, {
           params: {
             articleId,
             userId
           },
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
 
-        console.log('收藏请求响应:', response.data)
-
+        console.log('收藏响应:', response.data)
         if (response.data.code === 200) {
-          const article = this.articles.find(a => a.id === articleId)
-          if (article) {
-            article.collect = !article.collect
-            article.collectionUserCount += article.collect ? 1 : -1
-            console.log('文章状态更新:', {
-              articleId,
-              newCollectState: article.collect,
-              newCount: article.collectionUserCount
-            })
-            ElMessage.success(article.collect ? '收藏成功' : '已取消收藏')
-          }
-          // 获取最新的文章数据
+          // 更新文章状态
+          this.updateArticleState(articleId, 'collect', !this.articles.find(a => a.id === articleId)?.collect)
           return await this.getRenderedArticle(articleId)
         }
-      } catch (error: any) {
-        console.error('收藏请求失败:', error)
-        console.error('错误详情:', {
-          message: error.message,
-          response: error.response?.data
-        })
-        ElMessage.error('操作失败，请重试')
-        return false
+        throw new Error(response.data.msg || '收藏失败')
+      } catch (error) {
+        console.error('收藏失败:', error)
+        throw error
       }
     },
 
     // 分享文章
     async shareArticle(articleId: number) {
       const userId = this.getCurrentUserId()
-      if (!userId) {
-        ElMessage.warning('请先登录')
-        return
+      if (!userId || userId === -1) {
+        throw new Error('请先登录')
       }
 
+      console.log('开始分享文章:', articleId, '用户ID:', userId)
       try {
-        console.log('发送分享请求:', {
-          articleId,
-          userId,
-          url: `${API_BASE_URL}/addDataAndSentMessage/shareData`
-        })
-
         const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/shareData`, null, {
           params: {
             articleId,
             userId
           },
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         })
 
-        console.log('分享请求响应:', response.data)
-
+        console.log('分享响应:', response.data)
         if (response.data.code === 200) {
-          const article = this.articles.find(a => a.id === articleId)
-          if (article) {
-            article.shareUserCount += 1
-            console.log('文章状态更新:', {
-              articleId,
-              newShareCount: article.shareUserCount
-            })
-            ElMessage.success('分享成功')
-          }
-          // 获取最新的文章数据
           return await this.getRenderedArticle(articleId)
         }
-      } catch (error: any) {
-        console.error('分享请求失败:', error)
-        console.error('错误详情:', {
-          message: error.message,
-          response: error.response?.data
+        throw new Error(response.data.msg || '分享失败')
+      } catch (error) {
+        console.error('分享失败:', error)
+        throw error
+      }
+    },
+
+    // 添加评论
+    async addComment(content: string, articleId: number, fatherId: number = 0) {
+      const userId = this.getCurrentUserId()
+      if (!userId || userId === -1) {
+        throw new Error('请先登录')
+      }
+
+      console.log('添加评论:', { content, articleId, fatherId, userId })
+      try {
+        const endpoint = fatherId === 0 ? '/write/articleComment' : '/write/commentComment'
+        const response = await axios.post(`${API_BASE_URL}${endpoint}`, {
+          content,
+          userId,
+          articleId,
+          fatherId
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         })
-        ElMessage.error('分享失败，请重试')
-        return false
+
+        console.log('评论响应:', response.data)
+        if (response.data.code === 200) {
+          return true
+        }
+        throw new Error(response.data.msg || '评论失败')
+      } catch (error) {
+        console.error('评论失败:', error)
+        throw error
       }
     },
 
@@ -472,25 +411,29 @@ export const useUserArticleStore = defineStore('userArticle', {
       }
     },
 
-    // 获取渲染后的文章数据
+    // 获取渲染文章数据
     async getRenderedArticle(articleId: number) {
-      console.log('开始获取文章数据:', articleId)
+      const userId = this.getCurrentUserId()
       try {
-        const response = await axios.get(`${API_BASE_URL}/getRenderedArticle`, {
-          params: { articleId }
-        })
-        console.log('获取文章数据响应:', response.data)
+        console.log('获取文章数据:', { articleId, userId })
         
+        const response = await axios.get(`${API_BASE_URL}/getRenderedArticle`, {
+          params: {
+            articleId,
+            userId
+          },
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+
         if (response.data) {
-          // 更新文章列表
-          this.updateArticleInList(response.data)
           return response.data
         }
-        return false
+        throw new Error('获取文章数据失败')
       } catch (error) {
         console.error('获取文章数据失败:', error)
-        ElMessage.error('获取文章数据失败')
-        return false
+        throw error
       }
     },
 

@@ -8,7 +8,7 @@
             <h3 class="article-title" @click="handleArticleClick(item.article.id)">
               {{ item.article.title }}
             </h3>
-            <p class="article-summary">{{ item.article.summary || item.article.content.slice(0, 150) + '...' }}</p>
+            <p class="article-summary">{{ item.article.summary || '暂无概要' }}</p>
             <div class="article-meta">
               <span class="meta-item">
                 <el-icon><User /></el-icon>

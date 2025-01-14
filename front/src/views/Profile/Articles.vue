@@ -241,7 +241,10 @@ const handleEdit = async (articleId: number) => {
   try {
     // 获取文章详情
     const response = await request.get('/server/getRenderedArticle', {
-      params: { articleId }
+      params: { 
+        articleId,
+        userId: userId.value 
+      }
     })
     
     if (response.data) {

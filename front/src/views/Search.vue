@@ -105,9 +105,11 @@ import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import ArticleList from '../components/ArticleList.vue'
 import axios from 'axios'
+import { useAuth } from '../composables/useAuth'
 
 const route = useRoute()
 const router = useRouter()
+const { userId } = useAuth()
 
 // 搜索状态
 const searchQuery = ref('')
@@ -144,12 +146,14 @@ const fetchSearchResults = async () => {
         endpoint = '/articleSearch/default'
     }
 
+    // 构建请求参数，只包含必需的参数
+    const params = {
+      keyword: searchQuery.value.trim(),
+      userId: userId // 总是传递userId，未登录时为-1
+    }
+
     const response = await axios.get(`${API_BASE_URL}${endpoint}`, {
-      params: {
-        keyword: searchQuery.value.trim(),
-        page: currentPage.value,
-        pageSize: pageSize.value
-      },
+      params,
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
@@ -157,8 +161,7 @@ const fetchSearchResults = async () => {
 
     // 在控制台显示搜索结果数据
     console.log('搜索关键词:', searchQuery.value.trim())
-    console.log('当前页码:', currentPage.value)
-    console.log('每页数量:', pageSize.value)
+    console.log('用户ID:', userId)
     console.log('排序方式:', sortBy.value)
     console.log('API返回的原始数据:', response.data)
 
@@ -188,7 +191,7 @@ const fetchSearchResults = async () => {
       hasViewed: article.hasViewed === true
     }))
     
-    total.value = response.data.length // 如果后端返回总数，应该使用 response.data.total
+    total.value = response.data.length
   } catch (error) {
     console.error('搜索失败:', error)
     ElMessage.error('搜索失败，请重试')

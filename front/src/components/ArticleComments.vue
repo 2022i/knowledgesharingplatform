@@ -143,27 +143,64 @@ const loadComments = async (isLoadMore = false) => {
   }
 
   try {
-    const response = await request.get('/server/comment/getComments', {
+    // 获取所有评论
+    const response = await request.get('/server/articleComment/getArticleAllComments', {
       params: {
-        articleId: props.articleId,
-        page: page.value,
-        pageSize: pageSize.value
+        articleId: props.articleId
       }
     })
 
-    const { list, count } = response.data
-    total.value = count
+    console.log('All comments response:', response)
 
-    if (isLoadMore) {
-      comments.value.push(...list)
+    if (Array.isArray(response.data)) {
+      // 将评论数据转换为层级结构
+      const commentMap = new Map() // 用于快速查找评论
+      const rootComments = [] // 存储根评论
+
+      // 第一次遍历：创建所有评论对象并存入 Map
+      response.data.forEach(comment => {
+        const commentObj = {
+          ...comment,
+          user: {
+            id: comment.userId,
+            username: comment.username,
+            avatar: null // 后端暂未提供头像
+          },
+          replies: [] // 初始化回复数组
+        }
+        commentMap.set(comment.id, commentObj)
+      })
+
+      // 第二次遍历：构建评论层级关系
+      response.data.forEach(comment => {
+        const commentObj = commentMap.get(comment.id)
+        if (comment.fatherId === 0) {
+          // 这是根评论
+          rootComments.push(commentObj)
+        } else {
+          // 这是回复评论，添加到父评论的 replies 数组中
+          const parentComment = commentMap.get(comment.fatherId)
+          if (parentComment) {
+            parentComment.replies.push(commentObj)
+          }
+        }
+      })
+
+      // 更新评论列表
+      if (isLoadMore) {
+        comments.value.push(...rootComments)
+      } else {
+        comments.value = rootComments
+      }
+      total.value = rootComments.length
+      hasMore.value = false // 暂时不支持分页
     } else {
-      comments.value = list
+      console.error('Invalid response format for comments:', response)
+      throw new Error('评论数据格式错误')
     }
-
-    hasMore.value = comments.value.length < total.value
   } catch (error) {
     console.error('Failed to load comments:', error)
-    ElMessage.error('评论加载失败，请重试')
+    ElMessage.error(error instanceof Error ? error.message : '评论加载失败，请重试')
   } finally {
     loading.value = false
     loadingMore.value = false
@@ -178,18 +215,24 @@ const submitComment = async () => {
 
   submitting.value = true
   try {
-    await request.post('/server/comment/addComment', {
+    const userId = Number(localStorage.getItem('userId'))
+    if (!userId) {
+      throw new Error('请先登录')
+    }
+
+    await request.post('/server/write/articleComment', {
+      content: commentContent.value,
+      userId,
       articleId: props.articleId,
-      content: commentContent.value
+      fatherId: 0 // 根评论的 fatherId 为 0
     })
 
     ElMessage.success('评论成功')
     commentContent.value = ''
-    page.value = 1
-    loadComments()
-  } catch (error) {
+    loadComments() // 重新加载评论列表
+  } catch (error: any) {
     console.error('Failed to submit comment:', error)
-    ElMessage.error('评论失败，请重试')
+    ElMessage.error(error.message || '评论失败，请重试')
   } finally {
     submitting.value = false
   }
@@ -215,18 +258,24 @@ const submitReply = async (commentId: number) => {
 
   submitting.value = true
   try {
-    await request.post('/server/comment/addReply', {
+    const userId = Number(localStorage.getItem('userId'))
+    if (!userId) {
+      throw new Error('请先登录')
+    }
+
+    await request.post('/server/write/commentComment', {
+      content: replyContent.value,
+      userId,
       articleId: props.articleId,
-      commentId,
-      content: replyContent.value
+      fatherId: commentId
     })
 
     ElMessage.success('回复成功')
     cancelReply()
-    loadComments()
-  } catch (error) {
+    loadComments() // 重新加载评论列表
+  } catch (error: any) {
     console.error('Failed to submit reply:', error)
-    ElMessage.error('回复失败，请重试')
+    ElMessage.error(error.message || '回复失败，请重试')
   } finally {
     submitting.value = false
   }

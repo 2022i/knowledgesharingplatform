@@ -138,8 +138,12 @@ const article = ref<any>(null)
 const loadArticle = async () => {
   loading.value = true
   try {
+    const userId = Number(localStorage.getItem('userId')) || -1
     const response = await request.get('/server/getRenderedArticle', {
-      params: { articleId }
+      params: { 
+        articleId,
+        userId
+      }
     })
     article.value = response.data
   } catch (error) {
@@ -152,7 +156,8 @@ const loadArticle = async () => {
 }
 
 // 格式化数字
-const formatNumber = (num: number) => {
+const formatNumber = (num: number | undefined) => {
+  if (num === undefined || num === null) return '0'
   if (num >= 10000) {
     return (num / 10000).toFixed(1) + 'w'
   }

@@ -115,25 +115,32 @@ const loadArticles = async () => {
       case 'hot':
         response = await request.get('/server/getList/hotArticles')
         break
+      default:
+        throw new Error('未知的标签类型')
     }
 
     console.log('API Response:', response) // 添加日志
 
-    // 检查响应是否是数组
-    if (Array.isArray(response?.data)) {
+    // 检查响应状态和数据
+    if (response?.data?.code === 200 && Array.isArray(response.data.data)) {
+      articles.value = response.data.data
+      total.value = response.data.data.length
+      console.log('Articles loaded:', articles.value)
+    } else if (Array.isArray(response?.data)) {
+      // 直接返回数组的情况
       articles.value = response.data
       total.value = response.data.length
       console.log('Articles loaded:', articles.value)
     } else {
       articles.value = []
       total.value = 0
-      ElMessage.warning('暂无文章')
+      ElMessage.warning(response?.data?.msg || '暂无文章')
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to load articles:', error)
-    ElMessage.error('加载文章失败')
     articles.value = []
     total.value = 0
+    ElMessage.error(error?.response?.data?.msg || error?.message || '加载文章失败')
   } finally {
     loading.value = false
   }

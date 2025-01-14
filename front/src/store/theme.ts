@@ -29,6 +29,7 @@ apiClient.interceptors.request.use(
 export interface Theme {
   id: number
   name: string
+  subscribed?: boolean
 }
 
 // 定义主题数据接口
@@ -96,7 +97,10 @@ export const useThemeStore = defineStore('theme', {
       
       try {
         console.log('开始获取所有分类...')
-        const response = await apiClient.get('/theme/getAllThemeAndArticleCount')
+        const userId = Number(localStorage.getItem('userId')) || -1
+        const response = await apiClient.get('/theme/getAllThemeAndArticleCount', {
+          params: { userId }
+        })
 
         console.log('获取分类响应:', response.data)
         
@@ -104,7 +108,8 @@ export const useThemeStore = defineStore('theme', {
           this.themes = response.data.map(item => ({
             theme: {
               id: parseInt(String(item.theme.id), 10),
-              name: item.theme.name
+              name: item.theme.name,
+              subscribed: item.theme.subscribed
             },
             articleCount: parseInt(String(item.articleCount), 10)
           }))
@@ -131,6 +136,60 @@ export const useThemeStore = defineStore('theme', {
     findThemeByName(name: string): Theme | undefined {
       const themeData = this.themes.find(item => item.theme.name === name)
       return themeData?.theme
+    },
+
+    // 关注分类
+    async followTheme(themeId: number): Promise<boolean> {
+      try {
+        const userId = Number(localStorage.getItem('userId'))
+        if (!userId) {
+          throw new Error('请先登录')
+        }
+
+        const response = await apiClient.put('/follow/followTheme', null, {
+          params: { userId, themeId }
+        })
+
+        if (response.data.code === 200) {
+          // 更新本地状态
+          const themeData = this.themes.find(item => item.theme.id === themeId)
+          if (themeData) {
+            themeData.theme.subscribed = true
+          }
+          return true
+        }
+        throw new Error(response.data.msg || '关注失败')
+      } catch (error: any) {
+        console.error('关注分类失败:', error)
+        throw error
+      }
+    },
+
+    // 取消关注分类
+    async unfollowTheme(themeId: number): Promise<boolean> {
+      try {
+        const userId = Number(localStorage.getItem('userId'))
+        if (!userId) {
+          throw new Error('请先登录')
+        }
+
+        const response = await apiClient.get('/follow/unFollowTheme', {
+          params: { userId, themeId }
+        })
+
+        if (response.data.code === 200) {
+          // 更新本地状态
+          const themeData = this.themes.find(item => item.theme.id === themeId)
+          if (themeData) {
+            themeData.theme.subscribed = false
+          }
+          return true
+        }
+        throw new Error(response.data.msg || '取消关注失败')
+      } catch (error: any) {
+        console.error('取消关注分类失败:', error)
+        throw error
+      }
     }
   }
 }) 
