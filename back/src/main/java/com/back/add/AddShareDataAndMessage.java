@@ -23,6 +23,9 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> shareUserIds = shareUserIdsList.getIdsList(articleId);
+        if(shareUserIds.contains(userId)){
+            return;
+        }
         shareUserIds.add(userId);
         article.setSupportUserIds(shareUserIds);
         articleRepository.save(article);
@@ -31,6 +34,9 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> shareArticleId = shareArticleIdsList.getIdsList(userId);
+        if (shareArticleId.contains(articleId)){
+            return;
+        }
         shareArticleId.add(articleId);
         userData.setShareArticleId(shareArticleId);
         userDataRepository.save(userData);

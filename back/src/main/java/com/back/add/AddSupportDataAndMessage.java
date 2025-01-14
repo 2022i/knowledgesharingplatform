@@ -22,6 +22,9 @@ public class AddSupportDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> supportUserIds = supportUserIdsList.getIdsList(articleId);
+        if(supportUserIds.contains(userId)){
+            return;
+        }
         supportUserIds.add(userId);
         article.setSupportUserIds(supportUserIds);
         articleRepository.save(article);
@@ -30,6 +33,9 @@ public class AddSupportDataAndMessage extends AddDataAndMessage {
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> supportArticleId = supportArticleIdsList.getIdsList(userId);
+        if (supportArticleId.contains(articleId)){
+            return;
+        }
         supportArticleId.add(articleId);
         userData.setSupportArticleIds(supportArticleId);
         userDataRepository.save(userData);

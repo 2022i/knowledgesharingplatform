@@ -21,6 +21,9 @@ public class AddCollectionDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> collectionUserIds = collectUserIdsList.getIdsList(articleId);
+        if(collectionUserIds.contains(userId)){
+            return;
+        }
         collectionUserIds.add(userId);
         article.setSupportUserIds(collectionUserIds);
         articleRepository.save(article);
@@ -29,6 +32,9 @@ public class AddCollectionDataAndMessage extends AddDataAndMessage {
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> collectArticleId = collectArticleIdsList.getIdsList(userId);
+        if (collectArticleId.contains(articleId)){
+            return;
+        }
         collectArticleId.add(articleId);
         userData.setCollectArticleId(collectArticleId);
         userDataRepository.save(userData);
