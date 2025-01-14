@@ -47,7 +47,7 @@ public class ArticleSaverTest {
 
                     Article article = new Article();
                     article.setId(articles.size() + 1); // 假设ID是递增的
-                    article.setAuthorId(count);
+                    article.setAuthorId(1);
                     article.setThemeId(1);
                     article.setCreateTime(LocalDateTime.now());
                     article.setTitle(title);

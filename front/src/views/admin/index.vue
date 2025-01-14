@@ -9,24 +9,11 @@
       <el-menu
         :default-active="activeMenu"
         class="sidebar-menu"
-        @select="handleSelect"
         router
       >
-        <el-menu-item index="/admin/dashboard">
-          <el-icon><DataLine /></el-icon>
-          <span>数据概览</span>
-        </el-menu-item>
         <el-menu-item index="/admin/articles">
           <el-icon><Document /></el-icon>
           <span>文章管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/users">
-          <el-icon><User /></el-icon>
-          <span>用户管理</span>
-        </el-menu-item>
-        <el-menu-item index="/admin/comments">
-          <el-icon><ChatDotRound /></el-icon>
-          <span>评论管理</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -35,7 +22,7 @@
     <div class="main-content">
       <!-- 顶部导航栏 -->
       <div class="navbar">
-        <h2 class="page-title">{{ currentRoute }}</h2>
+        <h2 class="page-title">文章管理</h2>
         <div class="user-info">
           <el-dropdown @command="handleCommand">
             <span class="user-dropdown">
@@ -65,45 +52,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { 
-  DataLine,
-  Document,
-  User,
-  ChatDotRound,
-  Setting,
-  CaretBottom
-} from '@element-plus/icons-vue'
+import { Document, CaretBottom } from '@element-plus/icons-vue'
 import { useAuth } from '../../composables/useAuth'
 
 const router = useRouter()
 const route = useRoute()
-const { userInfo, logout, getCurrentUser } = useAuth()
+const { userInfo, logout } = useAuth()
 
 // 当前激活的菜单项
 const activeMenu = computed(() => route.path)
 
-// 当前路由名称
-const currentRoute = computed(() => {
-  const routeMap: Record<string, string> = {
-    '/admin/dashboard': '数据概览',
-    '/admin/articles': '文章管理',
-    '/admin/users': '用户管理',
-    '/admin/comments': '评论管理',
-    '/admin/settings': '系统设置'
-  }
-  return routeMap[route.path] || '未知页面'
-})
-
 // 用户信息
 const userAvatar = computed(() => userInfo.value?.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png')
 const userName = computed(() => userInfo.value?.name || '管理员')
-
-// 处理菜单选择
-const handleSelect = (index: string) => {
-  router.push(index)
-}
 
 // 处理下拉菜单命令
 const handleCommand = async (command: string) => {
@@ -111,11 +74,6 @@ const handleCommand = async (command: string) => {
     await logout()
   }
 }
-
-// 初始化获取用户信息
-onMounted(async () => {
-  await getCurrentUser()
-})
 </script>
 
 <style scoped>

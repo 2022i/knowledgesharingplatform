@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import Home from '../views/Home.vue'
 
 /**
  * 路由配置列表
@@ -12,17 +13,17 @@ const routes: RouteRecordRaw[] = [
   // 根路径重定向到首页
   {
     path: '/',
-    redirect: () => {
-      const token = localStorage.getItem('token')
-      return token ? '/home' : '/login'
-    }
+    redirect: '/home'
   },
   // 首页路由 - 需要登录权限
   {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/Home.vue'),
-    meta: { requiresAuth: true }
+    component: Home,
+    meta: { 
+      requiresAuth: true,
+      title: '首页'
+    }
   },
   // 登录页面 - 不显示导航栏
   {
@@ -65,34 +66,47 @@ const routes: RouteRecordRaw[] = [
   // 个人中心页面 - 需要登录权限
   {
     path: '/profile',
-    name: 'Profile',
     component: () => import('../views/Profile/index.vue'),
-    meta: { requiresAuth: true },
-    redirect: '/profile/articles',
     children: [
-      // 个人文章列表
+      {
+        path: '',
+        name: 'Profile',
+        redirect: 'articles'
+      },
       {
         path: 'articles',
         name: 'ProfileArticles',
         component: () => import('../views/Profile/Articles.vue')
       },
-      // 个人评论列表
       {
         path: 'comments',
         name: 'ProfileComments',
         component: () => import('../views/Profile/Comments.vue')
       },
-      // 个人收藏列表
+      {
+        path: 'likes',
+        name: 'ProfileLikes',
+        component: () => import('../views/Profile/Likes.vue')
+      },
       {
         path: 'favorites',
         name: 'ProfileFavorites',
         component: () => import('../views/Profile/Favorites.vue')
       },
-      // 个人点赞列表
       {
-        path: 'likes',
-        name: 'ProfileLikes',
-        component: () => import('../views/Profile/Likes.vue')
+        path: 'following',
+        name: 'ProfileFollowing',
+        component: () => import('../views/Profile/Following.vue')
+      },
+      {
+        path: 'achievements',
+        name: 'ProfileAchievements',
+        component: () => import('../views/Profile/Achievements.vue')
+      },
+      {
+        path: 'view-history',
+        name: 'ProfileViewHistory',
+        component: () => import('../views/Profile/ViewHistory.vue')
       }
     ]
   },
@@ -106,26 +120,12 @@ const routes: RouteRecordRaw[] = [
       requiresAdmin: true,
       hideNav: true
     },
+    redirect: '/admin/articles',  // 直接重定向到文章管理页
     children: [
-      {
-        path: 'dashboard',
-        name: 'AdminDashboard',
-        component: () => import('../views/admin/Dashboard.vue')
-      },
       {
         path: 'articles',
         name: 'AdminArticles',
         component: () => import('../views/admin/Articles.vue')
-      },
-      {
-        path: 'users',
-        name: 'AdminUsers',
-        component: () => import('../views/admin/Users.vue')
-      },
-      {
-        path: 'comments',
-        name: 'AdminComments',
-        component: () => import('../views/admin/Comments.vue')
       }
     ]
   },
@@ -167,7 +167,12 @@ router.beforeEach((to, from, next) => {
   })
   
   const token = localStorage.getItem('token')
-  const isAdmin = localStorage.getItem('isAdmin') === 'true'
+  // 从 localStorage 中获取用户信息来判断角色
+  const userInfo = localStorage.getItem('userInfo')
+  const isAdmin = userInfo ? JSON.parse(userInfo).role === 'admin' : false
+  
+  console.log('User role check:', { isAdmin })
+  
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
   const isAuthPage = ['/login', '/register'].includes(to.path)

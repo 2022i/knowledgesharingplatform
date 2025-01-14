@@ -1,34 +1,26 @@
-// 作者信息接口
+// 文章作者接口
 export interface Author {
   id: number
-  name: string
-  avatar: string
+  username: string
 }
 
-// 文章状态类型
-export type ArticleStatus = 'draft' | 'pending' | 'published' | 'rejected' | 'pending_delete'
-
-// 文章信息接口
+// 文章接口
 export interface Article {
   id: number
   title: string
-  excerpt: string
-  content?: string
-  views: number
-  comments: number
-  likes: number
-  status: ArticleStatus
+  Author: Author
+  theme: string
+  content: string
+  summary: string
+  relatedKnowledge: string[]
   createTime: string
-  updateTime?: string
-  rejectReason?: string
-  tags?: string[]
-  author: Author
-}
-
-export interface ArticleFilter {
-  page: number
-  pageSize: number
-  status?: ArticleStatus
-  keyword?: string
-  authorId?: number
+  viewUserCount: number
+  supportUserCount: number
+  opposeUserCount: number
+  commentCount: number
+  collectionUserCount: number
+  shareUserCount: number
+  support: boolean
+  oppose: boolean
+  collect: boolean
 } 

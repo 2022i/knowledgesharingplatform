@@ -54,4 +54,8 @@ public class ArticleTest {
                 .collect(Collectors.toList());
         articleRepository.saveAll(articles);
     }
+    @Test
+    public void test1() {
+        System.out.println(articleRepository.findArticlesByContent("测试"));
+    }
 }
