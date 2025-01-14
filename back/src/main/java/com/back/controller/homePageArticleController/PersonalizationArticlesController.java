@@ -4,6 +4,7 @@ import com.back.dto.article.RenderedArticle;
 import com.back.get.HomePageArticle.PersonalizationArticleForUser;
 import com.back.get.HomePageArticle.PersonalizationArticleForVisitor;
 import com.back.get.preparation.ArticleRenderingPreparation;
+import com.back.get.preparation.RenderedArticleBooleanSet;
 import com.back.index.Article;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;
@@ -20,7 +21,8 @@ public class PersonalizationArticlesController {
     private PersonalizationArticleForUser personalizationArticleforUser;
     @Resource
     private ArticleRenderingPreparation articleRenderingPreparation;
-
+    @Resource
+    private RenderedArticleBooleanSet renderedArticleBooleanSet;
     @GetMapping("/barrierArticlesVisitor")
     @Description("游客身份下推荐信息壁垒文章部分")
     public List<RenderedArticle> getBarrierArticles(@RequestParam List<Integer> ids){
@@ -46,6 +48,6 @@ public class PersonalizationArticlesController {
     @Description("用户身份下获取推荐文章")
     public List<RenderedArticle> getRecommendedArticles(@RequestParam int userId) {
         List<Article> articles=personalizationArticleforUser.getRecommendArticles(userId);
-        return articleRenderingPreparation.getRenderedArticles(articles);
+        return renderedArticleBooleanSet.setRenderedArticleBoolean(articleRenderingPreparation.getRenderedArticles(articles),userId);
     }
 }

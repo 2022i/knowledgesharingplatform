@@ -13,12 +13,11 @@ public class FollowTheme {
     private UserDataRepository userDataRepository;
     public void followTheme(int userId,int themeId){
         List<Integer> subscriptionThemeId = userDataRepository.findUserDataById(userId).getSubscriptionThemeId();
-        if (subscriptionThemeId.contains(themeId)) {
-            throw new IllegalArgumentException("Theme is already followed");
+        if (!subscriptionThemeId.contains(themeId)) {
+            subscriptionThemeId.add(themeId);
+            UserData userData = userDataRepository.findUserDataById(userId);
+            userData.setSubscriptionThemeId(subscriptionThemeId);
+            userDataRepository.save(userData);
         }
-        subscriptionThemeId.add(themeId);
-        UserData userData = userDataRepository.findUserDataById(userId);
-        userData.setSubscriptionThemeId(subscriptionThemeId);
-        userDataRepository.save(userData);
     }
 }

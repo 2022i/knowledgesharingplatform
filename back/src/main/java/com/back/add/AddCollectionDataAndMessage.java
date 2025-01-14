@@ -25,7 +25,7 @@ public class AddCollectionDataAndMessage extends AddDataAndMessage {
             return;
         }
         collectionUserIds.add(userId);
-        article.setSupportUserIds(collectionUserIds);
+        article.setCollectUserIds(collectionUserIds);
         articleRepository.save(article);
     }
     @Override
