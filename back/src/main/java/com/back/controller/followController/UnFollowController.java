@@ -16,17 +16,17 @@ public class UnFollowController {
     @Resource
     private UnFollowUser unFollowUser;
 
-    @GetMapping("/unFollowTheme")
+    @PutMapping("/unFollowTheme")
     @Description("用户点击取关某一主题")
     public Response followTheme(@RequestParam int userId, @RequestParam int themeId) {
         unFollowTheme.unFollowTheme(userId,themeId);
         return Response.successAddDataAndSentMessage();
     }
 
-    @GetMapping("/unFollowUser")
+    @PutMapping("/unFollowUser")
     @Description("用户点击取关另一用户")
-    public Response followUser(@RequestParam int userId, @RequestParam int followUserId) {
-        unFollowUser.unFollowUser(userId,followUserId);
+    public Response followUser(@RequestParam int currentUserId, @RequestParam int followUserId) {
+        unFollowUser.unFollowUser(currentUserId,followUserId);
         return Response.successAddDataAndSentMessage();
     }
 }
