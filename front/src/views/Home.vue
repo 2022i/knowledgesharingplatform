@@ -16,11 +16,12 @@
     <div class="main-content">
       <!-- 左侧文章列表 -->
       <div class="content-left">
-        <!-- 使用 v-loading 显示加载状态 -->
         <article-list 
           :articles="articles"
           :loading="loading"
           @update:articles="articles = $event"
+          @page-change="handlePageChange"
+          :empty-text="getEmptyText()"
         />
       </div>
 
@@ -100,48 +101,110 @@ const loadArticles = async () => {
     let response
     const userId = getUserId()
 
+    console.log('=== 开始加载文章列表 ===')
+    console.log('当前标签:', activeTab.value)
+    console.log('用户ID:', userId)
+
+    let apiEndpoint = ''
+    let requestParams = {}
+
     // 根据不同的tab调用不同的接口
     switch (activeTab.value) {
       case 'follow':
-        response = await request.get('/server/getList/followArticles', {
-          params: { userId }
-        })
+        apiEndpoint = '/server/getList/followArticles'
+        requestParams = { userId }
         break
       case 'recommend':
-        response = await request.get('/server/getList/recommendedArticlesUser', {
-          params: { userId }
-        })
+        apiEndpoint = '/server/getList/recommendedArticlesUser'
+        requestParams = { userId }
         break
       case 'hot':
-        response = await request.get('/server/getList/hotArticles')
+        apiEndpoint = '/server/getList/hotArticles'
+        requestParams = {}
         break
       default:
         throw new Error('未知的标签类型')
     }
 
-    console.log('API Response:', response) // 添加日志
+    // 打印请求信息
+    console.log('=== 发送请求 ===')
+    console.log('请求URL:', apiEndpoint)
+    console.log('请求参数:', requestParams)
+    console.log('完整请求URL:', `http://127.0.0.1:8081${apiEndpoint}${Object.keys(requestParams).length ? '?' + new URLSearchParams(requestParams).toString() : ''}`)
 
-    // 检查响应状态和数据
-    if (response?.data?.code === 200 && Array.isArray(response.data.data)) {
-      articles.value = response.data.data
-      total.value = response.data.data.length
-      console.log('Articles loaded:', articles.value)
-    } else if (Array.isArray(response?.data)) {
-      // 直接返回数组的情况
-      articles.value = response.data
+    response = await request.get(apiEndpoint, {
+      params: requestParams
+    })
+
+    console.log('=== 接收响应 ===')
+    console.log('响应状态:', response.status)
+    console.log('响应头:', response.headers)
+    console.log('响应数据:', response.data)
+
+    // 检查响应数据是否是数组
+    if (Array.isArray(response.data)) {
+      console.log('=== 数据处理 ===')
+      console.log('原始数据条数:', response.data.length)
+      
+      // 格式化文章数据
+      articles.value = response.data.map((article: any) => {
+        const formattedArticle = {
+          id: article.id,
+          title: article.title,
+          theme: article.theme,
+          content: article.content,
+          summary: article.summary,
+          relatedKnowledge: article.relatedKnowledge || [],
+          createTime: article.createTime,
+          viewUserCount: article.viewUserCount || 0,
+          supportUserCount: article.supportUserCount || 0,
+          opposeUserCount: article.opposeUserCount || 0,
+          commentCount: article.commentCount || 0,
+          collectionUserCount: article.collectionUserCount || 0,
+          shareUserCount: article.shareUserCount || 0,
+          author: {
+            id: article.author?.id,
+            username: article.author?.username || '未知用户',
+            avatar: article.author?.avatar
+          },
+          support: article.support || false,
+          oppose: article.oppose || false,
+          collect: article.collect || false
+        }
+        return formattedArticle
+      })
+
       total.value = response.data.length
-      console.log('Articles loaded:', articles.value)
+      
+      // 打印处理后的数据示例
+      if (articles.value.length > 0) {
+        console.log('处理后的第一篇文章数据:', articles.value[0])
+        console.log('处理后的数据条数:', articles.value.length)
+      }
     } else {
+      console.error('=== 数据格式错误 ===')
+      console.error('预期格式: Array')
+      console.error('实际数据:', response.data)
       articles.value = []
       total.value = 0
-      ElMessage.warning(response?.data?.msg || '暂无文章')
+      ElMessage.warning('暂无文章')
     }
   } catch (error: any) {
-    console.error('Failed to load articles:', error)
+    console.error('=== 请求错误 ===')
+    console.error('错误类型:', error.constructor.name)
+    console.error('错误消息:', error.message)
+    console.error('错误堆栈:', error.stack)
+    if (error.response) {
+      console.error('响应状态:', error.response.status)
+      console.error('响应数据:', error.response.data)
+    }
     articles.value = []
     total.value = 0
     ElMessage.error(error?.response?.data?.msg || error?.message || '加载文章失败')
   } finally {
+    console.log('=== 加载文章列表结束 ===')
+    console.log('最终文章数量:', articles.value.length)
+    console.log('加载状态:', loading.value)
     loading.value = false
   }
 }
@@ -172,6 +235,20 @@ onMounted(() => {
 defineOptions({
   name: 'HomePage'
 })
+
+// 获取空状态文本
+const getEmptyText = () => {
+  switch (activeTab.value) {
+    case 'follow':
+      return '暂无关注内容，去关注感兴趣的作者和主题吧'
+    case 'recommend':
+      return '暂无推荐内容'
+    case 'hot':
+      return '暂无热门内容'
+    default:
+      return '暂无内容'
+  }
+}
 </script>
 
 <style scoped>

@@ -65,8 +65,8 @@
       
       <article-list 
         :articles="articleStore.currentPageArticles"
-        v-loading="articleStore.loading"
-        @comment-added="handleCommentAdded"
+        :loading="articleStore.loading"
+        @update:articles="articleStore.setArticles"
       />
 
       <!-- 分页器 -->
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
   Monitor, 
@@ -114,11 +114,29 @@ import ArticleList from '../components/ArticleList.vue'
 import { useUserArticleStore } from '../store/userArticle'
 import { useThemeStore } from '../store/theme'
 import { ElMessage } from 'element-plus'
+import request from '../utils/request'
 
 const route = useRoute()
 const router = useRouter()
 const articleStore = useUserArticleStore()
 const themeStore = useThemeStore()
+
+// 获取当前用户ID
+const currentUserId = computed(() => Number(localStorage.getItem('userId')) || -1)
+
+// 分类列表
+const themes = ref<any[]>([])
+
+// 加载分类列表
+const loadThemes = async () => {
+  try {
+    await themeStore.fetchAllThemes()
+    themes.value = themeStore.getAllThemes
+  } catch (error) {
+    console.error('Failed to load themes:', error)
+    ElMessage.error('加载分类失败')
+  }
+}
 
 // 排序方式
 const sortBy = ref('latest')
@@ -180,11 +198,86 @@ const handleSizeChange = (size: number) => {
 
 // 加载文章
 const loadArticles = async () => {
-  const params = {
-    category: currentCategory.value,
-    sortBy: sortBy.value === 'latest' ? 'time' : sortBy.value === 'views' ? 'views' : 'likes'
+  try {
+    const userId = currentUserId.value
+    const themeId = Number(currentCategory.value)
+    
+    console.log('=== 开始加载分类文章 ===')
+    console.log('用户ID:', userId)
+    console.log('分类ID:', themeId)
+    
+    if (!themeId) {
+      console.log('未选择分类，清空文章列表')
+      articleStore.setArticles([])
+      return
+    }
+
+    articleStore.setLoading(true)
+    
+    console.log('发起API请求:', {
+      url: '/server/theme/getThemeAllArticles',
+      params: { themeId, userId }
+    })
+    
+    const response = await request.get('/server/theme/getThemeAllArticles', {
+      params: {
+        themeId,
+        userId
+      }
+    })
+
+    console.log('API响应:', response)
+
+    // 检查响应数据是否是数组
+    if (Array.isArray(response.data)) {
+      console.log('获取文章成功，文章数量:', response.data.length)
+      // 更新文章列表
+      articleStore.setArticles(response.data.map((article: any) => ({
+        id: article.id,
+        title: article.title,
+        theme: article.theme,
+        content: article.content,
+        summary: article.summary,
+        relatedKnowledge: article.relatedKnowledge || [],
+        createTime: article.createTime,
+        viewUserCount: article.viewUserCount || 0,
+        supportUserCount: article.supportUserCount || 0,
+        opposeUserCount: article.opposeUserCount || 0,
+        commentCount: article.commentCount || 0,
+        collectionUserCount: article.collectionUserCount || 0,
+        shareUserCount: article.shareUserCount || 0,
+        author: {
+          id: article.author?.id,
+          username: article.author?.username || '未知用户',
+          avatar: article.author?.avatar
+        },
+        support: article.support || false,
+        oppose: article.oppose || false,
+        collect: article.collect || false
+      })))
+      // 更新总数
+      articleStore.setTotal(response.data.length)
+      
+      // 打印第一篇文章的数据结构
+      if (response.data.length > 0) {
+        console.log('第一篇文章数据示例:', response.data[0])
+      }
+    } else {
+      console.error('API返回格式错误:', response.data)
+      throw new Error('获取文章列表失败：返回数据格式不正确')
+    }
+  } catch (error) {
+    console.error('加载文章失败:', error)
+    console.error('错误详情:', {
+      message: error instanceof Error ? error.message : '未知错误',
+      error
+    })
+    ElMessage.error(error instanceof Error ? error.message : '获取文章列表失败')
+    articleStore.setArticles([])
+  } finally {
+    console.log('=== 加载分类文章结束 ===')
+    articleStore.setLoading(false)
   }
-  await articleStore.fetchArticles(params)
 }
 
 // 处理评论添加
@@ -206,10 +299,43 @@ const handleFollow = async (themeId: number) => {
 // 处理取消关注
 const handleUnfollow = async (themeId: number) => {
   try {
-    await themeStore.unfollowTheme(themeId)
-    ElMessage.success('已取消关注')
-  } catch (error: any) {
-    ElMessage.error(error.message || '取消关注失败')
+    if (!currentUserId.value || currentUserId.value === -1) {
+      ElMessage.warning('请先登录')
+      return
+    }
+
+    // 构造请求数据
+    const data = `userId=${currentUserId.value}&themeId=${themeId}`
+    
+    // 打印请求URL和参数
+    console.log('Unfollow theme request:', {
+      url: 'http://127.0.0.1:8081/server/follow/unFollowTheme',
+      method: 'PUT',
+      data,
+      currentUserId: currentUserId.value
+    })
+
+    const response = await request.put('/server/follow/unFollowTheme', data, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+
+    if (response.data.code === 200) {
+      // 更新分类的关注状态
+      const theme = themes.value.find(t => t.id === themeId)
+      if (theme) {
+        theme.subscribed = false
+      }
+      ElMessage.success('已取消关注')
+      // 重新加载分类列表
+      await loadThemes()
+    } else {
+      throw new Error(response.data.msg || '取消关注失败')
+    }
+  } catch (error) {
+    console.error('Failed to unfollow theme:', error)
+    ElMessage.error(error instanceof Error ? error.message : '取消关注失败')
   }
 }
 
@@ -219,6 +345,8 @@ watch(
   (newCategory) => {
     if (newCategory !== currentCategory.value) {
       currentCategory.value = newCategory?.toString() || ''
+      // 重置页码
+      articleStore.setCurrentPage(1)
       loadArticles()
     }
   }
@@ -226,6 +354,8 @@ watch(
 
 // 监听排序方式变化
 watch(sortBy, () => {
+  // 重置页码
+  articleStore.setCurrentPage(1)
   loadArticles()
 })
 

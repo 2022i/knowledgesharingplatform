@@ -16,7 +16,21 @@
               <el-avatar :size="32" :src="article.Author?.avatar">
                 {{ article.Author?.username?.charAt(0).toUpperCase() }}
               </el-avatar>
-              <span class="author-name">{{ article.Author?.username }}</span>
+              <div class="author-name">
+                <router-link :to="`/user/${article.Author?.id}`">
+                  {{ article.Author?.username }}
+                </router-link>
+                <!-- 只有当当前用户不是作者时才显示关注按钮 -->
+                <el-button
+                  v-if="userId && article.Author?.id !== userId"
+                  :type="article.Author?.followed ? 'success' : 'primary'"
+                  size="small"
+                  @click="handleFollowAuthor"
+                  :loading="followLoading"
+                >
+                  {{ article.Author?.followed ? '已关注' : '关注' }}
+                </el-button>
+              </div>
             </div>
             <el-tag size="small" type="info">{{ article.theme }}</el-tag>
             <span class="publish-time">{{ formatTime(article.createTime) }}</span>
@@ -118,6 +132,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 import ArticleComments from '../components/ArticleComments.vue'
+import { useAuth } from '../composables/useAuth'
 
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
@@ -125,6 +140,8 @@ dayjs.locale('zh-cn')
 const route = useRoute()
 const router = useRouter()
 const articleStore = useUserArticleStore()
+const { userId } = useAuth()
+const followLoading = ref(false)
 
 // 文章ID
 const articleId = Number(route.params.id)
@@ -138,6 +155,10 @@ const article = ref<any>(null)
 const loadArticle = async () => {
   loading.value = true
   try {
+    // 先记录浏览历史
+    await articleStore.addViewRecord(articleId)
+    console.log('浏览历史记录成功')
+
     const userId = Number(localStorage.getItem('userId')) || -1
     const response = await request.get('/server/getRenderedArticle', {
       params: { 
@@ -145,10 +166,40 @@ const loadArticle = async () => {
         userId
       }
     })
-    article.value = response.data
-  } catch (error) {
-    console.error('Failed to load article:', error)
-    ElMessage.error('文章加载失败，请重试')
+
+    console.log('=== 文章数据加载 ===');
+    console.log('原始响应数据:', response.data);
+
+    if (response.data) {
+      article.value = {
+        ...response.data,
+        Author: response.data.Author || response.data.author || null
+      }
+      
+      // 确保作者信息存在且格式正确
+      if (article.value.Author) {
+        article.value.Author = {
+          id: article.value.Author.id || article.value.Author.userId,
+          username: article.value.Author.username || article.value.Author.name,
+          avatar: article.value.Author.avatar,
+          followed: article.value.Author.followed || false
+        }
+      }
+    } else {
+      throw new Error('文章数据为空');
+    }
+  } catch (error: any) {
+    console.error('文章加载失败:', error);
+    if (error.message === '请先登录') {
+      ElMessage.warning('登录后可以获得更好的阅读体验')
+    } else {
+      console.error('错误详情:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      ElMessage.error('文章加载失败，请重试')
+    }
     article.value = null
   } finally {
     loading.value = false
@@ -217,21 +268,146 @@ const handleShare = async () => {
   }
 }
 
-// 处理文章内容
+// 添加默认图片的 Base64 编码
+const DEFAULT_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF0WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNy4yLWMwMDAgNzkuMWI2NWE3OWI0LCAyMDIyLzA2LzEzLTIyOjAxOjAxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjQuMCAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjMtMDEtMjVUMTY6NDA6NTgrMDg6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjMtMDEtMjVUMTY6NDA6NTgrMDg6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIzLTAxLTI1VDE2OjQwOjU4KzA4OjAwIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjY1ZWRkMjQzLTk5ZTAtNDM5Yy1hNmJlLTY3NjA2YmY1NDRhYiIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjY1ZWRkMjQzLTk5ZTAtNDM5Yy1hNmJlLTY3NjA2YmY1NDRhYiIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjY1ZWRkMjQzLTk5ZTAtNDM5Yy1hNmJlLTY3NjA2YmY1NDRhYiIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjY1ZWRkMjQzLTk5ZTAtNDM5Yy1hNmJlLTY3NjA2YmY1NDRhYiIgc3RFdnQ6d2hlbj0iMjAyMy0wMS0yNVQxNjo0MDo1OCswODowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDI0LjAgKE1hY2ludG9zaCkiLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAALAAAAAAyADIAAAL/jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/AwdLT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsaPIgwocKFDBs6fAgxosSJFCtavIgxo8aNs2A7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr2ryJM6fOnTx7+vwJNKjQoUSLGj2KNKnSpUybOn0KNarUqVSrWr2KNavWrVy7ev0KNqzYsWTLmj2LNq3atWzbun0LN67cuXTr2r2LN6/evXz7+v0LOLDgwYQLGz6MOLHixYwbO34MObLkyZQrW76MObPmzZw7e/4MOrTo0aRLmz6NOrXq1axbu34NO7bs2bRr276NO7fu3bx7+/4NPLjw4cSLGz+OPLny5cybO38OPbr06dSrW7+OPbv27dy7e/8OPrz48eTLmz+PPr369ezbu38PP778+fTr27+PP7/+/fz7+/8PYIACDkhggQYeiGCCCi7IYIMOPghhhBJOSGGFFl6IYYYabshhhx5+CGKIIo5IYokmnohiiiquyGKLLr4IY4wyzkhjjTbeiGOOOu7IY48+/ghkkEIOSWSRRh6JZJJKLslkk04+CWWUUk5JZZVWXollllpuyWWXXn4JZphijklmmWaeiWaaaq7JZptuvglnnHLOSWeddt6JZ5567slnn37+CWiggg5KaKGGHopoooouymijjj4KaaSSTkpppZZeimmmm/8Kaqiijkpqqaaeimqqqq7KaquuvgprrLLOSmuttt6Ka6667sprr77+Cmywwg5LbLHGHotsssouy2yzzj4LbbTSTkttNQUAADs='
+
 const processContent = (content: string) => {
   if (!content) return ''
   
-  // 创建临时DOM元素
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = content
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(content, 'text/html')
   
-  // 移除分页相关元素
-  const paginationElements = tempDiv.querySelectorAll(
-    '.el-pagination, [class*="el-pagination"], .pagination, .pager, nav[role="navigation"]'
-  )
-  paginationElements.forEach(el => el.remove())
+  // 处理图片
+  doc.querySelectorAll('img').forEach(img => {
+    // 添加加载和错误处理
+    img.setAttribute('loading', 'lazy')
+    img.setAttribute('onerror', `this.onerror=null;this.src='${DEFAULT_IMAGE}';this.classList.add('img-load-error')`)
+    img.setAttribute('onload', `this.classList.add('img-loaded')`)
+    
+    // 设置图片样式
+    img.style.maxWidth = '100%'
+    img.style.height = 'auto'
+    img.style.display = 'block'
+    img.style.margin = '10px auto'
+  })
   
-  return tempDiv.innerHTML
+  return doc.body.innerHTML
+}
+
+// 添加相关样式
+const style = document.createElement('style')
+style.textContent = `
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+    border-radius: 4px;
+    transition: opacity 0.3s;
+  }
+  
+  .article-content img.img-loaded {
+    opacity: 1;
+  }
+  
+  .article-content img.img-load-error {
+    opacity: 0.6;
+    max-height: 200px;
+    object-fit: contain;
+    background: #f5f5f5;
+  }
+`
+document.head.appendChild(style)
+
+// 处理关注作者
+const handleFollowAuthor = async () => {
+  if (!article.value?.Author?.id) {
+    console.error('作者ID不存在:', article.value?.Author);
+    ElMessage.error('无法获取作者信息');
+    return;
+  }
+
+  console.log('开始关注操作，当前状态：', {
+    userId,
+    authorId: article.value.Author.id,
+    isFollowing: article.value.Author.followed
+  });
+
+  if (!userId) {
+    console.log('用户未登录');
+    ElMessage.warning('请先登录');
+    router.push('/login');
+    return;
+  }
+
+  if (article.value.Author.id === userId) {
+    console.log('尝试关注自己');
+    ElMessage.warning('不能关注自己');
+    return;
+  }
+
+  try {
+    followLoading.value = true;
+    const isFollowing = article.value.Author.followed;
+    const endpoint = isFollowing ? '/server/follow/unFollowUser' : '/server/follow/followUser';
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8081';
+    
+    // 构建请求参数
+    const params = {
+      currentUserId: userId,
+      followUserId: article.value.Author.id
+    };
+    
+    console.log('=== 用户关注操作 ===');
+    console.log('操作类型:', isFollowing ? '取消关注' : '关注');
+    console.log('当前用户ID:', userId);
+    console.log('目标作者ID:', article.value.Author.id);
+    console.log('目标用户:', article.value.Author.username);
+    console.log('请求路径:', endpoint);
+    console.log('请求参数:', params);
+    console.log('完整请求URL:', `${baseUrl}${endpoint}?currentUserId=${userId}&followUserId=${article.value.Author.id}`);
+
+    const response = await request.put(endpoint, null, {
+      params: params,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    console.log('响应数据:', response.data);
+
+    if (response.data.code === 200) {
+      article.value.Author.followed = !isFollowing;
+      ElMessage.success(isFollowing ? '已取消关注' : '关注成功');
+    } else {
+      console.error('服务器返回错误：', response.data);
+      throw new Error(response.data.msg || '操作失败');
+    }
+  } catch (error: any) {
+    console.error('关注操作失败，详细信息：', {
+      error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      config: error.config
+    });
+
+    // 处理特定错误
+    if (error.response?.status === 403) {
+      ElMessage.error('您没有权限执行此操作，请确保已登录并刷新页面');
+    } else if (error.response?.status === 401) {
+      ElMessage.error('登录已过期，请重新登录');
+      router.push('/login');
+    } else if (error.code === 'ECONNABORTED') {
+      ElMessage.error('请求超时，请检查网络连接');
+    } else if (error.message.includes('Network Error')) {
+      ElMessage.error('网络错误，请检查网络连接');
+    } else {
+      ElMessage.error(error.response?.data?.msg || error.message || '操作失败，请重试');
+    }
+  } finally {
+    followLoading.value = false;
+  }
 }
 
 // 组件挂载时加载文章数据
@@ -293,13 +469,23 @@ onMounted(() => {
 .author-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .author-name {
-  font-size: 16px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-name a {
   color: var(--el-text-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.author-name a:hover {
+  color: var(--el-color-primary);
 }
 
 .publish-time {

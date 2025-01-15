@@ -122,12 +122,63 @@ const handleUnfollow = async (followingId: number) => {
       }
     )
 
-    await loadFollowingUsers()
-    ElMessage.success('取消关注成功')
-  } catch (error) {
+    loading.value = true
+    console.log('=== 取消关注操作 ===')
+    console.log('当前用户ID:', userId.value)
+    console.log('目标用户ID:', followingId)
+
+    // 构建请求参数
+    const params = new URLSearchParams()
+    params.append('currentUserId', userId.value.toString())
+    params.append('followUserId', followingId.toString())
+
+    const response = await request.put('/server/follow/unFollowUser', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+
+    console.log('响应数据:', response.data)
+
+    if (response.data.code === 200) {
+      // 从列表中移除该用户
+      followingUsers.value = followingUsers.value.filter(user => user.id !== followingId)
+      // 更新总数
+      total.value = followingUsers.value.length
+      // 更新个人信息中的关注数
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+      userInfo.following = total.value
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+      
+      ElMessage.success('已取消关注')
+    } else {
+      throw new Error(response.data.msg || '取消关注失败')
+    }
+  } catch (error: any) {
     if (error === 'cancel') return
-    console.error('Failed to unfollow user:', error)
-    ElMessage.error('取消关注失败')
+    
+    console.error('取消关注失败:', {
+      error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    })
+    
+    // 处理特定错误
+    if (error.response?.status === 403) {
+      ElMessage.error('您没有权限执行此操作')
+    } else if (error.response?.status === 401) {
+      ElMessage.error('登录已过期，请重新登录')
+      router.push('/login')
+    } else if (error.code === 'ECONNABORTED') {
+      ElMessage.error('请求超时，请检查网络连接')
+    } else if (error.message.includes('Network Error')) {
+      ElMessage.error('网络错误，请检查网络连接')
+    } else {
+      ElMessage.error(error.response?.data?.msg || error.message || '取消关注失败，请重试')
+    }
+  } finally {
+    loading.value = false
   }
 }
 

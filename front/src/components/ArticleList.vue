@@ -44,37 +44,35 @@ const articleStore = useUserArticleStore()
 // 处理点赞
 const handleSupport = async (articleId: number) => {
   try {
-    await articleStore.toggleSupport(articleId)
-    const updatedArticle = await articleStore.getRenderedArticle(articleId)
-    if (updatedArticle) {
+    const result = await articleStore.toggleSupport(articleId)
+    if (result) {
       const newArticles = [...props.articles]
       const index = newArticles.findIndex(article => article.id === articleId)
       if (index !== -1) {
-        newArticles[index] = { ...newArticles[index], ...updatedArticle }
+        newArticles[index] = { ...newArticles[index], ...result }
         emit('update:articles', newArticles)
       }
     }
   } catch (error) {
-    console.error('Failed to toggle support:', error)
-    ElMessage.error('操作失败，请重试')
+    console.error('点赞操作失败:', error)
+    ElMessage.error('点赞失败，请重试')
   }
 }
 
 // 处理反对
 const handleOppose = async (articleId: number) => {
   try {
-    await articleStore.toggleOppose(articleId)
-    const updatedArticle = await articleStore.getRenderedArticle(articleId)
-    if (updatedArticle) {
+    const result = await articleStore.toggleOppose(articleId)
+    if (result) {
       const newArticles = [...props.articles]
       const index = newArticles.findIndex(article => article.id === articleId)
       if (index !== -1) {
-        newArticles[index] = { ...newArticles[index], ...updatedArticle }
+        newArticles[index] = { ...newArticles[index], ...result }
         emit('update:articles', newArticles)
       }
     }
   } catch (error) {
-    console.error('Failed to toggle oppose:', error)
+    console.error('反对操作失败:', error)
     ElMessage.error('操作失败，请重试')
   }
 }
@@ -82,34 +80,30 @@ const handleOppose = async (articleId: number) => {
 // 处理收藏
 const handleCollect = async (articleId: number) => {
   try {
-    console.log('开始收藏操作:', articleId)
     const result = await articleStore.toggleCollect(articleId)
     if (result) {
       const newArticles = [...props.articles]
       const index = newArticles.findIndex(article => article.id === articleId)
       if (index !== -1) {
         newArticles[index] = { ...newArticles[index], ...result }
-        console.log('更新后的文章数据:', newArticles[index])
         emit('update:articles', newArticles)
       }
     }
   } catch (error) {
     console.error('收藏操作失败:', error)
-    ElMessage.error('操作失败，请重试')
+    ElMessage.error('收藏失败，请重试')
   }
 }
 
 // 处理分享
 const handleShare = async (articleId: number) => {
   try {
-    console.log('开始分享操作:', articleId)
     const result = await articleStore.shareArticle(articleId)
     if (result) {
       const newArticles = [...props.articles]
       const index = newArticles.findIndex(article => article.id === articleId)
       if (index !== -1) {
         newArticles[index] = { ...newArticles[index], ...result }
-        console.log('更新后的文章数据:', newArticles[index])
         emit('update:articles', newArticles)
       }
     }
