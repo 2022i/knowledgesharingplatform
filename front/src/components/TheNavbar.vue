@@ -124,13 +124,15 @@ const handleCommand = async (command: string) => {
   top: 0;
   left: 0;
   right: 0;
-  height: 52px;  /* 稍微降低高度 */
+  height: 52px;
   background-color: #fff;
   box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
-  z-index: 100;
+  z-index: 1000;
 }
 
 .nav-content {
+  position: relative;
+  z-index: 1001;
   max-width: 1200px;
   height: 100%;
   margin: 0 auto;
@@ -141,12 +143,16 @@ const handleCommand = async (command: string) => {
 }
 
 .nav-left {
+  position: relative;
+  z-index: 1001;
   display: flex;
   align-items: center;
-  gap: 48px;  /* 增加Logo和导航链接的间距 */
+  gap: 48px;
 }
 
 .logo-link {
+  position: relative;
+  z-index: 1001;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -165,18 +171,21 @@ const handleCommand = async (command: string) => {
 }
 
 .nav-links {
+  position: relative;
+  z-index: 1001;
   display: flex;
-  gap: 24px;  /* 调整导航项间距 */
+  gap: 24px;
 }
 
 .nav-item {
-  color: #8590a6;  /* 未选中时使用更浅的颜色 */
+  position: relative;
+  z-index: 1001;
+  color: #8590a6;
   text-decoration: none;
   font-size: 15px;
   padding: 0 8px;
   line-height: 52px;
   transition: all 0.3s;
-  position: relative;
 }
 
 .nav-item:hover {
@@ -199,13 +208,17 @@ const handleCommand = async (command: string) => {
 }
 
 .nav-right {
+  position: relative;
+  z-index: 1001;
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
 .nav-search {
-  width: 320px;  /* 调整搜索框宽度 */
+  position: relative;
+  z-index: 1001;
+  width: 320px;
 }
 
 :deep(.el-input__wrapper) {
@@ -224,16 +237,22 @@ const handleCommand = async (command: string) => {
 }
 
 .nav-user {
+  position: relative;
+  z-index: 1001;
   display: flex;
   align-items: center;
 }
 
 :deep(.el-dropdown) {
+  position: relative;
+  z-index: 1001;
   display: flex;
   align-items: center;
 }
 
 :deep(.el-avatar) {
+  position: relative;
+  z-index: 1001;
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
   transition: transform 0.2s;
@@ -245,6 +264,8 @@ const handleCommand = async (command: string) => {
 }
 
 :deep(.el-dropdown-menu) {
+  position: relative;
+  z-index: 1002;
   margin-top: 8px;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);

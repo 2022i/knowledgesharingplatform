@@ -333,7 +333,10 @@ const handleSizeChange = (size: number) => {
 
 // 处理标签点击
 const handleTagClick = (tag: any) => {
-  router.push(`/tag/${tag.id}`)
+  router.push({
+    path: '/category',
+    query: { category: tag.id.toString() }
+  })
 }
 
 // 监听路由参数变化

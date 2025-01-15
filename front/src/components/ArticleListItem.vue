@@ -1,10 +1,10 @@
 <template>
-  <div class="article-item" @click="$router.push(`/article/${article.id}`)">
+  <div class="article-item" @click.stop="handleArticleClick">
     <div class="article-header">
       <h3 class="article-title">{{ article.title }}</h3>
       <div class="article-meta">
-        <span class="author">{{ article.author.username }}</span>
-        <span class="theme">{{ article.theme }}</span>
+        <span class="author">{{ article.author?.username || article.Author?.username || '未知用户' }}</span>
+        <span class="theme">{{ article.theme || '未分类' }}</span>
         <span class="time">{{ formatTime(article.createTime) }}</span>
       </div>
     </div>
@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { View, CaretTop, CaretBottom, Star, Share, ChatDotRound } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
@@ -51,8 +52,10 @@ import 'dayjs/locale/zh-cn'
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 
+const router = useRouter()
+
 // Props 定义
-defineProps<{
+const props = defineProps<{
   article: {
     id: number
     title: string
@@ -88,6 +91,11 @@ defineEmits<{
 // 格式化时间
 const formatTime = (time: string) => {
   return dayjs(time).fromNow()
+}
+
+// 处理文章点击
+const handleArticleClick = () => {
+  router.push(`/article/${props.article.id}`)
 }
 </script>
 

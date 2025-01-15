@@ -187,9 +187,20 @@ export const useUserArticleStore = defineStore('userArticle', {
         throw new Error('请先登录')
       }
 
-      console.log('开始点赞文章:', articleId, '用户ID:', userId)
       try {
-        const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/supportData`, null, {
+        const currentArticle = await this.getRenderedArticle(articleId)
+        const isSupported = currentArticle.support
+        
+        const endpoint = isSupported 
+          ? '/reduce/supportData'
+          : '/addDataAndSentMessage/supportData'
+        
+        console.log('=== 点赞操作 ===')
+        console.log('当前状态:', isSupported ? '已点赞' : '未点赞')
+        console.log('调用接口:', endpoint)
+        console.log('请求参数:', { articleId, userId })
+        
+        const response = await axios.put(`${API_BASE_URL}${endpoint}`, null, {
           params: {
             articleId,
             userId
@@ -200,15 +211,14 @@ export const useUserArticleStore = defineStore('userArticle', {
           }
         })
 
-        console.log('点赞响应:', response.data)
         if (response.data.code === 200) {
-          // 更新文章状态
-          this.updateArticleState(articleId, 'support', !this.articles.find(a => a.id === articleId)?.support)
+          console.log('操作成功:', isSupported ? '取消点赞' : '添加点赞')
+          this.updateArticleState(articleId, 'support', !isSupported)
           return await this.getRenderedArticle(articleId)
         }
-        throw new Error(response.data.msg || '点赞失败')
+        throw new Error(response.data.msg || '操作失败')
       } catch (error) {
-        console.error('点赞失败:', error)
+        console.error('点赞操作失败:', error)
         throw error
       }
     },
@@ -220,9 +230,20 @@ export const useUserArticleStore = defineStore('userArticle', {
         throw new Error('请先登录')
       }
 
-      console.log('开始反对文章:', articleId, '用户ID:', userId)
       try {
-        const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/oppositionData`, null, {
+        const currentArticle = await this.getRenderedArticle(articleId)
+        const isOpposed = currentArticle.oppose
+        
+        const endpoint = isOpposed
+          ? '/reduce/opposeData'
+          : '/addDataAndSentMessage/oppositionData'
+        
+        console.log('=== 反对操作 ===')
+        console.log('当前状态:', isOpposed ? '已反对' : '未反对')
+        console.log('调用接口:', endpoint)
+        console.log('请求参数:', { articleId, userId })
+        
+        const response = await axios.put(`${API_BASE_URL}${endpoint}`, null, {
           params: {
             articleId,
             userId
@@ -233,15 +254,14 @@ export const useUserArticleStore = defineStore('userArticle', {
           }
         })
 
-        console.log('反对响应:', response.data)
         if (response.data.code === 200) {
-          // 更新文章状态
-          this.updateArticleState(articleId, 'oppose', !this.articles.find(a => a.id === articleId)?.oppose)
+          console.log('操作成功:', isOpposed ? '取消反对' : '添加反对')
+          this.updateArticleState(articleId, 'oppose', !isOpposed)
           return await this.getRenderedArticle(articleId)
         }
-        throw new Error(response.data.msg || '反对失败')
+        throw new Error(response.data.msg || '操作失败')
       } catch (error) {
-        console.error('反对失败:', error)
+        console.error('反对操作失败:', error)
         throw error
       }
     },
@@ -253,9 +273,20 @@ export const useUserArticleStore = defineStore('userArticle', {
         throw new Error('请先登录')
       }
 
-      console.log('开始收藏文章:', articleId, '用户ID:', userId)
       try {
-        const response = await axios.put(`${API_BASE_URL}/addDataAndSentMessage/collectionData`, null, {
+        const currentArticle = await this.getRenderedArticle(articleId)
+        const isCollected = currentArticle.collect
+        
+        const endpoint = isCollected
+          ? '/reduce/collectData'
+          : '/addDataAndSentMessage/collectionData'
+        
+        console.log('=== 收藏操作 ===')
+        console.log('当前状态:', isCollected ? '已收藏' : '未收藏')
+        console.log('调用接口:', endpoint)
+        console.log('请求参数:', { articleId, userId })
+        
+        const response = await axios.put(`${API_BASE_URL}${endpoint}`, null, {
           params: {
             articleId,
             userId
@@ -266,15 +297,14 @@ export const useUserArticleStore = defineStore('userArticle', {
           }
         })
 
-        console.log('收藏响应:', response.data)
         if (response.data.code === 200) {
-          // 更新文章状态
-          this.updateArticleState(articleId, 'collect', !this.articles.find(a => a.id === articleId)?.collect)
+          console.log('操作成功:', isCollected ? '取消收藏' : '添加收藏')
+          this.updateArticleState(articleId, 'collect', !isCollected)
           return await this.getRenderedArticle(articleId)
         }
-        throw new Error(response.data.msg || '收藏失败')
+        throw new Error(response.data.msg || '操作失败')
       } catch (error) {
-        console.error('收藏失败:', error)
+        console.error('收藏操作失败:', error)
         throw error
       }
     },
@@ -451,6 +481,21 @@ export const useUserArticleStore = defineStore('userArticle', {
         newArticles[index] = article
         this.articles = newArticles
       }
+    },
+
+    // 设置文章列表
+    setArticles(articles: Article[]) {
+      this.articles = articles
+    },
+
+    // 设置加载状态
+    setLoading(loading: boolean) {
+      this.loading = loading
+    },
+
+    // 设置总数
+    setTotal(total: number) {
+      this.total = total
     }
   }
 }) 

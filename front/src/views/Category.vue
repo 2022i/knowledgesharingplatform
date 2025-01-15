@@ -127,6 +127,20 @@ const currentUserId = computed(() => Number(localStorage.getItem('userId')) || -
 // 分类列表
 const themes = ref<any[]>([])
 
+// 定义分类图标映射
+const categoryIcons: Record<string, any> = {
+  '计算机科学': Monitor,
+  '数据科学': DataLine,
+  '网络技术': Connection,
+  '系统架构': Setting,
+  '软件工程': Promotion,
+  '项目管理': Management,
+  '商业分析': Briefcase,
+  '技术趋势': TrendCharts,
+  // 默认图标为 Monitor
+  'default': Monitor
+}
+
 // 加载分类列表
 const loadThemes = async () => {
   try {
@@ -144,21 +158,10 @@ const sortBy = ref('latest')
 // 当前选中的分类
 const currentCategory = ref(route.query.category?.toString() || '')
 
-// 分类图标映射
-const categoryIcons: Record<string, any> = {
-  '前端开发': Monitor,
-  '后端开发': DataLine,
-  '人工智能': Connection,
-  '运维部署': Setting,
-  '产品设计': Promotion,
-  '项目管理': Management,
-  '职场经验': Briefcase,
-  '数据分析': TrendCharts
-}
 
 // 获取分类图标
 const getCategoryIcon = (categoryName: string) => {
-  return categoryIcons[categoryName] || Monitor
+  return categoryIcons[categoryName] || categoryIcons['default']
 }
 
 // 处理分类切换

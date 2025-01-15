@@ -17,7 +17,7 @@
                 {{ article.Author?.username?.charAt(0).toUpperCase() }}
               </el-avatar>
               <div class="author-name">
-                <router-link :to="`/user/${article.Author?.id}`">
+                <router-link :to="`/user/${article.Author?.id}`" @click.stop>
                   {{ article.Author?.username }}
                 </router-link>
                 <!-- 只有当当前用户不是作者时才显示关注按钮 -->
@@ -25,7 +25,7 @@
                   v-if="userId && article.Author?.id !== userId"
                   :type="article.Author?.followed ? 'success' : 'primary'"
                   size="small"
-                  @click="handleFollowAuthor"
+                  @click.stop="handleFollowAuthor"
                   :loading="followLoading"
                 >
                   {{ article.Author?.followed ? '已关注' : '关注' }}
@@ -42,19 +42,6 @@
             </span>
           </div>
         </div>
-        
-        <!-- 知识标签 -->
-        <div v-if="article.relatedKnowledge?.length" class="knowledge-tags">
-          <el-tag
-            v-for="tag in article.relatedKnowledge"
-            :key="tag"
-            size="small"
-            effect="plain"
-            class="knowledge-tag"
-          >
-            {{ tag }}
-          </el-tag>
-        </div>
       </div>
 
       <!-- 文章正文 -->
@@ -67,7 +54,7 @@
           <el-button 
             :type="article.support ? 'primary' : 'default'"
             :icon="CaretTop"
-            @click="handleSupport"
+            @click.stop="handleSupport"
           >
             {{ article.support ? '已点赞' : '点赞' }}
             <span class="count">{{ formatNumber(article.supportUserCount) }}</span>
@@ -77,7 +64,7 @@
           <el-button
             :type="article.oppose ? 'danger' : 'default'"
             :icon="CaretBottom"
-            @click="handleOppose"
+            @click.stop="handleOppose"
           >
             {{ article.oppose ? '已反对' : '反对' }}
             <span class="count">{{ formatNumber(article.opposeUserCount) }}</span>
@@ -87,7 +74,7 @@
           <el-button
             :type="article.collect ? 'warning' : 'default'"
             :icon="Star"
-            @click="handleCollect"
+            @click.stop="handleCollect"
           >
             {{ article.collect ? '已收藏' : '收藏' }}
             <span class="count">{{ formatNumber(article.collectionUserCount) }}</span>
@@ -96,7 +83,7 @@
           <!-- 分享 -->
           <el-button
             :icon="Share"
-            @click="handleShare"
+            @click.stop="handleShare"
           >
             分享
             <span class="count">{{ formatNumber(article.shareUserCount) }}</span>
@@ -171,25 +158,40 @@ const loadArticle = async () => {
     console.log('原始响应数据:', response.data);
 
     if (response.data) {
+      // 处理作者信息
+      const authorData = response.data.Author || response.data.author || {}
+      const processedAuthor = {
+        id: authorData.id || authorData.userId || null,
+        username: authorData.username || authorData.name || '未知用户',
+        avatar: authorData.avatar || '',
+        followed: authorData.followed || false
+      }
+
+      // 处理文章基本信息
       article.value = {
-        ...response.data,
-        Author: response.data.Author || response.data.author || null
+        id: response.data.id,
+        title: response.data.title || '无标题',
+        content: response.data.content || '',
+        theme: response.data.theme || '未分类',
+        createTime: response.data.createTime || new Date().toISOString(),
+        viewUserCount: response.data.viewUserCount || 0,
+        supportUserCount: response.data.supportUserCount || 0,
+        opposeUserCount: response.data.opposeUserCount || 0,
+        collectionUserCount: response.data.collectionUserCount || 0,
+        shareUserCount: response.data.shareUserCount || 0,
+        support: response.data.support || false,
+        oppose: response.data.oppose || false,
+        collect: response.data.collect || false,
+        relatedKnowledge: Array.isArray(response.data.relatedKnowledge) ? response.data.relatedKnowledge : [],
+        Author: processedAuthor
       }
-      
-      // 确保作者信息存在且格式正确
-      if (article.value.Author) {
-        article.value.Author = {
-          id: article.value.Author.id || article.value.Author.userId,
-          username: article.value.Author.username || article.value.Author.name,
-          avatar: article.value.Author.avatar,
-          followed: article.value.Author.followed || false
-        }
-      }
+
+      console.log('处理后的文章数据:', article.value)
     } else {
-      throw new Error('文章数据为空');
+      throw new Error('文章数据为空')
     }
   } catch (error: any) {
-    console.error('文章加载失败:', error);
+    console.error('文章加载失败:', error)
     if (error.message === '请先登录') {
       ElMessage.warning('登录后可以获得更好的阅读体验')
     } else {
@@ -197,7 +199,7 @@ const loadArticle = async () => {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status
-      });
+      })
       ElMessage.error('文章加载失败，请重试')
     }
     article.value = null
@@ -279,9 +281,11 @@ const processContent = (content: string) => {
   
   // 处理图片
   doc.querySelectorAll('img').forEach(img => {
-    // 添加加载和错误处理
+    // 添加延迟加载属性
     img.setAttribute('loading', 'lazy')
+    // 添加错误处理
     img.setAttribute('onerror', `this.onerror=null;this.src='${DEFAULT_IMAGE}';this.classList.add('img-load-error')`)
+    // 添加加载完成处理
     img.setAttribute('onload', `this.classList.add('img-loaded')`)
     
     // 设置图片样式
@@ -289,6 +293,15 @@ const processContent = (content: string) => {
     img.style.height = 'auto'
     img.style.display = 'block'
     img.style.margin = '10px auto'
+    
+    // 阻止图片点击事件冒泡
+    img.setAttribute('onclick', 'event.stopPropagation()')
+  })
+  
+  // 处理链接
+  doc.querySelectorAll('a').forEach(link => {
+    // 阻止链接点击事件冒泡
+    link.setAttribute('onclick', 'event.stopPropagation()')
   })
   
   return doc.body.innerHTML
@@ -304,6 +317,7 @@ style.textContent = `
     margin: 10px auto;
     border-radius: 4px;
     transition: opacity 0.3s;
+    pointer-events: none;  /* 防止图片干扰点击事件 */
   }
   
   .article-content img.img-loaded {
@@ -315,6 +329,11 @@ style.textContent = `
     max-height: 200px;
     object-fit: contain;
     background: #f5f5f5;
+  }
+
+  .article-content a {
+    position: relative;
+    z-index: 1;
   }
 `
 document.head.appendChild(style)
@@ -452,6 +471,8 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .meta-left {
@@ -470,18 +491,24 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .author-name {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .author-name a {
   color: var(--el-text-color-primary);
   text-decoration: none;
   font-weight: 500;
+  position: relative;
+  z-index: 2;
 }
 
 .author-name a:hover {
@@ -507,6 +534,8 @@ onMounted(() => {
   word-wrap: break-word;
   word-break: break-word;
   max-width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .article-actions {
@@ -514,6 +543,8 @@ onMounted(() => {
   padding: 16px 0;
   border-top: 1px solid var(--el-border-color-light);
   border-bottom: 1px solid var(--el-border-color-light);
+  position: relative;
+  z-index: 2;
 }
 
 .action-buttons {
@@ -534,6 +565,8 @@ onMounted(() => {
 
 .comments-section {
   margin-top: 32px;
+  position: relative;
+  z-index: 2;
 }
 
 :deep(.article-content) {
@@ -562,11 +595,15 @@ onMounted(() => {
     height: auto;
     border-radius: 4px;
     margin: 16px 0;
+    pointer-events: none;
   }
 
   a {
     color: var(--el-color-primary);
     text-decoration: none;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
     &:hover {
       text-decoration: underline;
     }

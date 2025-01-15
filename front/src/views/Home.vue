@@ -120,7 +120,7 @@ const loadArticles = async () => {
         break
       case 'hot':
         apiEndpoint = '/server/getList/hotArticles'
-        requestParams = {}
+        requestParams = { userId }
         break
       default:
         throw new Error('未知的标签类型')
