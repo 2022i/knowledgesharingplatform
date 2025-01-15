@@ -17,7 +17,6 @@ public class HotArticle {
     public List<Article> getHotArticles() {
         int limit = 10;
         List<Article> articles = articleRepository.findArticlesByCheckAndDeleteAndReject(true, false, false);
-
         List<ArticleScore> articleScores = articles.stream().map(article -> {
             int supportCount = article.getSupportUserIds().size();
             int collectCount = article.getCollectUserIds().size();

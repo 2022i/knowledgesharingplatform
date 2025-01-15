@@ -10,12 +10,13 @@ import java.util.List;
 public interface ArticleRepository extends ElasticsearchRepository<Article, Integer> {
     Article findArticleById(int id);
     List<Article> findArticleByThemeId(int themeId);
-    List<Article> findArticlesByTitleOrContent(String title, String content);
+    List<Article> findArticlesByTitleOrContentAndCheck(String title, String content, boolean check);
     List<Article> findArticlesByCheck(boolean check);
     void deleteArticleById(int id);
     List<Article> findArticlesByDelete(boolean delete);
     @NotNull List<Article> findAll();
-    List<Article> findArticlesByThemeId(int themeId);
+    List<Article> findArticlesByThemeIdAndCheckAndRejectAndDelete(int themeId, boolean check, boolean reject, boolean delete);
     List<Article> findArticlesByAuthorIdAndDraft(int authorId, boolean draft);
     List<Article> findArticlesByCheckAndDeleteAndReject(boolean check, boolean delete, boolean reject);
+    List<Article> findArticlesByAuthorIdAndCheckAndRejectAndDelete(int authorId, boolean check, boolean reject, boolean delete);
 }

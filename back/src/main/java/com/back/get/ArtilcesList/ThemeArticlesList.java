@@ -12,6 +12,6 @@ public class ThemeArticlesList {
     @Resource
     private ArticleRepository articleRepository;
     public List<Article> getThemeArticles(int themeId) {
-        return articleRepository.findArticlesByThemeId(themeId);
+        return articleRepository.findArticlesByThemeIdAndCheckAndRejectAndDelete(themeId, true, false, false);
     }
 }

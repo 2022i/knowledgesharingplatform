@@ -7,7 +7,6 @@ import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public abstract class RecommendedArticle {
@@ -15,35 +14,33 @@ public abstract class RecommendedArticle {
     private UserDataRepository userDataRepository;
     @Resource
     protected ArticleRepository articleRepository;
-    @Resource
-    private ValidArticle validArticle;
     protected UserData userData;
     private List<Integer> subscribedThemes;
     protected Set<Integer> followedAuthors;
-    private List<Article> recommendedArticles;
 
     public List<Article> getRecommendArticles(int userId){
         init(userId);
         return generateArticles();
     }
     protected List<Article> generateArticles(){
-        recommendedArticles = new ArrayList<>();
-        int articleCount =articleRepository.findAll().size();
-        int randomNum = new Random().nextInt(articleCount)+1;
-        int recommendArticlesCount=10;
+        List<Article> alternativeArticles = new ArrayList<>();
+        for(Integer themeId:subscribedThemes){
+            alternativeArticles.addAll(articleRepository.findArticlesByThemeIdAndCheckAndRejectAndDelete(themeId, true, false, false));
+        }
+        for(Integer authorId:followedAuthors){
+            alternativeArticles.addAll(articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDelete(authorId, true, false, false));
+        }
+        int randomNum = new Random().nextInt(alternativeArticles.size())+1;
+        int recommendArticlesCount=5;
+        List<Article> recommendedArticles = new ArrayList<>();
         while (recommendArticlesCount>0){
-            Article article=articleRepository.findArticleById(randomNum);
-            if(isInsert(article,userData)){
-                recommendedArticles.add(article);
+            if(!recommendedArticles.contains(alternativeArticles.get(randomNum))){
+                recommendedArticles.add(alternativeArticles.get(randomNum));
+                randomNum = new Random().nextInt(alternativeArticles.size())+1;
                 recommendArticlesCount--;
             }
-            randomNum = new Random().nextInt(articleCount)+1;
         }
-        // 去重并随机打乱推荐结果
-        return recommendedArticles.stream()
-                .distinct()
-                .limit(10)  // 推荐10篇文章
-                .collect(Collectors.toList());
+        return recommendedArticles;
     }
     abstract void init(int userId);
     abstract void setFollowedAuthors();
@@ -53,11 +50,5 @@ public abstract class RecommendedArticle {
     protected void setSubscribedThemes(){
         subscribedThemes = new ArrayList<>();
         subscribedThemes.addAll(userData.getSubscriptionThemeId());
-    }
-    protected boolean isInsert(Article article, UserData userData){
-        return validArticle.isArticleValid(article,userData)&&!recommendedArticles.contains(article)&&isRecommend(article);
-    }
-    private boolean isRecommend(Article article){
-        return subscribedThemes.contains(article.getThemeId())||followedAuthors.contains(article.getAuthorId());
     }
 }

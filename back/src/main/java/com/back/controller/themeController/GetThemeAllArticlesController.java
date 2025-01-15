@@ -17,6 +17,6 @@ public class GetThemeAllArticlesController {
     private ArticleRenderingPreparation articleRenderingPreparation;
     @GetMapping("/getThemeAllArticles")
     public List<RenderedArticle> getThemeAllArticles(@RequestParam int themeId, @RequestParam int userId) {
-        return articleRenderingPreparation.getRenderedArticles(articleRepository.findArticlesByThemeId(themeId),userId);
+        return articleRenderingPreparation.getRenderedArticles(articleRepository.findArticlesByThemeIdAndCheckAndRejectAndDelete(themeId, true, false, false),userId);
     }
 }

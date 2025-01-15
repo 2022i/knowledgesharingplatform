@@ -19,11 +19,10 @@ public class AiForArticleSummaryController {
     private AiForArticle aiForArticle;
 
     @PostMapping ("/summary")
-    @Description("使用ai生成文章概要，限制在150字以内")
+    @Description("使用ai生成文章概要")
     public String getSummary(@RequestBody String content){
         try {
-            GenerationResult result = aiForArticle.getSummary(content);
-            return result.getOutput().getChoices().get(0).getMessage().getContent();
+            return aiForArticle.getSummary(content);
         } catch (ApiException | NoApiKeyException | InputRequiredException e) {
             System.err.println("错误信息："+e.getMessage());
             System.out.println("请参考文档：https://help.aliyun.com/zh/model-studio/developer-reference/error-code");

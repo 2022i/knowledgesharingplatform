@@ -23,11 +23,12 @@ public class AiForArticle {
     private static final String API_KEY = "sk-4bbb3c09ffea4106bbf07e0ee66d03b7";
     private static final String MODEL = "qwen-turbo";
     private static final String SYSTEM_MESSAGE = "You are a helpful assistant.";
-    private static final String SUMMARY_PROMPT = "请给出文章概要，直接给出内容即可,限制在150字以内";
+    private static final String SUMMARY_PROMPT = "根据我给你的内容，给出100字以内的不包含html标签的概要";
     private static final String TAGS_PROMPT = "请为文章生成标签，形如食品、生活、财经等,直接给出标签即可";
 
-    public GenerationResult getSummary(String content) throws ApiException, NoApiKeyException, InputRequiredException {
-        return generate(content, SUMMARY_PROMPT);
+    public String getSummary(String content) throws ApiException, NoApiKeyException, InputRequiredException {
+        GenerationResult result = generate(content, SUMMARY_PROMPT);
+        return result.getOutput().getChoices().get(0).getMessage().getContent();
     }
 
     public List<String> generateTags(String content) throws ApiException, NoApiKeyException, InputRequiredException {
