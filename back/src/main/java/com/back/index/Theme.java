@@ -11,6 +11,6 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class Theme {
     @Id
     private int id;
-    @Field(type=FieldType.Keyword)
+    @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String name;
 }

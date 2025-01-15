@@ -29,6 +29,7 @@ spring:
       - /directDelete/**
       - /submitDeleteRequest/**
       - /undoDeleteRequest/**
+      - /search/**
 
   datasource:
     url: jdbc:mysql://localhost:3306/defect_management
