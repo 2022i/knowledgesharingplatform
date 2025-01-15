@@ -31,7 +31,7 @@ public abstract class RecommendedArticle {
             alternativeArticles.addAll(articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDelete(authorId, true, false, false));
         }
         int randomNum = new Random().nextInt(alternativeArticles.size())+1;
-        int recommendArticlesCount=5;
+        int recommendArticlesCount=8;
         List<Article> recommendedArticles = new ArrayList<>();
         while (recommendArticlesCount>0){
             if(!recommendedArticles.contains(alternativeArticles.get(randomNum))){

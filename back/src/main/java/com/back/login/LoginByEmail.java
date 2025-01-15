@@ -10,7 +10,7 @@ public class LoginByEmail extends Login {
     }
 
     @Override
-    protected String getPassword(String email) {
+    protected String getUserPassword(String email) {
         return userRepository.findUserByEmail(email).getPassword();
     }
     @Override

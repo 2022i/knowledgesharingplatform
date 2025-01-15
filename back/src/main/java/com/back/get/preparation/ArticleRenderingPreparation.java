@@ -34,7 +34,7 @@ public class ArticleRenderingPreparation {
         RenderedArticle renderedArticle = new RenderedArticle();
         renderedArticle.setId(article.getId());
         renderedArticle.setTitle(article.getTitle());
-        renderedArticle.setAuthor(userRenderingPreparation.getArticleAuthor(userDataRepository.findUserDataById(article.getAuthorId()),article.getAuthorId()));
+        renderedArticle.setAuthor(userRenderingPreparation.getArticleAuthor(userDataRepository.findUserDataById(article.getAuthorId()),userId));
         renderedArticle.setTheme(themeRepository.findThemeById(article.getThemeId()).getName());
         renderedArticle.setTitle(article.getTitle());
         renderedArticle.setSummary(article.getSummary());

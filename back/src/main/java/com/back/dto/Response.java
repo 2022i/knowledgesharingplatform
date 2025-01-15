@@ -63,11 +63,18 @@ public class Response {
         return result;
     }
 
-    public static Response successLogin(String token, int userId) {
+    public static Response successLoginUser(String token, int userId) {
         Response result = new Response();
         result.setCode(200);
         result.setMsg(token);
-        result.setAdditionalInformation(String.valueOf(userId));
+        result.setAdditionalInformation("Normal User: "+ userId);
+        return result;
+    }
+    public static Response successLoginAdministrator(String token) {
+        Response result = new Response();
+        result.setCode(200);
+        result.setMsg(token);
+        result.setAdditionalInformation("Administrator");
         return result;
     }
 
