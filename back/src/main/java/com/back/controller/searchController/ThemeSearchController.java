@@ -1,4 +1,4 @@
-package com.back.controller;
+package com.back.controller.searchController;
 
 import com.back.dto.RenderedTheme;
 import com.back.get.preparation.ThemeRenderingPreparation;

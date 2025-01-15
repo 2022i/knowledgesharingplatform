@@ -1,4 +1,4 @@
-package com.back.controller.articleSearchController;
+package com.back.controller.searchController.articleSearchController;
 
 import com.back.dto.article.RenderedArticle;
 import com.back.get.preparation.RenderedArticleBooleanSet;
