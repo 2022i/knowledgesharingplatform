@@ -1,5 +1,7 @@
 package com.back.add;
 
+import com.back.get.ArticleIdsList.SupportArticleIdsList;
+import com.back.get.UserIdsList.SupportUserIdsList;
 import com.back.sentSystemMessage.SentOpposeMessage;
 import com.back.get.ArticleIdsList.OpposeArticleIdsList;
 import com.back.get.UserIdsList.OpposeUserIdsList;
@@ -18,29 +20,40 @@ public class AddOppositionDataAndMessage extends AddDataAndMessage {
     private OpposeUserIdsList opposeUserIdsList;
     @Resource
     private OpposeArticleIdsList opposeArticleIdsList;
+    @Resource
+    private SupportUserIdsList supportUserIdsList;
+    @Resource
+    private SupportArticleIdsList supportArticleIdsList;
+    private List<Integer> oppositionUserIds;
+    private List<Integer> oppositionArticleId;
 
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
-        List<Integer> oppositionUserIds = opposeUserIdsList.getIdsList(articleId);
-        if(!oppositionUserIds.contains(userId)){
-            oppositionUserIds.add(userId);
-            article.setOpposeUserIds(oppositionUserIds);
-            articleRepository.save(article);
-        }
+        oppositionUserIds.add(userId);
+        article.setOpposeUserIds(oppositionUserIds);
+        articleRepository.save(article);
     }
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
-        List<Integer> oppositionArticleId = opposeArticleIdsList.getIdsList(userId);
-        if (!oppositionArticleId.contains(articleId)){
-            oppositionArticleId.add(articleId);
-            userData.setOpposeArticleIds(oppositionArticleId);
-            userDataRepository.save(userData);
-        }
+        oppositionArticleId.add(articleId);
+        userData.setOpposeArticleIds(oppositionArticleId);
+        userDataRepository.save(userData);
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){
         sentMessage.sentMessage(articleId,messageGenerator);
+    }
+    @Override
+    protected boolean isAvailable(int articleId, int userId){
+        oppositionUserIds = opposeUserIdsList.getIdsList(articleId);
+        oppositionArticleId = opposeArticleIdsList.getIdsList(userId);
+        List<Integer> supportArticleId = supportArticleIdsList.getIdsList(userId);
+        List<Integer> supportUserIds = supportUserIdsList.getIdsList(articleId);
+        return !oppositionUserIds.contains(userId)&&
+                !oppositionArticleId.contains(articleId)&&
+                !supportArticleId.contains(articleId)&&
+                !supportUserIds.contains(userId);
     }
 }

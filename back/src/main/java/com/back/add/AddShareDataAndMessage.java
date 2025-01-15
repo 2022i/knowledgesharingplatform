@@ -18,15 +18,12 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
     private ShareUserIdsList shareUserIdsList;
     @Resource
     private ShareArticleIdsList shareArticleIdsList;
+    private List<Integer> shareUserIds;
+    private List<Integer> shareArticleId;
 
     @Override
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
-        List<Integer> shareUserIds = shareUserIdsList.getIdsList(articleId);
-        System.out.println(shareUserIds);
-        if(shareUserIds.contains(userId)){
-            return;
-        }
         shareUserIds.add(userId);
         article.setShareUserIds(shareUserIds);
         articleRepository.save(article);
@@ -34,10 +31,6 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
-        List<Integer> shareArticleId = shareArticleIdsList.getIdsList(userId);
-        if (shareArticleId.contains(articleId)){
-            return;
-        }
         shareArticleId.add(articleId);
         userData.setShareArticleId(shareArticleId);
         userDataRepository.save(userData);
@@ -45,5 +38,11 @@ public class AddShareDataAndMessage extends AddDataAndMessage {
     @Override
     protected void sentMessage(int articleId, int messageGenerator){
         sentMessage.sentMessage(articleId,messageGenerator);
+    }
+    @Override
+    protected boolean isAvailable(int articleId, int userId){
+        shareUserIds = shareUserIdsList.getIdsList(articleId);
+        shareArticleId = shareArticleIdsList.getIdsList(userId);
+        return true;
     }
 }
