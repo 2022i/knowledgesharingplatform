@@ -1,7 +1,6 @@
 package com.back.controller.searchController.articleSearchController;
 
 import com.back.dto.article.RenderedArticle;
-import com.back.get.preparation.RenderedArticleBooleanSet;
 import com.back.search.ArticleSearchOrderedSupportCount;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;
@@ -15,11 +14,9 @@ import java.util.List;
 public class ArticleSearchOrderedSupportCountController {
     @Resource
     private ArticleSearchOrderedSupportCount articleSearchOrderedSupportCount;
-    @Resource
-    private RenderedArticleBooleanSet renderedArticleBooleanSet;
     @Description("根据关键字搜索文章，按文章的点赞数由高到低排序，返回文章数据用于渲染")
     @GetMapping("/orderedSupportCount")
     public List<RenderedArticle> getArticles(@RequestParam String keyword,@RequestParam int userId){
-        return renderedArticleBooleanSet.setRenderedArticleBoolean(articleSearchOrderedSupportCount.getArticles(keyword),userId);
+        return articleSearchOrderedSupportCount.getArticles(keyword,userId);
     }
 }

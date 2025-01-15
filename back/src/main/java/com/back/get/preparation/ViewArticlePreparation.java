@@ -21,7 +21,7 @@ public class ViewArticlePreparation {
     private ViewDataRepository viewDataRepository;
     public List<RenderedViewArticle> getRenderedViewArticles(int userId){
         List<Article> viewArticles = viewArticlesList.getArticlesList(userId);
-        List<RenderedArticle> renderedArticles = articleRenderingPreparation.getRenderedArticles(viewArticles);
+        List<RenderedArticle> renderedArticles = articleRenderingPreparation.getRenderedArticles(viewArticles, userId);
         List<RenderedViewArticle> renderedViewArticles = new ArrayList<>();
         for (RenderedArticle renderedArticle : renderedArticles) {
             RenderedViewArticle renderedViewArticle=new RenderedViewArticle();

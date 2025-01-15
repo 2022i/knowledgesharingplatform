@@ -20,6 +20,6 @@ public class WriteArticlesController {
     @Description("个人中心接口，获取用户写过的文章详细信息列表，返回文章数据用于渲染")
     @GetMapping("/getWriteArticles")
     public List<RenderedArticle> getWriteArticles(@RequestParam int userId) {
-        return articleRenderingPreparation.getRenderedArticles(writeArticlesList.getArticlesList(userId));
+        return articleRenderingPreparation.getRenderedArticles(writeArticlesList.getArticlesList(userId), userId);
     }
 }

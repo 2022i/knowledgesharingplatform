@@ -12,7 +12,7 @@ public class RenderedArticleGet {
     private ArticleRepository articleRepository;
     @Resource
     private ArticleRenderingPreparation articleRenderingPreparation;
-    public RenderedArticle getRenderedArticle(int articleId) {
-         return articleRenderingPreparation.getRenderedArticle(articleRepository.findArticleById(articleId));
+    public RenderedArticle getRenderedArticle(int articleId, int userId) {
+         return articleRenderingPreparation.getRenderedArticle(articleRepository.findArticleById(articleId),userId);
     }
 }

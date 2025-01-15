@@ -31,7 +31,7 @@ public class ArticleAndCommentPreparation {
             ArticleAndComment articleAndComment = new ArticleAndComment();
             List<String> comments = getCommentContentList(commentArticleId, userId);
             articleAndComment.setComments(comments);
-            articleAndComment.setArticle(getRenderedArticle(commentArticleId));
+            articleAndComment.setArticle(getRenderedArticle(commentArticleId, userId));
             articleAndComments.add(articleAndComment);
         }
         return articleAndComments;
@@ -44,7 +44,7 @@ public class ArticleAndCommentPreparation {
         }
         return comments;
     }
-    private RenderedArticle getRenderedArticle(int articleId) {
-        return articleRenderingPreparation.getRenderedArticle(articleRepository.findArticleById(articleId));
+    private RenderedArticle getRenderedArticle(int articleId, int userId) {
+        return articleRenderingPreparation.getRenderedArticle(articleRepository.findArticleById(articleId),userId );
     }
 }

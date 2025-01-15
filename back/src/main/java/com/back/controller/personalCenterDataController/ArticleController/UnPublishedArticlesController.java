@@ -17,6 +17,6 @@ public class UnPublishedArticlesController {
     private UnpublishedArticlesList unpublishedArticlesList;
     @GetMapping("/getUnpublishedArticles")
     public List<RenderedArticle> getUnpublishedArticles(@RequestParam int userId) {
-        return articleRenderingPreparation.getRenderedArticles(unpublishedArticlesList.getUnpublishedArticlesList(userId));
+        return articleRenderingPreparation.getRenderedArticles(unpublishedArticlesList.getUnpublishedArticlesList(userId),userId );
     }
 }

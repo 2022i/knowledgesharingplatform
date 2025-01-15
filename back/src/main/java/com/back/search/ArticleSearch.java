@@ -13,5 +13,5 @@ public abstract class ArticleSearch {
     protected ArticleRepository articleRepository;
     @Resource
     protected ArticleRenderingPreparation articleRenderingPreparation;
-    abstract public List<RenderedArticle> getArticles(String keyword);
+    abstract public List<RenderedArticle> getArticles(String keyword, int userId);
 }

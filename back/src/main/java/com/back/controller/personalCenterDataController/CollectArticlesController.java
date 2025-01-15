@@ -3,7 +3,6 @@ package com.back.controller.personalCenterDataController;
 import com.back.dto.article.RenderedArticle;
 import com.back.get.ArtilcesList.CollectArticlesList;
 import com.back.get.preparation.ArticleRenderingPreparation;
-import com.back.get.preparation.RenderedArticleBooleanSet;
 import jakarta.annotation.Resource;
 import jdk.jfr.Description;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +17,9 @@ public class CollectArticlesController {
     private CollectArticlesList collectArticlesList;
     @Resource
     private ArticleRenderingPreparation articleRenderingPreparation;
-    @Resource
-    private RenderedArticleBooleanSet renderedArticleBooleanSet;
     @Description("个人中心接口，获取用户收藏的文章详细信息列表，返回文章数据用于渲染")
     @GetMapping("/getCollectArticles")
     public List<RenderedArticle> getCollectArticles(@RequestParam int userId) {
-        return renderedArticleBooleanSet.setRenderedArticleBoolean(articleRenderingPreparation.getRenderedArticles(collectArticlesList.getArticlesList(userId)),userId);
+        return articleRenderingPreparation.getRenderedArticles(collectArticlesList.getArticlesList(userId),userId);
     }
 }

@@ -19,6 +19,6 @@ public class DeletingArticlesController {
     @Description("个人中心接口，获取用户提交删除请求，待审核的文章")
     @GetMapping("/getDeletingArticles")
     public List<RenderedArticle> getDeletingArticles(@RequestParam int userId) {
-        return articleRenderingPreparation.getRenderedArticles(deletingArticlesList.getDeletingArticlesList(userId));
+        return articleRenderingPreparation.getRenderedArticles(deletingArticlesList.getDeletingArticlesList(userId), userId);
     }
 }

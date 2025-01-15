@@ -19,6 +19,6 @@ public class PublishedArticlesController {
     @Description("个人中心接口，获取用户已发布的文章")
     @GetMapping("/getPublishedArticles")
     public List<RenderedArticle> getPublishedArticles(@RequestParam int userId) {
-        return articleRenderingPreparation.getRenderedArticles(publishedArticleList.getPublishedArticlesList(userId));
+        return articleRenderingPreparation.getRenderedArticles(publishedArticleList.getPublishedArticlesList(userId),userId );
     }
 }
