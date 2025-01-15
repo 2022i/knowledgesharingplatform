@@ -21,23 +21,21 @@ public class AddCollectionDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> collectionUserIds = collectUserIdsList.getIdsList(articleId);
-        if(collectionUserIds.contains(userId)){
-            return;
+        if(!collectionUserIds.contains(userId)){
+            collectionUserIds.add(userId);
+            article.setCollectUserIds(collectionUserIds);
+            articleRepository.save(article);
         }
-        collectionUserIds.add(userId);
-        article.setCollectUserIds(collectionUserIds);
-        articleRepository.save(article);
     }
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> collectArticleId = collectArticleIdsList.getIdsList(userId);
-        if (collectArticleId.contains(articleId)){
-            return;
+        if (!collectArticleId.contains(articleId)){
+            collectArticleId.add(articleId);
+            userData.setCollectArticleId(collectArticleId);
+            userDataRepository.save(userData);
         }
-        collectArticleId.add(articleId);
-        userData.setCollectArticleId(collectArticleId);
-        userDataRepository.save(userData);
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){

@@ -23,23 +23,21 @@ public class AddOppositionDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> oppositionUserIds = opposeUserIdsList.getIdsList(articleId);
-        if(oppositionUserIds.contains(userId)){
-            return;
+        if(!oppositionUserIds.contains(userId)){
+            oppositionUserIds.add(userId);
+            article.setOpposeUserIds(oppositionUserIds);
+            articleRepository.save(article);
         }
-        oppositionUserIds.add(userId);
-        article.setOpposeUserIds(oppositionUserIds);
-        articleRepository.save(article);
     }
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> oppositionArticleId = opposeArticleIdsList.getIdsList(userId);
-        if (oppositionArticleId.contains(articleId)){
-            return;
+        if (!oppositionArticleId.contains(articleId)){
+            oppositionArticleId.add(articleId);
+            userData.setOpposeArticleIds(oppositionArticleId);
+            userDataRepository.save(userData);
         }
-        oppositionArticleId.add(articleId);
-        userData.setOpposeArticleIds(oppositionArticleId);
-        userDataRepository.save(userData);
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){

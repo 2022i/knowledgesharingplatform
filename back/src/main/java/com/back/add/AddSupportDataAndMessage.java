@@ -22,23 +22,21 @@ public class AddSupportDataAndMessage extends AddDataAndMessage {
     protected void addArticleData(int articleId, int userId) {
         Article article = articleRepository.findArticleById(articleId);
         List<Integer> supportUserIds = supportUserIdsList.getIdsList(articleId);
-        if(supportUserIds.contains(userId)){
-            return;
+        if(!supportUserIds.contains(userId)){
+            supportUserIds.add(userId);
+            article.setSupportUserIds(supportUserIds);
+            articleRepository.save(article);
         }
-        supportUserIds.add(userId);
-        article.setSupportUserIds(supportUserIds);
-        articleRepository.save(article);
     }
     @Override
     protected void addUserData(int articleId, int userId) {
         UserData userData = userDataRepository.findUserDataById(userId);
         List<Integer> supportArticleId = supportArticleIdsList.getIdsList(userId);
-        if (supportArticleId.contains(articleId)){
-            return;
+        if (!supportArticleId.contains(articleId)){
+            supportArticleId.add(articleId);
+            userData.setSupportArticleIds(supportArticleId);
+            userDataRepository.save(userData);
         }
-        supportArticleId.add(articleId);
-        userData.setSupportArticleIds(supportArticleId);
-        userDataRepository.save(userData);
     }
     @Override
     protected void sentMessage(int articleId, int messageGenerator){
