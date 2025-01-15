@@ -11,6 +11,6 @@ public class PublishedArticlesList {
     @Resource
     private ArticleRepository articleRepository;
     public List<Article> getPublishedArticlesList(int userId){
-        return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDelete(userId,true,false,false);
+        return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(userId,true,false,false, false);
     }
 }

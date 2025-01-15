@@ -28,7 +28,7 @@ public abstract class RecommendedArticle {
             alternativeArticles.addAll(articleRepository.findArticlesByThemeIdAndCheckAndRejectAndDelete(themeId, true, false, false));
         }
         for(Integer authorId:followedAuthors){
-            alternativeArticles.addAll(articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDelete(authorId, true, false, false));
+            alternativeArticles.addAll(articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(authorId, true, false, false, false));
         }
         int randomNum = new Random().nextInt(alternativeArticles.size())+1;
         int recommendArticlesCount=8;

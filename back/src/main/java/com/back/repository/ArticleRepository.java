@@ -18,6 +18,6 @@ public interface ArticleRepository extends ElasticsearchRepository<Article, Inte
     List<Article> findArticlesByThemeIdAndCheckAndRejectAndDelete(int themeId, boolean check, boolean reject, boolean delete);
     List<Article> findArticlesByAuthorIdAndDraft(int authorId, boolean draft);
     List<Article> findArticlesByCheckAndDeleteAndReject(boolean check, boolean delete, boolean reject);
-    List<Article> findArticlesByAuthorIdAndCheckAndRejectAndDelete(int authorId, boolean check, boolean reject, boolean delete);
+    List<Article> findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(int authorId, boolean check, boolean reject, boolean delete, boolean draft);
     List<Article> findArticlesByAuthorIdAndDelete(int authorId, boolean delete);
 }

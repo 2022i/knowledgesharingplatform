@@ -10,4 +10,5 @@ public class PersonalAchievements {
     private int sharedCount;
     private int CollectedCount;
     private int fansCount;
+    private boolean haveMessage;
 }

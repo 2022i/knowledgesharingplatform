@@ -2,6 +2,7 @@ package com.back.follow;
 
 import com.back.index.UserData;
 import com.back.repository.UserDataRepository;
+import com.back.sentSystemMessage.SentFollowMessage;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.List;
 public class FollowUser {
     @Resource
     private UserDataRepository userDataRepository;
-
+    @Resource
+    private SentFollowMessage sentFollowMessage;
     public void followUser(int userId, int followUserId){
         //将followUserId加入userId的关注列表
         UserData followUserData=userDataRepository.findUserDataById(followUserId);
@@ -24,6 +26,7 @@ public class FollowUser {
             fansList.add(userId);
             followUserData.setFansId(fansList);
             userDataRepository.save(followUserData);
+            sentFollowMessage.sentMessage(userId,followUserId);
         }
     }
 }

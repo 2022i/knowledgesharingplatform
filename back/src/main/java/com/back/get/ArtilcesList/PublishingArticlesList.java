@@ -11,6 +11,6 @@ public class PublishingArticlesList extends WriteArticlesList{
     @Resource
     private ArticleRepository articleRepository;
     public List<Article> getPublishingArticlesList(int userId){
-        return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDelete(userId,false,false,false);
+        return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(userId,false,false,false, false);
     }
 }

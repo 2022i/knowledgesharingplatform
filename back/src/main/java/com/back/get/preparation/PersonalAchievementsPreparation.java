@@ -4,6 +4,8 @@ import com.back.dto.PersonalAchievements;
 import com.back.get.ArtilcesList.WriteArticlesList;
 import com.back.get.UserIdsList.FansIdsList;
 import com.back.index.Article;
+import com.back.index.Message;
+import com.back.repository.MessageRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,6 +16,8 @@ public class PersonalAchievementsPreparation {
     private WriteArticlesList writeArticlesList;
     @Resource
     private FansIdsList fansIdsList;
+    @Resource
+    private MessageRepository messageRepository;
     public PersonalAchievements getPersonalAchievements(int userId) {
         PersonalAchievements personalAchievements = new PersonalAchievements();
         personalAchievements.setWriteArticleCount(getWriteArticleCount(userId));
@@ -23,7 +27,11 @@ public class PersonalAchievementsPreparation {
         personalAchievements.setSharedCount(getSharedCount(userId));
         personalAchievements.setCollectedCount(getCollectedCount(userId));
         personalAchievements.setFansCount(getFansCount(userId));
+        personalAchievements.setHaveMessage(haveMessage(userId));
         return personalAchievements;
+    }
+    private boolean haveMessage(int userId) {
+        return !messageRepository.findMessagesByMessageRecipientIdAndRead(userId, false).isEmpty();
     }
     private int getWriteArticleCount(int userId) {
         return writeArticlesList.getArticlesList(userId).size();
