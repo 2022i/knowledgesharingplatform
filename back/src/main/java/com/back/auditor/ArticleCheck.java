@@ -18,6 +18,7 @@ public class ArticleCheck {
     }
     public Response rejectArticle(int articleId) {
         Article article = articleRepository.findArticleById(articleId);
+        article.setCheck(true);
         article.setReject(true);
         articleRepository.save(article);
         return Response.successRejectArticle();

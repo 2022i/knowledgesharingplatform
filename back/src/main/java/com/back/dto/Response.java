@@ -67,7 +67,7 @@ public class Response {
         Response result = new Response();
         result.setCode(200);
         result.setMsg(token);
-        result.setAdditionalInformation("Normal User: "+ userId);
+        result.setAdditionalInformation(String.valueOf(userId));
         return result;
     }
     public static Response successLoginAdministrator(String token) {
