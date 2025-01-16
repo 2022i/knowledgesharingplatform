@@ -5,6 +5,7 @@ import com.back.get.ArtilcesList.WriteArticlesList;
 import com.back.get.UserIdsList.FansIdsList;
 import com.back.index.Article;
 import com.back.index.Message;
+import com.back.repository.ArticleRepository;
 import com.back.repository.MessageRepository;
 import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
@@ -21,6 +22,8 @@ public class PersonalAchievementsPreparation {
     private MessageRepository messageRepository;
     @Resource
     private UserDataRepository userDataRepository;
+    @Resource
+    private ArticleRepository articleRepository;
     public PersonalAchievements getPersonalAchievements(int userId) {
         PersonalAchievements personalAchievements = new PersonalAchievements();
         personalAchievements.setUserName(getUserName(userId));
@@ -33,6 +36,9 @@ public class PersonalAchievementsPreparation {
         personalAchievements.setHaveMessage(haveMessage(userId));
         return personalAchievements;
     }
+    private List<Article> getPublishedArticles(int userId) {
+        return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(userId, true, false, false, false);
+    }
     private String getUserName(int userId) {
         return userDataRepository.findUserDataById(userId).getUsername();
     }
@@ -43,17 +49,19 @@ public class PersonalAchievementsPreparation {
         return writeArticlesList.getArticlesList(userId).size();
     }
     private int getSupportedCount(int userId) {
-        List<Article> articles = writeArticlesList.getArticlesList(userId);
+        List<Article> articles = getPublishedArticles(userId);
         int count = 0;
         if (!articles.isEmpty()) {
             for (Article article : articles) {
-                count +=article.getSupportUserIds().size();
+                if(article!=null){
+                    count +=article.getSupportUserIds().size();
+                }
             }
         }
         return count;
     }
     private int getOpposedCount(int userId) {
-        List<Article> articles = writeArticlesList.getArticlesList(userId);
+        List<Article> articles = getPublishedArticles(userId);
         int count = 0;
         if(!articles.isEmpty()){
             for (Article article : articles) {
@@ -63,7 +71,7 @@ public class PersonalAchievementsPreparation {
         return count;
     }
     private int getSharedCount(int userId) {
-        List<Article> articles = writeArticlesList.getArticlesList(userId);
+        List<Article> articles = getPublishedArticles(userId);
         int count = 0;
         if(!articles.isEmpty()) {
             for (Article article : articles) {
@@ -73,7 +81,7 @@ public class PersonalAchievementsPreparation {
         return count;
     }
     private int getCollectedCount(int userId) {
-        List<Article> articles = writeArticlesList.getArticlesList(userId);
+        List<Article> articles = getPublishedArticles(userId);
         int count = 0;
         if(!articles.isEmpty()) {
             for (Article article : articles) {
