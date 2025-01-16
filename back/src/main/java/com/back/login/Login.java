@@ -25,13 +25,14 @@ public abstract class Login {
         if(!isAccountExit(loginRequest.getUserUniqueIdentifier())){
             return Response.notFoundUser();
         } else if(isUserExist(loginRequest.getUserUniqueIdentifier()) && isUserPasswordCorrect(loginRequest.getPassword(),loginRequest.getUserUniqueIdentifier())) {
-            return Response.successLoginUser(generateToken(loginRequest),getUserId(loginRequest.getUserUniqueIdentifier()));
+            return Response.successLoginUser(getUserId(loginRequest.getUserUniqueIdentifier()),generateToken(loginRequest),getUsername(loginRequest.getUserUniqueIdentifier()));
         }
         else if (isAdministratorExist(loginRequest.getUserUniqueIdentifier()) && isAdministratorPasswordCorrect(loginRequest.getPassword(),loginRequest.getUserUniqueIdentifier())) {
             return Response.successLoginAdministrator(generateToken(loginRequest));
         }
         return Response.errorPassword();
     }
+    abstract String getUsername(String userUniqueIdentifier);
     private boolean isAccountExit(String userUniqueIdentifier) {
         return isUserExist(userUniqueIdentifier) || isAdministratorExist(userUniqueIdentifier);
     }
