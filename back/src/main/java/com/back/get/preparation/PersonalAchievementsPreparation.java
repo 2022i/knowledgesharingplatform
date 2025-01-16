@@ -46,7 +46,7 @@ public class PersonalAchievementsPreparation {
         return !messageRepository.findMessagesByMessageRecipientIdAndRead(userId, false).isEmpty();
     }
     private int getWriteArticleCount(int userId) {
-        return writeArticlesList.getArticlesList(userId).size();
+        return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(userId, true, false, false, false).size();
     }
     private int getSupportedCount(int userId) {
         List<Article> articles = getPublishedArticles(userId);
