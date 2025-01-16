@@ -621,7 +621,7 @@ const handlePublish = async () => {
 
   try {
     loading.value = true
-    console.log('开始发布文章...')
+    console.log('开始处理文章...')
     
     // 获取当前用户ID
     const userInfo = localStorage.getItem('userInfo')
@@ -631,7 +631,7 @@ const handlePublish = async () => {
     const { id: authorId } = JSON.parse(userInfo)
 
     // 准备发布数据
-    const publishData = {
+    const articleData = {
       authorId: parseInt(String(authorId), 10),
       themeId: parseInt(String(articleForm.value.category), 10),
       title: articleForm.value.title,
@@ -640,27 +640,30 @@ const handlePublish = async () => {
       relatedKnowledge: articleForm.value.tags
     }
 
-    // 如果是编辑模式，添加文章ID
+    // 获取文章ID
     const articleId = route.params.id
+    let response
+
     if (articleId) {
-      publishData.id = parseInt(articleId as string, 10)
+      // 更新文章
+      console.log('更新文章，ID:', articleId)
+      articleData.id = parseInt(articleId as string, 10)
+      response = await request({
+        url: '/server/write/updateArticle',
+        method: 'put',
+        data: articleData
+      })
+    } else {
+      // 发布新文章
+      console.log('发布新文章')
+      response = await request({
+        url: '/server/write/article',
+        method: 'post',
+        data: articleData
+      })
     }
 
-    console.log('发布文章数据:', publishData)
-
-    // 发送请求
-    const response = await axios.post(
-      'http://127.0.0.1:8081/server/write/article',
-      publishData,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      }
-    )
-
-    console.log('发布响应:', response.data)
+    console.log('响应:', response.data)
 
     if (response.data.code === 200) {
       ElMessage.success(articleId ? '文章更新成功' : '文章发布成功')
@@ -669,11 +672,11 @@ const handlePublish = async () => {
       // 发布成功后跳转到个人中心的文章列表页
       router.push('/profile/articles')
     } else {
-      throw new Error(response.data.msg || '发布失败')
+      throw new Error(response.data.msg || '操作失败')
     }
   } catch (error: any) {
-    console.error('发布文章失败:', error)
-    ElMessage.error(error.message || '发布失败，请重试')
+    console.error('操作失败:', error)
+    ElMessage.error(error.message || '操作失败，请重试')
   } finally {
     loading.value = false
   }
