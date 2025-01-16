@@ -33,11 +33,15 @@ public class PersonalAchievementsPreparation {
         personalAchievements.setSharedCount(getSharedCount(userId));
         personalAchievements.setCollectedCount(getCollectedCount(userId));
         personalAchievements.setFansCount(getFansCount(userId));
+        personalAchievements.setFollowCount(getFollowCount(userId));
         personalAchievements.setHaveMessage(haveMessage(userId));
         return personalAchievements;
     }
     private List<Article> getPublishedArticles(int userId) {
         return articleRepository.findArticlesByAuthorIdAndCheckAndRejectAndDeleteAndDraft(userId, true, false, false, false);
+    }
+    private int getFollowCount(int userId) {
+        return userDataRepository.findUserDataById(userId).getFollowUserId().size();
     }
     private String getUserName(int userId) {
         return userDataRepository.findUserDataById(userId).getUsername();
