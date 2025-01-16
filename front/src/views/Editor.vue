@@ -161,6 +161,7 @@ import { useThemeStore } from '../store/theme'
 import axios from 'axios'
 import type { Article } from '../types/article'
 import type { Theme } from '../store/theme'
+import request from '../utils/request'
 
 const router = useRouter()
 const route = useRoute()
@@ -195,42 +196,107 @@ const themeOptions = computed(() => {
   return themes
 })
 
-// 在组件挂载时获取分类数据
+// 加载文章数据
+const loadArticle = async (articleId: number) => {
+  console.log('开始加载文章数据，文章ID:', articleId)
+  try {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    const userId = userInfo.id
+
+    // 发送请求获取文章数据
+    const response = await request.get('/server/getRenderedArticle', {
+      params: {
+        articleId,
+        userId
+      }
+    })
+
+    console.log('原始响应数据:', response)
+
+    // 获取文章数据
+    const articleData = response.data
+
+    // 打印完整的文章数据用于调试
+    console.log('文章数据:', {
+      id: articleData.id,
+      title: articleData.title,
+      theme: articleData.theme,
+      content: articleData.content,
+      summary: articleData.summary,
+      relatedKnowledge: articleData.relatedKnowledge
+    })
+
+    if (!articleData) {
+      throw new Error('文章数据为空')
+    }
+
+    // 查找匹配的主题ID
+    const matchingTheme = themeStore.getAllThemes.find(
+      theme => theme.name === articleData.theme
+    )
+    console.log('匹配的主题:', matchingTheme)
+
+    // 更新表单数据
+    articleForm.value = {
+      title: articleData.title || '',
+      content: articleData.content || '',
+      category: matchingTheme ? matchingTheme.id : null,
+      tags: Array.isArray(articleData.relatedKnowledge) ? articleData.relatedKnowledge : [],
+      summary: articleData.summary || ''
+    }
+
+    console.log('更新后的表单数据:', articleForm.value)
+
+    // 如果没有找到匹配的主题，显示警告
+    if (!matchingTheme) {
+      ElMessage.warning('未找到文章对应的分类，请重新选择分类')
+    }
+
+  } catch (error: any) {
+    console.error('加载文章数据失败:', {
+      error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      stack: error.stack
+    })
+    
+    if (error.response?.status === 404) {
+      ElMessage.error('文章不存在或已被删除')
+    } else {
+      ElMessage.error(error.message || '加载文章数据失败，请稍后重试')
+    }
+    
+    // 加载失败时返回上一页
+    router.back()
+  }
+}
+
+// 在组件挂载时检查是否有文章ID参数
 onMounted(async () => {
   console.log('Editor组件开始加载...')
   try {
+    // 首先加载分类数据
     console.log('开始获取分类数据...')
     await themeStore.fetchAllThemes()
     console.log('分类数据加载完成:', themeStore.getAllThemes)
     
+    // 检查是否有文章ID参数
     const articleId = route.params.id
     if (articleId) {
-      // 确保 articleId 是整数
+      // 编辑模式：加载现有文章
       const id = parseInt(articleId as string, 10)
-      console.log('正在加载文章ID:', id)
-      
-      try {
-        const response = await axios.get(`/server/article/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-        
-        if (response.data.code === 200) {
-          const article = response.data.data
-          console.log('找到文章数据:', article)
-          articleForm.value = {
-            title: article.title,
-            content: article.content || '',
-            category: article.themeId ? parseInt(String(article.themeId), 10) : null,
-            tags: article.relatedKnowledge || [],
-            summary: article.summary || ''
-          }
-          console.log('文章表单数据已更新:', articleForm.value)
-        }
-      } catch (error) {
-        console.error('加载文章数据失败:', error)
-        ElMessage.error('加载文章数据失败，请稍后重试')
+      console.log('检测到文章ID，进入编辑模式:', id)
+      await loadArticle(id)
+    } else {
+      // 新建模式：初始化空白表单
+      console.log('未检测到文章ID，进入新建模式')
+      articleForm.value = {
+        title: '',
+        content: '',
+        category: null,
+        tags: [],
+        summary: ''
       }
     }
 
@@ -241,8 +307,8 @@ onMounted(async () => {
       }
     }, 60000) // 每分钟自动保存
   } catch (error) {
-    console.error('加载分类数据失败:', error)
-    ElMessage.error('加载分类数据失败，请刷新页面重试')
+    console.error('初始化编辑器失败:', error)
+    ElMessage.error('初始化失败，请刷新页面重试')
   }
 })
 
@@ -285,21 +351,29 @@ const handleSaveDraft = async () => {
       relatedKnowledge: []
     }
 
-    const response = await axios.post('http://127.0.0.1:8081/server/write/draft', draftData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
+    console.log('保存草稿数据:', draftData)
+
+    const response = await request.post('/server/write/draft', draftData)
+
+    console.log('保存草稿响应:', response)
 
     if (response.data.code === 200) {
       ElMessage.success(response.data.msg || '草稿保存成功')
+      // 等待消息显示完成后再跳转到个人中心的文章列表页
+      setTimeout(() => {
+        router.push('/profile/articles')
+      }, 1500)
     } else {
-      ElMessage.error(response.data.msg || '草稿保存失败')
+      throw new Error(response.data.msg || '草稿保存失败')
     }
-  } catch (error) {
-    console.error('保存草稿时发生错误:', error)
-    ElMessage.error('保存草稿失败，请稍后重试')
+  } catch (error: any) {
+    console.error('保存草稿失败:', {
+      error,
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    })
+    ElMessage.error(error.message || '保存草稿失败，请稍后重试')
   } finally {
     savingDraft.value = false
   }
@@ -556,7 +630,7 @@ const handlePublish = async () => {
     }
     const { id: authorId } = JSON.parse(userInfo)
 
-    // 准备发布数据，确保所有ID都是整数
+    // 准备发布数据
     const publishData = {
       authorId: parseInt(String(authorId), 10),
       themeId: parseInt(String(articleForm.value.category), 10),
@@ -564,6 +638,12 @@ const handlePublish = async () => {
       content: articleForm.value.content,
       summary: articleForm.value.summary,
       relatedKnowledge: articleForm.value.tags
+    }
+
+    // 如果是编辑模式，添加文章ID
+    const articleId = route.params.id
+    if (articleId) {
+      publishData.id = parseInt(articleId as string, 10)
     }
 
     console.log('发布文章数据:', publishData)
@@ -583,11 +663,11 @@ const handlePublish = async () => {
     console.log('发布响应:', response.data)
 
     if (response.data.code === 200) {
-      ElMessage.success('文章发布成功')
+      ElMessage.success(articleId ? '文章更新成功' : '文章发布成功')
       // 关闭对话框
       tagsDialogVisible.value = false
-      // 发布成功后跳转到首页
-      router.push('/home')
+      // 发布成功后跳转到个人中心的文章列表页
+      router.push('/profile/articles')
     } else {
       throw new Error(response.data.msg || '发布失败')
     }
@@ -650,6 +730,9 @@ const editorConfig = {
         insertFn(res.data.url)
       }
     }
+  },
+  attributes: {
+    writingsuggestions: 'on'
   }
 }
 

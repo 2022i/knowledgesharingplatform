@@ -36,7 +36,7 @@
                 <el-button 
                   type="primary" 
                   text 
-                  @click="$emit('edit', article.id)"
+                  @click="handleEdit(article.id)"
                 >
                   编辑
                 </el-button>
@@ -219,6 +219,11 @@ const handleUndoDelete = async (id: number) => {
     console.error('撤销删除失败:', error)
     ElMessage.error('撤销删除失败')
   }
+}
+
+// 处理编辑
+const handleEdit = (id: number) => {
+  router.push(`/editor/${id}`)
 }
 </script>
 

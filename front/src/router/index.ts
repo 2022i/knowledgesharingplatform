@@ -99,6 +99,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../views/Profile/Following.vue')
       },
       {
+        path: 'fans',
+        name: 'ProfileFans',
+        component: () => import('../views/Profile/Fans.vue')
+      },
+      {
         path: 'achievements',
         name: 'ProfileAchievements',
         component: () => import('../views/Profile/Achievements.vue')
@@ -143,6 +148,16 @@ const routes: RouteRecordRaw[] = [
     meta: { 
       requiresAuth: true,
       title: '分类'
+    }
+  },
+  // 用户主页 - 需要登录权限
+  {
+    path: '/user/:id',
+    name: 'User',
+    component: () => import('../views/User.vue'),
+    meta: { 
+      requiresAuth: true,
+      title: '用户主页'
     }
   }
 ]

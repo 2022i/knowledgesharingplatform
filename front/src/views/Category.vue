@@ -101,14 +101,22 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
-  Monitor, 
-  DataLine, 
-  Connection, 
-  Setting, 
-  Promotion,
-  Management,
-  Briefcase,
-  TrendCharts
+  Monitor,
+  Notebook,
+  Connection,
+  Reading,
+  ChatLineRound,
+  Bell,
+  Collection,
+  Guide,
+  OfficeBuilding,
+  Wallet,
+  DocumentCopy,
+  DataAnalysis,
+  TrendCharts,
+  Cpu,
+  Opportunity,
+  FirstAidKit
 } from '@element-plus/icons-vue'
 import ArticleList from '../components/ArticleList.vue'
 import { useUserArticleStore } from '../store/userArticle'
@@ -130,14 +138,22 @@ const themes = ref<any[]>([])
 // 定义分类图标映射
 const categoryIcons: Record<string, any> = {
   '计算机科学': Monitor,
-  '数据科学': DataLine,
-  '网络技术': Connection,
-  '系统架构': Setting,
-  '软件工程': Promotion,
-  '项目管理': Management,
-  '商业分析': Briefcase,
-  '技术趋势': TrendCharts,
-  // 默认图标为 Monitor
+  '心理学': Opportunity,
+  '逻辑学': Connection,
+  '教育': Reading,
+  '语言': ChatLineRound,
+  '新闻': Bell,
+  '哲学': Collection,
+  '宗教': Guide,
+  '政治': OfficeBuilding,
+  '经济': Wallet,
+  '法律': DocumentCopy,
+  '数学': DataAnalysis,
+  '物理': TrendCharts,
+  '化学': Cpu,
+  '生命科学': Notebook,
+  '医学': FirstAidKit,
+  // 默认图标
   'default': Monitor
 }
 

@@ -48,7 +48,7 @@
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ achievements.fansCount }}</div>
-          <div class="stat-label">关注者</div>
+          <div class="stat-label">粉丝</div>
         </div>
       </div>
     </div>

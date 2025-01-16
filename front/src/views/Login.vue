@@ -19,14 +19,6 @@
           :rules="rules"
           class="login-form"
         >
-          <!-- 角色选择 -->
-          <el-form-item>
-            <el-radio-group v-model="loginForm.role" @change="handleRoleChange">
-              <el-radio-button value="user">普通用户</el-radio-button>
-              <el-radio-button value="admin">管理员</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-
           <!-- 登录方式切换 -->
           <div class="login-tabs">
             <div
@@ -106,8 +98,7 @@ const loading = ref(false)
 const loginForm = ref({
   userUniqueIdentifier: '',
   password: '',
-  loginType: 'email' as 'email' | 'username',
-  role: 'user' as 'user' | 'admin'
+  loginType: 'email' as 'email' | 'username'
 })
 
 // 表单验证规则
@@ -138,11 +129,6 @@ const toggleLoginType = () => {
   }
 }
 
-// 处理角色切换
-const handleRoleChange = () => {
-  console.log('当前选择的角色:', loginForm.value.role)
-}
-
 // 处理登录
 const handleLogin = async () => {
   if (!loginFormRef.value) return
@@ -151,23 +137,15 @@ const handleLogin = async () => {
     await loginFormRef.value.validate()
     loading.value = true
     
-    console.log('开始登录请求:', {
-      identifier: loginForm.value.userUniqueIdentifier,
-      loginType: loginForm.value.loginType,
-      role: loginForm.value.role
-    })
+    console.log('=== 提交登录表单 ===')
+    console.log('登录类型:', loginForm.value.loginType)
+    console.log('登录标识:', loginForm.value.userUniqueIdentifier)
 
     // 调用登录接口
     const success = await login(loginForm.value)
     
     if (success) {
       ElMessage.success('登录成功')
-      // 根据角色跳转到不同的页面
-      if (loginForm.value.role === 'admin') {
-        await router.push('/admin/articles')
-      } else {
-        await router.push('/home')
-      }
     }
   } catch (error: any) {
     console.error('登录失败:', error)

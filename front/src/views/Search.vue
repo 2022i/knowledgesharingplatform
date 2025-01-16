@@ -57,9 +57,13 @@
       <!-- 用户搜索结果 -->
       <template v-if="searchType === 'users'">
         <div v-for="user in results" :key="user.id" class="user-result-item">
-          <el-avatar :size="50" :src="user.avatar" />
+          <el-avatar :size="50" :src="user.avatar">
+            {{ user.username?.charAt(0).toUpperCase() }}
+          </el-avatar>
           <div class="user-info">
-            <h3>{{ user.username }}</h3>
+            <router-link :to="`/user/${user.id}`" class="username">
+              <h3>{{ user.username }}</h3>
+            </router-link>
             <p>{{ user.bio }}</p>
           </div>
           <el-button
@@ -697,5 +701,15 @@ const handleUnfollowTag = async (tag: any) => {
     padding: 10px 16px;
     min-width: unset;
   }
+}
+
+.username {
+  text-decoration: none;
+  color: var(--el-text-color-primary);
+  transition: color 0.3s ease;
+}
+
+.username:hover {
+  color: var(--el-color-primary);
 }
 </style>

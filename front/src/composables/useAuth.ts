@@ -8,7 +8,6 @@ export interface LoginForm {
   userUniqueIdentifier: string // 可以是邮箱或用户名
   password: string
   loginType: 'email' | 'username' // 登录类型
-  role: UserRole  // 添加角色字段
 }
 
 // 注册表单接口
@@ -25,7 +24,7 @@ export type UserRole = 'admin' | 'user'
 // 用户信息接口
 export interface UserInfo {
   id: number
-  name: string
+  username: string
   email: string
   role: UserRole
   avatar?: string
@@ -37,7 +36,8 @@ export interface UserInfo {
 interface ApiResponse<T = any> {
   code: number
   msg: string
-  additionalInformation: number  // userId 是整型
+  username: string
+  id: number
   data?: T
 }
 
@@ -162,45 +162,74 @@ export function useAuth() {
         ? '/login/loginByEmail' 
         : '/login/loginByUsername'
 
+      console.log('=== 开始登录 ===')
+      console.log('登录类型:', form.loginType)
+      console.log('登录标识:', form.userUniqueIdentifier)
+      console.log('请求地址:', endpoint)
+
       const response = await axiosInstance.post<ApiResponse>(endpoint, {
         userUniqueIdentifier: form.userUniqueIdentifier,
         password: form.password
       })
 
-      console.log('登录响应:', response.data)
+      console.log('=== 登录响应 ===')
+      console.log('响应状态码:', response.data.code)
+      console.log('响应消息:', response.data.msg)
+      console.log('用户名:', response.data.username)
+      console.log('用户ID:', response.data.id)
 
       if (response.data.code === 200) {
         // 保存token和userId
         const token = response.data.msg
-        const userId = response.data.additionalInformation
+        const userId = response.data.id
+        const username = response.data.username
+        
+        // 根据返回的用户名判断角色
+        const role: UserRole = username === 'Administrator' ? 'admin' : 'user'
+        
+        console.log('=== 用户信息 ===')
+        console.log('Token:', token)
+        console.log('用户ID:', userId)
+        console.log('用户名:', username)
+        console.log('角色:', role)
         
         localStorage.setItem('token', token)
         localStorage.setItem('userId', userId.toString())
+        localStorage.setItem('username', username)
 
         // 创建用户信息
         const userInfoData: UserInfo = {
           id: userId,
-          name: form.userUniqueIdentifier,
+          username: username,
           email: form.loginType === 'email' ? form.userUniqueIdentifier : '',
-          role: form.role,  // 使用表单中选择的角色
+          role: role,
           lastLoginAt: new Date().toISOString()
         }
 
         userInfo.value = userInfoData
         localStorage.setItem('userInfo', JSON.stringify(userInfoData))
         
+        console.log('=== 登录成功 ===')
+        console.log('用户信息已保存:', userInfoData)
+        
         // 根据角色跳转到不同页面
-        if (form.role === 'admin') {
-          await router.push('/admin')
+        if (role === 'admin') {
+          console.log('管理员登录，跳转到管理页面')
+          await router.push('/admin/articles')
         } else {
+          console.log('普通用户登录，跳转到首页')
           await router.push('/home')
         }
         
         return true
       } else {
+        console.log('=== 登录失败 ===')
+        console.log('错误消息:', response.data.msg)
         throw new Error(response.data.msg)
       }
     } catch (error) {
+      console.error('=== 登录错误 ===')
+      console.error('错误详情:', error)
       handleAuthError(error)
       throw error
     } finally {
