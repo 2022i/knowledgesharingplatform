@@ -18,8 +18,10 @@ public class SaveData {
         articleRepository.save(article);
         UserData userData = userDataRepository.findUserDataById(authorId);
         List<Integer> writeArticleIds= userData.getWriteArticleIds();
-        writeArticleIds.add(article.getId());
-        userData.setWriteArticleIds(writeArticleIds);
-        userDataRepository.save(userData);
+        if(!writeArticleIds.contains(article.getId())){
+            writeArticleIds.add(article.getId());
+            userData.setWriteArticleIds(writeArticleIds);
+            userDataRepository.save(userData);
+        }
     }
 }
