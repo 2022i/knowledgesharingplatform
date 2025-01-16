@@ -6,7 +6,8 @@ import lombok.Data;
 public class Response {
     private int code;
     private String msg;
-    private String additionalInformation;
+    private String additionalInformation1;
+    private int additionalInformation2;
     public static Response successAddDataAndSentMessage() {
         Response result = new Response();
         result.setCode(200);
@@ -65,16 +66,17 @@ public class Response {
 
     public static Response successLoginUser(int userId,String token, String username) {
         Response result = new Response();
-        result.setCode(userId);
+        result.setCode(200);
         result.setMsg(token);
-        result.setAdditionalInformation(username);
+        result.setAdditionalInformation1(username);
+        result.setAdditionalInformation2(userId);
         return result;
     }
     public static Response successLoginAdministrator(String token) {
         Response result = new Response();
         result.setCode(200);
         result.setMsg(token);
-        result.setAdditionalInformation("Administrator");
+        result.setAdditionalInformation1("Administrator");
         return result;
     }
 
