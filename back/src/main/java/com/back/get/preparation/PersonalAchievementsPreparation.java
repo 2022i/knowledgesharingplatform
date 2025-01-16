@@ -6,6 +6,7 @@ import com.back.get.UserIdsList.FansIdsList;
 import com.back.index.Article;
 import com.back.index.Message;
 import com.back.repository.MessageRepository;
+import com.back.repository.UserDataRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -18,10 +19,12 @@ public class PersonalAchievementsPreparation {
     private FansIdsList fansIdsList;
     @Resource
     private MessageRepository messageRepository;
+    @Resource
+    private UserDataRepository userDataRepository;
     public PersonalAchievements getPersonalAchievements(int userId) {
         PersonalAchievements personalAchievements = new PersonalAchievements();
+        personalAchievements.setUserName(getUserName(userId));
         personalAchievements.setWriteArticleCount(getWriteArticleCount(userId));
-        System.out.println("writeArticleCount: " + getWriteArticleCount(userId));
         personalAchievements.setSupportedCount(getSupportedCount(userId));
         personalAchievements.setOpposedCount(getOpposedCount(userId));
         personalAchievements.setSharedCount(getSharedCount(userId));
@@ -29,6 +32,9 @@ public class PersonalAchievementsPreparation {
         personalAchievements.setFansCount(getFansCount(userId));
         personalAchievements.setHaveMessage(haveMessage(userId));
         return personalAchievements;
+    }
+    private String getUserName(int userId) {
+        return userDataRepository.findUserDataById(userId).getUsername();
     }
     private boolean haveMessage(int userId) {
         return !messageRepository.findMessagesByMessageRecipientIdAndRead(userId, false).isEmpty();
