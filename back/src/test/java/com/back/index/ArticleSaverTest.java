@@ -30,7 +30,7 @@ public class ArticleSaverTest {
 
     @Test
     public void saveArticlesFromFiles() throws IOException, NoApiKeyException, InputRequiredException {
-        File folder = new File("C:\\Users\\23831\\Desktop\\protect7");
+        File folder = new File("E:\\protect7");
         File[] files = folder.listFiles(); // 获取文件夹下的所有文件
         List<Article> articles = new ArrayList<>();
         if (files != null) {

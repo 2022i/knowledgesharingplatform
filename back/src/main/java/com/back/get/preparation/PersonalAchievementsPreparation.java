@@ -45,32 +45,40 @@ public class PersonalAchievementsPreparation {
     private int getSupportedCount(int userId) {
         List<Article> articles = writeArticlesList.getArticlesList(userId);
         int count = 0;
-        for (Article article : articles) {
-            count += article.getSupportUserIds().size();
+        if (!articles.isEmpty()) {
+            for (Article article : articles) {
+                count +=article.getSupportUserIds().size();
+            }
         }
         return count;
     }
     private int getOpposedCount(int userId) {
         List<Article> articles = writeArticlesList.getArticlesList(userId);
         int count = 0;
-        for (Article article : articles) {
-            count += article.getOpposeUserIds().size();
+        if(!articles.isEmpty()){
+            for (Article article : articles) {
+                count += article.getOpposeUserIds().size();
+            }
         }
         return count;
     }
     private int getSharedCount(int userId) {
         List<Article> articles = writeArticlesList.getArticlesList(userId);
         int count = 0;
-        for (Article article : articles) {
-            count += article.getShareUserIds().size();
+        if(!articles.isEmpty()) {
+            for (Article article : articles) {
+                count += article.getShareUserIds().size();
+            }
         }
         return count;
     }
     private int getCollectedCount(int userId) {
         List<Article> articles = writeArticlesList.getArticlesList(userId);
         int count = 0;
-        for (Article article : articles) {
-            count += article.getCollectUserIds().size();
+        if(!articles.isEmpty()) {
+            for (Article article : articles) {
+                count += article.getCollectUserIds().size();
+            }
         }
         return count;
     }
