@@ -1,4 +1,4 @@
-项目演示视频：
+项目演示视频：https://www.bilibili.com/video/BV1xUAteRE41/
 
 本平台为知识采集与汇编系统，具体需求包括以下几个方面：
 1、通过富文本编辑器将知识录入到数据库（如果技术支持可写入ElasticSearch），通过
