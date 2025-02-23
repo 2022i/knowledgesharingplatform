@@ -6,14 +6,13 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "user")
 @Data
+@Document(indexName = "user")
 public class User {
     @Id
-    private int id;
+    private Integer id;
     @Field(type = FieldType.Text, analyzer = "smartcn", searchAnalyzer = "smartcn")
     private String username;
-    @Field(type=FieldType.Keyword)
     private String email;
     private String password;
 }

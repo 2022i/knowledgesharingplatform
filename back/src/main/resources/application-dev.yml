@@ -34,13 +34,9 @@ spring:
       - /isFollow/**
 
   datasource:
-    url: jdbc:mysql://localhost:3306/defect_management
+    url: jdbc:mysql://localhost:3306/knowledge_sharing_platform
     username: root
     password: root
-
-
-
-
 logging:
   level:
     com.back.assessment: debug

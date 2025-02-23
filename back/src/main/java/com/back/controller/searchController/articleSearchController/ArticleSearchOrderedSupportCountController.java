@@ -16,7 +16,7 @@ public class ArticleSearchOrderedSupportCountController {
     private ArticleSearchOrderedSupportCount articleSearchOrderedSupportCount;
     @Description("根据关键字搜索文章，按文章的点赞数由高到低排序，返回文章数据用于渲染")
     @GetMapping("/orderedSupportCount")
-    public List<RenderedArticle> getArticles(@RequestParam String keyword,@RequestParam int userId){
+    public List<RenderedArticle> getArticles(@RequestParam String keyword, @RequestParam int userId){
         return articleSearchOrderedSupportCount.getArticles(keyword,userId);
     }
 }

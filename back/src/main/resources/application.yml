@@ -3,8 +3,6 @@ server:
   address: 0.0.0.0
   servlet:
     context-path: /server
-
-
 spring:
   mail:
     host: smtp.qq.com
@@ -17,14 +15,10 @@ spring:
           auth: true
           ssl:
             enable: true
-
   elasticsearch:
     uris: http://localhost:9200
 #    connection-timeout: 3000
 #    socket-timeout: 5000
-
-
-
   data:
     redis:
       database: 1
@@ -40,14 +34,8 @@ spring:
           max-active: 100
           max-idle: 75
           min-idle: 75
-
-
-
-
-
   profiles:
     active: dev
-
 ai:
   api:
     key:  sk-4bbb3c09ffea4106bbf07e0ee66d03b7
